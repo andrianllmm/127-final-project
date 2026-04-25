@@ -1,2 +1,3 @@
-# 127-final-project
-CMSC127 Final Project 
+# CMSC 127 Final Project
+
+Final project for CMSC 127
