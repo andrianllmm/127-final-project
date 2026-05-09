@@ -1,5 +1,8 @@
 import app from './app.js';
 import { env } from './config/env.js';
+import { initPool } from './db/pool.js';
+
+await initPool();
 
 const server = app.listen(env.PORT, env.HOST, () => {
   const address = server.address();
