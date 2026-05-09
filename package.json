@@ -4,11 +4,21 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prepare": "husky"
   },
   "packageManager": "pnpm@10.0.0",
   "devDependencies": {
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.3",
     "prettier": "3.8.3",
     "turbo": "^2.9.12"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,md}": [
+      "prettier --write"
+    ]
   }
 }
