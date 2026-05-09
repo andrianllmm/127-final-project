@@ -1,6 +1,6 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
-  "globalEnv": ["PORT", "HOST"],
+  "globalEnv": ["PORT", "HOST", "WEB_URL"],
   "tasks": {
     "dev": {
       "persistent": true,
