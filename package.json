@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "license": "Apache-2.0",
+  "scripts": {
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
   "packageManager": "pnpm@10.0.0",
   "devDependencies": {
     "prettier": "3.8.3",
