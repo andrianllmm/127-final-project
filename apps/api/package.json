@@ -7,6 +7,9 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "db:up": "dbmate up",
+    "db:down": "dbmate down",
+    "db:new": "dbmate new",
     "lint": "eslint .",
     "check-types": "tsc --noEmit"
   },
@@ -14,6 +17,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "slonik": "^48.14.1",
     "tsx": "^4.21.0",
     "zod": "^4.4.3"
   },
@@ -26,8 +30,11 @@
     "@types/node": "^24.12.2",
     "@typescript-eslint/eslint-plugin": "^8.59.2",
     "@typescript-eslint/parser": "^8.59.2",
+    "dbmate": "^2.33.0",
     "eslint": "^10.2.1",
+    "eslint-plugin-slonik": "^1.13.5",
     "globals": "^17.5.0",
+    "libpg-query": "^17.7.3",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.59.2"
   }

@@ -1,6 +1,6 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
-  "globalEnv": ["PORT", "HOST", "WEB_URL"],
+  "globalEnv": ["PORT", "HOST", "DATABASE_URL", "WEB_URL"],
   "tasks": {
     "dev": {
       "persistent": true,
@@ -9,6 +9,15 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
+    },
+    "db:up": {
+      "dependsOn": ["^db:up"]
+    },
+    "db:down": {
+      "dependsOn": ["^db:down"]
+    },
+    "db:new": {
+      "dependsOn": ["^db:new"]
     },
     "lint": {
       "dependsOn": ["^lint"]
