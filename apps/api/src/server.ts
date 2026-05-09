@@ -1,16 +1,14 @@
 import app from './app.js';
+import { env } from './config/env.js';
 
-const PORT = Number(process.env.PORT) || 3000;
-const HOST = process.env.HOST || '0.0.0.0';
-
-const server = app.listen(PORT, HOST, () => {
+const server = app.listen(env.PORT, env.HOST, () => {
   const address = server.address();
 
   if (typeof address === 'object' && address) {
-    console.log(
-      `Server running on http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${address.port}`,
-    );
+    const host = env.HOST === '0.0.0.0' ? 'localhost' : env.HOST;
+
+    console.log(`Server running on http://${host}:${address.port}`);
   } else {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${env.PORT}`);
   }
 });
