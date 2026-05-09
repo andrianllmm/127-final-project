@@ -36,6 +36,9 @@ importers:
         specifier: ^4.21.0
         version: 4.21.0
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:^
+        version: link:../../packages/typescript-config
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -61,6 +64,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.3.0(jiti@2.6.1))
+      '@repo/typescript-config':
+        specifier: workspace:^
+        version: link:../../packages/typescript-config
       '@rolldown/plugin-babel':
         specifier: ^0.2.3
         version: 0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@24.12.3)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4))
@@ -103,6 +109,8 @@ importers:
       vite:
         specifier: ^8.0.10
         version: 8.0.11(@types/node@24.12.3)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4)
+
+  packages/typescript-config: {}
 
 packages:
 
