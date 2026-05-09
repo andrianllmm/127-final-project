@@ -1,0 +1,29 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalEnv": ["PORT", "HOST", "DATABASE_URL", "WEB_URL"],
+  "tasks": {
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "db:up": {
+      "dependsOn": ["^db:up"]
+    },
+    "db:down": {
+      "dependsOn": ["^db:down"]
+    },
+    "db:new": {
+      "dependsOn": ["^db:new"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    }
+  }
+}
