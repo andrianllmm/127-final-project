@@ -24,7 +24,12 @@ app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Hello' });
+  res.json({
+    name: 'MiaGo API',
+    version: '1.0.0',
+    status: 'running',
+    docs: '/docs',
+  });
 });
 
 app.get('/api/me', async (req, res) => {
