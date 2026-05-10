@@ -110,10 +110,26 @@ pnpm dev
 
 ```
 apps/
-  web/        # React (Vite) frontend
-  api/        # Express backend
-
-packages/     # shared utilities and configs
+├── web/                         # React (Vite) frontend
+│   └── src/
+│       ├── features/            # feature modules
+│       ├── layouts/             # page wrappers
+│       ├── pages/               # general pages
+│       ├── shared/              # reusable components/hooks/utils
+│       ├── router.tsx           # route config
+│       ├── main.tsx             # entry point
+│       └── App.tsx              # root component
+│
+├── api/                         # Express backend
+│   └── src/
+│       ├── modules/             # feature modules
+│       ├── db/                  # database client
+│       ├── common/              # shared backend utilities
+│       ├── config/              # environment & app config
+│       ├── app.ts               # express app setup
+│       └── server.ts            # server bootstrap
+│
+packages/                        # shared across apps
 ```
 
 ---
