@@ -1,5 +1,5 @@
 import { createPool, type DatabasePool } from 'slonik';
-import { env } from '@/config/env.js';
+import { env } from '../config/env.js';
 
 export let pool: DatabasePool;
 
