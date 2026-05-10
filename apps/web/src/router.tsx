@@ -3,8 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import { RootLayout } from './layouts/RootLayout';
 import { AuthLayout } from './layouts/AuthLayout';
 
+import { NotFoundPage } from './pages/NotFoundPage';
 import { HomePage } from './pages/HomePage';
-import NotFoundPage from './pages/NotFoundPage';
 import { SignInPage } from './features/auth/pages/SignInPage';
 import { SignUpPage } from './features/auth/pages/SignUpPage';
 import { UserProfilePage } from './features/users/pages/UserProfilePage';
