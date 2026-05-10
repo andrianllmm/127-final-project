@@ -8,6 +8,7 @@ import { HomePage } from './pages/HomePage';
 import { SignInPage } from './features/auth/pages/SignInPage';
 import { SignUpPage } from './features/auth/pages/SignUpPage';
 import { UserProfilePage } from './features/users/pages/UserProfilePage';
+import { HealthPage } from './pages/HealthPage';
 
 export function AppRouter() {
   return (
@@ -15,6 +16,7 @@ export function AppRouter() {
       <Route element={<RootLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/profile/:id" element={<UserProfilePage />} />
+        <Route path="/health" element={<HealthPage />} />
       </Route>
       <Route element={<AuthLayout />}>
         <Route path="/sign-in" element={<SignInPage />} />

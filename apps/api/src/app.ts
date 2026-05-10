@@ -39,6 +39,15 @@ app.get('/api/me', async (req, res) => {
   return res.json(session);
 });
 
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    memoryUsage: process.memoryUsage(),
+  });
+});
+
 app.use('/users', usersRoutes);
 
 export default app;
