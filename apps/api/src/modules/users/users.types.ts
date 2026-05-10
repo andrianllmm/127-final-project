@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
 export const userSchema = z.object({
-  id: z.number(),
+  id: z.string(),
+  name: z.string(),
   email: z.email(),
+  emailVerified: z.boolean(),
+  image: z.string().nullable().optional(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type User = z.infer<typeof userSchema>;
@@ -12,9 +17,3 @@ export const userIdParamSchema = z.object({
 });
 
 export type UserIdParamDTO = z.infer<typeof userIdParamSchema>;
-
-export const createUserSchema = z.object({
-  email: z.email(),
-});
-
-export type CreateUserDTO = z.infer<typeof createUserSchema>;
