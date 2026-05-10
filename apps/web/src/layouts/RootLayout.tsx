@@ -1,12 +1,12 @@
+import { Navbar } from '@/shared/layout/NavBar';
 import { Outlet } from 'react-router-dom';
 
 export function RootLayout() {
   return (
     <div className="min-h-screen flex flex-col">
-      <main className="flex-1">
-        <div className="mx-auto max-w-6xl px-4 py-6">
-          <Outlet />
-        </div>
+      <Navbar />
+      <main className="flex-1 flex flex-col">
+        <Outlet />
       </main>
     </div>
   );
