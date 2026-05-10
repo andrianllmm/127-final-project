@@ -18,6 +18,9 @@
     "typescriptreact": "html",
     "javascriptreact": "html"
   },
+  "[sql]": {
+    "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
+  },
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
