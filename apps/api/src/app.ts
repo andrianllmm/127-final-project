@@ -3,6 +3,8 @@ import cors from 'cors';
 import { env } from './config/env.js';
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
 import { auth } from './auth/auth.js';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './docs/swagger.js';
 
 import usersRoutes from './modules/users/users.routes.js';
 
@@ -18,6 +20,8 @@ app.use(
 app.all('/api/auth/{*any}', toNodeHandler(auth));
 
 app.use(express.json());
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req, res) => {
   res.json({ message: 'Hello' });
