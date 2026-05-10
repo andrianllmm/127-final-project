@@ -1,4 +1,4 @@
-\restrict OR6bdt7UoYtUHgHuRRlk6RyBcQoKFvgQtB5HssqImVdQRDDa28El9l1XIW07Yc5
+\restrict NFCPGhCZ4UJZnj7c4Yx2vBdCuufJxetjyMsGHQGcULolbWaoYbknhHDpsHk0OzZ
 
 -- Dumped from database version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
 -- Dumped by pg_dump version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
@@ -19,6 +19,27 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: account; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.account (
+    id text NOT NULL,
+    "accountId" text NOT NULL,
+    "providerId" text NOT NULL,
+    "userId" text NOT NULL,
+    "accessToken" text,
+    "refreshToken" text,
+    "idToken" text,
+    "accessTokenExpiresAt" timestamp with time zone,
+    "refreshTokenExpiresAt" timestamp with time zone,
+    scope text,
+    password text,
+    "createdAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -28,40 +49,56 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Name: session; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.users (
-    id integer NOT NULL,
-    email text NOT NULL
+CREATE TABLE public.session (
+    id text NOT NULL,
+    "expiresAt" timestamp with time zone NOT NULL,
+    token text NOT NULL,
+    "createdAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp with time zone NOT NULL,
+    "ipAddress" text,
+    "userAgent" text,
+    "userId" text NOT NULL
 );
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: user; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.users_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+CREATE TABLE public."user" (
+    id text NOT NULL,
+    name text NOT NULL,
+    email text NOT NULL,
+    "emailVerified" boolean NOT NULL,
+    image text,
+    "createdAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: verification; Type: TABLE; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+CREATE TABLE public.verification (
+    id text NOT NULL,
+    identifier text NOT NULL,
+    value text NOT NULL,
+    "expiresAt" timestamp with time zone NOT NULL,
+    "createdAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: account account_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account
+    ADD CONSTRAINT account_pkey PRIMARY KEY (id);
 
 
 --
@@ -73,26 +110,87 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: session session_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_email_key UNIQUE (email);
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_pkey PRIMARY KEY (id);
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: session session_token_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_token_key UNIQUE (token);
+
+
+--
+-- Name: user user_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_email_key UNIQUE (email);
+
+
+--
+-- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: verification verification_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.verification
+    ADD CONSTRAINT verification_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: account_userId_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "account_userId_idx" ON public.account USING btree ("userId");
+
+
+--
+-- Name: session_userId_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "session_userId_idx" ON public.session USING btree ("userId");
+
+
+--
+-- Name: verification_identifier_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX verification_identifier_idx ON public.verification USING btree (identifier);
+
+
+--
+-- Name: account account_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.account
+    ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: session session_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict OR6bdt7UoYtUHgHuRRlk6RyBcQoKFvgQtB5HssqImVdQRDDa28El9l1XIW07Yc5
+\unrestrict NFCPGhCZ4UJZnj7c4Yx2vBdCuufJxetjyMsGHQGcULolbWaoYbknhHDpsHk0OzZ
 
 
 --
@@ -100,4 +198,5 @@ ALTER TABLE ONLY public.users
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20260509175040');
+    ('20260509175040'),
+    ('20260510051607');

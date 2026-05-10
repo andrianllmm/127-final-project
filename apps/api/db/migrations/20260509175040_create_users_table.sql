@@ -1,8 +1,8 @@
 -- migrate:up
-create table users (
-  id serial primary key,
-  email text not null unique
+CREATE TABLE users (
+  id serial PRIMARY KEY,
+  email text NOT NULL UNIQUE
 );
 
 -- migrate:down
-drop table users;
+DROP TABLE users;
