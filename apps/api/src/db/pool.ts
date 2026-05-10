@@ -1,10 +1,13 @@
 import { createPool, type DatabasePool } from 'slonik';
 import { env } from '../config/env.js';
 
-export let pool: DatabasePool;
+let pool: DatabasePool | null = null;
 
-export const initPool = async () => {
-  pool = await createPool(env.DATABASE_URL!, {
-    maximumPoolSize: 10,
-  });
-};
+export async function getPool() {
+  if (!pool) {
+    pool = await createPool(env.DATABASE_URL!, {
+      maximumPoolSize: 10,
+    });
+  }
+  return pool;
+}
