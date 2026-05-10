@@ -1,3 +1,4 @@
+import { Logo } from '@/shared/components/brand/Logo';
 import { Link, Outlet } from 'react-router-dom';
 
 export function AuthLayout() {
@@ -6,7 +7,7 @@ export function AuthLayout() {
       <header className="w-full">
         <div className="mx-auto flex h-24 max-w-6xl items-center justify-center px-4">
           <Link to="/">
-            <div className="text-3xl font-bold">MiaGo!</div>
+            <Logo />
           </Link>
         </div>
       </header>

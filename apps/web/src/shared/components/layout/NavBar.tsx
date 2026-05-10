@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { NavUser } from './NavUser';
+import { Logo } from '../brand/Logo';
 
 export function Navbar() {
   return (
@@ -7,7 +8,7 @@ export function Navbar() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         {/* Brand */}
         <Link to="/">
-          <div className="text-xl font-bold">MiaGo!</div>
+          <Logo />
         </Link>
 
         {/* Auth */}
