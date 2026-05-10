@@ -1,7 +1,7 @@
 import { Button } from '@/shared/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
-export default function NotFoundPage() {
+export function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
