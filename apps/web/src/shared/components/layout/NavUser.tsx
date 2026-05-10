@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 
-import { authClient } from '@/features/auth/lib/authClient';
+import { authClient } from '@/shared/lib/authClient';
 import { getInitials } from '@/shared/lib/getInitials';
 
 import {
