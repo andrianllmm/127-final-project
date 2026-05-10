@@ -4,7 +4,7 @@ import { env } from './config/env.js';
 import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
 import { auth } from './auth/auth.js';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './docs/swagger.js';
+import { swaggerSpec } from './config/swagger.js';
 
 import usersRoutes from './modules/users/users.routes.js';
 
