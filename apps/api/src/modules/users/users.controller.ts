@@ -1,27 +1,27 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { UsersService } from './users.service.js';
 
-const service = new UsersService();
-
 export class UsersController {
-  async getAll(req: Request, res: Response) {
-    const users = await service.getUsers();
+  private service = new UsersService();
+
+  getAll = async (_req: Request, res: Response): Promise<Response> => {
+    const users = await this.service.getUsers();
     return res.json(users);
-  }
+  };
 
-  async getById(req: Request, res: Response) {
-    const id = req.params.id;
+  getById = async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
 
-    if (typeof id !== 'string') {
+    if (typeof id !== 'string' || !id) {
       return res.status(400).json({ message: 'Invalid user id' });
     }
 
-    const user = await service.getUserById(id);
+    const user = await this.service.getUserById(id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     return res.json(user);
-  }
+  };
 }
