@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -13,12 +13,21 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/shared/compon
 
 import { Input } from '@/shared/components/ui/input';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+
 const signUpSchema = z
   .object({
     name: z.string().min(2, 'Name is too short'),
     email: z.string().email('Invalid email'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string().min(6),
+    role: z.enum(['customer', 'vendor', 'rider']),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -32,11 +41,15 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
 
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      role: 'customer',
+    },
   });
 
   async function onSubmit(values: SignUpInput) {
@@ -44,6 +57,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
       name: values.name,
       email: values.email,
       password: values.password,
+      role: values.role,
     });
 
     if (error) {
@@ -88,6 +102,35 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
               {errors.email && (
                 <FieldDescription className="text-destructive">
                   {errors.email.message}
+                </FieldDescription>
+              )}
+            </Field>
+
+            {/* ROLE */}
+            <Field>
+              <FieldLabel>Role</FieldLabel>
+
+              <Controller
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="customer">Customer</SelectItem>
+                      <SelectItem value="vendor">Vendor</SelectItem>
+                      <SelectItem value="rider">Rider</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+
+              {errors.role && (
+                <FieldDescription className="text-destructive">
+                  {errors.role.message}
                 </FieldDescription>
               )}
             </Field>
