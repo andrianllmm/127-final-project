@@ -5,23 +5,72 @@ import { AuthLayout } from './layouts/AuthLayout';
 
 import { NotFoundPage } from './pages/NotFoundPage';
 import { HomePage } from './pages/HomePage';
+import { HealthPage } from './pages/HealthPage';
+
 import { SignInPage } from './features/auth/pages/SignInPage';
 import { SignUpPage } from './features/auth/pages/SignUpPage';
-import { UserProfilePage } from './features/users/pages/UserProfilePage';
-import { HealthPage } from './pages/HealthPage';
+
+import { UserProfilePage } from './features/user/pages/UserProfilePage';
+
+import { StoreListPage } from './features/store/pages/StoreListPage';
+import { StoreDetailPage } from './features/store/pages/StoreDetailPage';
+import { StoreItemsPage } from './features/store/pages/StoreItemsPage';
+import { StoreItemPage } from './features/store/pages/StoreItemPage';
+
+import { CartPage } from './features/order/pages/CartPage';
+import { OrderListPage } from './features/order/pages/OrderListPage';
+import { OrderDetailPage } from './features/order/pages/OrderDetailPage';
+
+import { RiderJobsPage } from './features/rider/pages/RiderJobsPage';
+import { RiderJobDetailPage } from './features/rider/pages/RiderJobDetailPage';
+import { RiderActivePage } from './features/rider/pages/RiderActivePage';
+import { RiderHistoryPage } from './features/rider/pages/RiderHistoryPage';
 
 export function AppRouter() {
   return (
     <Routes>
-      <Route element={<RootLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/profile/:id" element={<UserProfilePage />} />
-        <Route path="/health" element={<HealthPage />} />
-      </Route>
+      {/* PUBLIC */}
       <Route element={<AuthLayout />}>
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
       </Route>
+
+      {/* APP */}
+      <Route element={<RootLayout />}>
+        {/* DASHBOARD */}
+        <Route path="/" element={<HomePage />} />
+
+        {/* SHARED */}
+        <Route path="/profile" element={<UserProfilePage />} />
+        <Route path="/health" element={<HealthPage />} />
+
+        {/* STORES */}
+        <Route path="/stores" element={<StoreListPage />} />
+
+        <Route path="/stores/:id" element={<StoreDetailPage />} />
+
+        <Route path="/stores/:id/items" element={<StoreItemsPage />} />
+
+        <Route path="/stores/:id/items/:itemId" element={<StoreItemPage />} />
+
+        {/* ORDERS */}
+        <Route path="/cart" element={<CartPage />} />
+
+        <Route path="/orders" element={<OrderListPage />} />
+
+        <Route path="/orders/:id" element={<OrderDetailPage />} />
+
+        {/* RIDER */}
+        <Route path="/rider/jobs" element={<RiderJobsPage />} />
+
+        <Route path="/rider/jobs/:id" element={<RiderJobDetailPage />} />
+
+        <Route path="/rider/active" element={<RiderActivePage />} />
+
+        <Route path="/rider/history" element={<RiderHistoryPage />} />
+      </Route>
+
+      {/* 404 */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
