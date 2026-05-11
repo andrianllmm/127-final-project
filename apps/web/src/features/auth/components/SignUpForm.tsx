@@ -79,7 +79,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <FieldGroup>
-            {/* NAME */}
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
               <Input id="name" type="text" placeholder="Juan Dela Cruz" {...register('name')} />
@@ -90,7 +89,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
               )}
             </Field>
 
-            {/* EMAIL */}
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
@@ -106,7 +104,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
               )}
             </Field>
 
-            {/* ROLE */}
             <Field>
               <FieldLabel>Role</FieldLabel>
 
@@ -135,7 +132,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
               )}
             </Field>
 
-            {/* PASSWORD */}
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input id="password" type="password" {...register('password')} />
@@ -146,7 +142,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
               )}
             </Field>
 
-            {/* CONFIRM PASSWORD */}
             <Field>
               <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
               <Input id="confirmPassword" type="password" {...register('confirmPassword')} />
@@ -157,14 +152,12 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<typeof 
               )}
             </Field>
 
-            {/* ROOT ERROR */}
             {errors.root && (
               <FieldDescription className="text-destructive text-center">
                 {errors.root.message}
               </FieldDescription>
             )}
 
-            {/* SUBMIT */}
             <Field>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Creating...' : 'Create Account'}

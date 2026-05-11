@@ -56,7 +56,6 @@ export function SignInForm({ className, ...props }: React.ComponentProps<'div'>)
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <FieldGroup>
-              {/* EMAIL */}
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
@@ -72,7 +71,6 @@ export function SignInForm({ className, ...props }: React.ComponentProps<'div'>)
                 )}
               </Field>
 
-              {/* PASSWORD */}
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -91,14 +89,12 @@ export function SignInForm({ className, ...props }: React.ComponentProps<'div'>)
                 )}
               </Field>
 
-              {/* ROOT ERROR */}
               {errors.root && (
                 <FieldDescription className="text-destructive text-center">
                   {errors.root.message}
                 </FieldDescription>
               )}
 
-              {/* SUBMIT */}
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? 'Signing in...' : 'Sign in'}
