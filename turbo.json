@@ -19,6 +19,9 @@
     "db:new": {
       "dependsOn": ["^db:new"]
     },
+    "db:seed": {
+      "dependsOn": ["^db:new"]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },

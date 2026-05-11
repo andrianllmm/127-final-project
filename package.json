@@ -9,6 +9,7 @@
     "db:up": "turbo run db:up",
     "db:down": "turbo run db:down",
     "db:new": "turbo run db:new",
+    "db:seed": "turbo run db:seed",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
