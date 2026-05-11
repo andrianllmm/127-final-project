@@ -53,18 +53,6 @@ DO $$ BEGIN
     END IF;
 END $$;
 
-DO $$ BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'user'
-          AND table_schema = 'public'
-          AND column_name = 'password_hash'
-    ) THEN
-        ALTER TABLE "user" ADD COLUMN password_hash TEXT;
-        UPDATE "user" SET password_hash = 'temporary_hash' WHERE password_hash IS NULL;
-        ALTER TABLE "user" ALTER COLUMN password_hash SET NOT NULL;
-    END IF;
-END $$;
 
 DO $$ BEGIN
     IF NOT EXISTS (
