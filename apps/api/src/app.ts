@@ -8,6 +8,9 @@ import { swaggerSpec } from './config/swagger.js';
 
 import usersRoutes from './modules/users/users.routes.js';
 import authRoutes from './modules/auth/auth.routes.js';
+import storeRoutes from './modules/store/store.routes.js';
+import orderRoutes from './modules/order/order.routes.js';
+import riderRoutes from './modules/rider/rider.routes.js';
 
 const app = express();
 
@@ -44,5 +47,8 @@ app.get('/health', (_req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
+app.use('/stores', storeRoutes);
+app.use('/orders', orderRoutes);
+app.use('/rider', riderRoutes);
 
 export default app;
