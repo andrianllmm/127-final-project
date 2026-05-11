@@ -10,6 +10,7 @@
     "db:up": "dbmate up",
     "db:down": "dbmate down",
     "db:new": "dbmate new",
+    "db:seed": "tsx src/db/seed.ts",
     "lint": "eslint .",
     "check-types": "tsc --noEmit"
   },

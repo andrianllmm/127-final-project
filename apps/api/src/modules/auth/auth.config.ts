@@ -15,6 +15,21 @@ export const auth = betterAuth({
 
   trustedOrigins: [env.WEB_URL],
 
+  user: {
+    additionalFields: {
+      role: {
+        type: ['customer', 'vendor', 'rider'],
+        required: false,
+        defaultValue: 'customer',
+        input: false,
+      },
+      phone_number: {
+        type: 'string',
+        required: false,
+      },
+    },
+  },
+
   advanced: {
     defaultCookieAttributes: {
       sameSite: isProduction ? 'none' : 'lax',
