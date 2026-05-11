@@ -1,12 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import { env } from './config/env.js';
-import { fromNodeHeaders, toNodeHandler } from 'better-auth/node';
+import { toNodeHandler } from 'better-auth/node';
 import { auth } from './modules/auth/auth.config.js';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
 
 import usersRoutes from './modules/users/users.routes.js';
+import authRoutes from './modules/auth/auth.routes.js';
+import storeRoutes from './modules/store/store.routes.js';
+import orderRoutes from './modules/order/order.routes.js';
+import riderRoutes from './modules/rider/rider.routes.js';
 
 const app = express();
 
@@ -32,13 +36,6 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/api/me', async (req, res) => {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
-  return res.json(session);
-});
-
 app.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -48,6 +45,10 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
+app.use('/stores', storeRoutes);
+app.use('/orders', orderRoutes);
+app.use('/rider', riderRoutes);
 
 export default app;
