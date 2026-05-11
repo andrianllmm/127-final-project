@@ -4,6 +4,6 @@ export class OrderRepository {
   }
 
   async findById(id: string) {
-    return null;
+    return id;
   }
 }

@@ -4,6 +4,6 @@ export class RiderRepository {
   }
 
   async findById(id: string) {
-    return null;
+    return id;
   }
 }

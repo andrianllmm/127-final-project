@@ -4,6 +4,6 @@ export class StoreRepository {
   }
 
   async findById(id: string) {
-    return null;
+    return id;
   }
 }
