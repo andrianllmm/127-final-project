@@ -88,6 +88,7 @@ async function request<TResponse, TBody = unknown>(
     ...restOptions,
     method,
     headers,
+    credentials: 'include',
   };
 
   if (body !== undefined) {
