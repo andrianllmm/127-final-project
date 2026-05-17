@@ -44,12 +44,12 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
   vendor: [
     {
       name: 'Store Profile',
-      url: '/stores/me',
+      url: '/mystore',
       icon: <HugeiconsIcon icon={StoreIcon} strokeWidth={2} />,
     },
     {
       name: 'Store Items',
-      url: '/stores/me/items',
+      url: '/mystore/items',
       icon: <HugeiconsIcon icon={DishIcon} strokeWidth={2} />,
     },
   ],
