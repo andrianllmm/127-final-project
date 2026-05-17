@@ -27,7 +27,7 @@ export const HomePage = () => {
         break;
 
       case 'rider':
-        navigate('/deliveries/jobs', { replace: true });
+        navigate('/offers', { replace: true });
         break;
     }
   }, [session, isPending, navigate]);
