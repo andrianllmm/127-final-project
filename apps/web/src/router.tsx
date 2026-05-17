@@ -21,10 +21,10 @@ import { CartPage } from './features/order/pages/CartPage';
 import { OrderListPage } from './features/order/pages/OrderListPage';
 import { OrderDetailPage } from './features/order/pages/OrderDetailPage';
 
-import { RiderJobsPage } from './features/rider/pages/RiderJobsPage';
-import { RiderJobDetailPage } from './features/rider/pages/RiderJobDetailPage';
-import { RiderActivePage } from './features/rider/pages/RiderActivePage';
-import { RiderHistoryPage } from './features/rider/pages/RiderHistoryPage';
+import { DeliveriesJobsPage } from './features/deliveries/pages/DeliveriesJobsPage';
+import { DeliveriesJobDetailPage } from './features/deliveries/pages/DeliveriesJobDetailPage';
+import { DeliveriesActivePage } from './features/deliveries/pages/DeliveriesActivePage';
+import { DeliveriesHistoryPage } from './features/deliveries/pages/DeliveriesHistoryPage';
 
 export function AppRouter() {
   return (
@@ -60,14 +60,14 @@ export function AppRouter() {
 
         <Route path="/orders/:id" element={<OrderDetailPage />} />
 
-        {/* RIDER */}
-        <Route path="/rider/jobs" element={<RiderJobsPage />} />
+        {/* DELIVERIES */}
+        <Route path="/deliveries/jobs" element={<DeliveriesJobsPage />} />
 
-        <Route path="/rider/jobs/:id" element={<RiderJobDetailPage />} />
+        <Route path="/deliveries/jobs/:id" element={<DeliveriesJobDetailPage />} />
 
-        <Route path="/rider/active" element={<RiderActivePage />} />
+        <Route path="/deliveries/active" element={<DeliveriesActivePage />} />
 
-        <Route path="/rider/history" element={<RiderHistoryPage />} />
+        <Route path="/deliveries/history" element={<DeliveriesHistoryPage />} />
       </Route>
 
       {/* 404 */}

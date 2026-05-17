@@ -1,4 +1,4 @@
-export class RiderRepository {
+export class DeliveriesRepository {
   async findAll() {
     return [];
   }

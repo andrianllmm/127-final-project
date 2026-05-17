@@ -28,10 +28,10 @@ apps/
 ## Domain Features
 
 - Auth
-- Users (customers, riders, vendors)
+- Users (customers, vendors, riders)
 - Stores
 - Orders
-- Riders
+- Deliveries
 
 ## Express Rules
 
