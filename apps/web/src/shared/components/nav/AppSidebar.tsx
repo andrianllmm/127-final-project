@@ -74,7 +74,7 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = authClient.useSession();
-  const role = (session?.user?.role as UserRole | undefined) ?? 'customer';
+  const role = session ? (session.user?.role as UserRole | undefined) || 'customer' : undefined;
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -90,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain navItems={navData[role]} />
+        <NavMain navItems={role ? navData[role] : []} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
