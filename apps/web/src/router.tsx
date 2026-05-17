@@ -10,7 +10,7 @@ import { HealthPage } from './pages/HealthPage';
 import { SignInPage } from './features/auth/pages/SignInPage';
 import { SignUpPage } from './features/auth/pages/SignUpPage';
 
-import { UserProfilePage } from './features/user/pages/UserProfilePage';
+import { UserProfilePage } from './features/users/pages/UserProfilePage';
 
 import { StoreListPage } from './features/store/pages/StoreListPage';
 import { StoreDetailPage } from './features/store/pages/StoreDetailPage';
