@@ -12,20 +12,20 @@ import { SignUpPage } from './features/auth/pages/SignUpPage';
 
 import { UserProfilePage } from './features/users/pages/UserProfilePage';
 
-import { StoreListPage } from './features/store/pages/StoreListPage';
-import { StoreDetailPage } from './features/store/pages/StoreDetailPage';
-import { StoreNewPage } from './features/store/pages/StoreNewPage';
-import { StoreMePage } from './features/store/pages/StoreMePage';
-import { StoreEditPage } from './features/store/pages/StoreEditPage';
-import { StoreItemsPage } from './features/store/pages/StoreItemsPage';
-import { StoreItemPage } from './features/store/pages/StoreItemPage';
+import { StoreListPage } from './features/stores/pages/StoreListPage';
+import { StoreDetailPage } from './features/stores/pages/StoreDetailPage';
+import { StoreNewPage } from './features/stores/pages/StoreNewPage';
+import { StoreMePage } from './features/stores/pages/StoreMePage';
+import { StoreEditPage } from './features/stores/pages/StoreEditPage';
+import { StoreItemsPage } from './features/stores/pages/StoreItemsPage';
+import { StoreItemPage } from './features/stores/pages/StoreItemPage';
 import { CartPage } from './features/orders/pages/CartPage';
 import { OrderListPage } from './features/orders/pages/OrderListPage';
 import { OffersPage } from './features/deliveries/pages/OffersPage';
 import { DeliveriesPage } from './features/deliveries/pages/DeliveriesPage';
 import { DeliveriesHistoryPage } from './features/deliveries/pages/DeliveriesHistoryPage';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
-import { StoreAnalyticsPage } from './features/store/pages/StoreAnalyticsPage';
+import { StoreAnalyticsPage } from './features/stores/pages/StoreAnalyticsPage';
 
 export function AppRouter() {
   return (
