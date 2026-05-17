@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import { OrderService } from './order.service.js';
+import { OrdersService } from './orders.service.js';
 
-export class OrderController {
-  private service = new OrderService();
+export class OrdersController {
+  private service = new OrdersService();
 
   getAll = async (_req: Request, res: Response): Promise<Response> => {
     const data = await this.service.getAll();

@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
-import { StoreService } from './store.service.js';
+import { StoresService } from './stores.service.js';
 import { AuthRequest } from '../../common/middleware/auth.middleware.js';
 
-export class StoreController {
-  private service = new StoreService();
+export class StoresController {
+  private service = new StoresService();
 
   getAll = async (_req: Request, res: Response): Promise<Response> => {
     const data = await this.service.getAll();

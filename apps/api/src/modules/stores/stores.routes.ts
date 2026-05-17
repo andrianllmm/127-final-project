@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { StoreController } from './store.controller.js';
+import { StoresController } from './stores.controller.js';
 import { requireRole } from '../../common/middleware/rbac.middleware.js';
 import { requireAuth } from '../../common/middleware/auth.middleware.js';
 import validate from 'express-zod-safe';
@@ -7,7 +7,7 @@ import z from 'zod';
 import { createStoreSchema, updateStoreSchema } from '@repo/api';
 
 const router = Router();
-const controller = new StoreController();
+const controller = new StoresController();
 
 router.get('/', controller.getAll);
 

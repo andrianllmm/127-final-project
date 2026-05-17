@@ -1,4 +1,4 @@
-export class OrderRepository {
+export class OrdersRepository {
   async findAll() {
     return [];
   }

@@ -20,9 +20,9 @@ import { StoreEditPage } from './features/store/pages/StoreEditPage';
 import { StoreItemsPage } from './features/store/pages/StoreItemsPage';
 import { StoreItemPage } from './features/store/pages/StoreItemPage';
 
-import { CartPage } from './features/order/pages/CartPage';
-import { OrderListPage } from './features/order/pages/OrderListPage';
-import { OrderDetailPage } from './features/order/pages/OrderDetailPage';
+import { CartPage } from './features/orders/pages/CartPage';
+import { OrderListPage } from './features/orders/pages/OrderListPage';
+import { OrderDetailPage } from './features/orders/pages/OrderDetailPage';
 
 import { DeliveriesJobsPage } from './features/deliveries/pages/DeliveriesJobsPage';
 import { DeliveriesJobDetailPage } from './features/deliveries/pages/DeliveriesJobDetailPage';

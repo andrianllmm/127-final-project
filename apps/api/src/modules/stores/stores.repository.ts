@@ -2,7 +2,7 @@ import { sql } from 'slonik';
 import { getPool } from '../../db/pool.js';
 import { CreateStoreInput, Store, storeSchema, UpdateStoreInput } from '@repo/api';
 
-export class StoreRepository {
+export class StoresRepository {
   async findAll(): Promise<Store[]> {
     const pool = await getPool();
 

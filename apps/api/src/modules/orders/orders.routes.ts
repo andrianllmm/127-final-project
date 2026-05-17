@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { OrderController } from './order.controller.js';
+import { OrdersController } from './orders.controller.js';
 
 const router = Router();
-const controller = new OrderController();
+const controller = new OrdersController();
 
 router.get('/', controller.getAll);
 router.get('/:id', controller.getById);

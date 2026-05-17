@@ -1,11 +1,11 @@
-import { StoreRepository } from './store.repository.js';
+import { StoresRepository } from './stores.repository.js';
 import { CreateStoreInput, UpdateStoreInput } from '@repo/api';
 
-export class StoreService {
-  private repo: StoreRepository;
+export class StoresService {
+  private repo: StoresRepository;
 
-  constructor(repo?: StoreRepository) {
-    this.repo = repo ?? new StoreRepository();
+  constructor(repo?: StoresRepository) {
+    this.repo = repo ?? new StoresRepository();
   }
 
   async getAll() {
