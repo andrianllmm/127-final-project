@@ -49,7 +49,7 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
     },
     {
       name: 'Store Items',
-      url: '/store/me/items',
+      url: '/stores/me/items',
       icon: <HugeiconsIcon icon={DishIcon} strokeWidth={2} />,
     },
   ],
