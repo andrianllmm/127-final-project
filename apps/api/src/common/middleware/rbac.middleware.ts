@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from 'express';
 import type { AuthRequest } from './auth.middleware.js';
-import type { UserRole } from '../../modules/auth/auth.types.js';
+import type { UserRole } from '@repo/api';
 
 export function requireRole(...allowedRoles: UserRole[]) {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
