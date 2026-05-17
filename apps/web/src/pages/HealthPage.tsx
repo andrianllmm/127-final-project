@@ -1,4 +1,4 @@
-import { apiClient, ApiError } from '@/shared/lib/apiClilent';
+import { apiClient, ApiError } from '@/shared/lib/apiClient';
 import { useEffect, useState } from 'react';
 
 type HealthResponse = {

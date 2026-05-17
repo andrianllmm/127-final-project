@@ -14,6 +14,9 @@ import { UserProfilePage } from './features/user/pages/UserProfilePage';
 
 import { StoreListPage } from './features/store/pages/StoreListPage';
 import { StoreDetailPage } from './features/store/pages/StoreDetailPage';
+import { StoreNewPage } from './features/store/pages/StoreNewPage';
+import { StoreMePage } from './features/store/pages/StoreMePage';
+import { StoreEditPage } from './features/store/pages/StoreEditPage';
 import { StoreItemsPage } from './features/store/pages/StoreItemsPage';
 import { StoreItemPage } from './features/store/pages/StoreItemPage';
 
@@ -49,7 +52,13 @@ export function AppRouter() {
           {/* STORES */}
           <Route path="/stores" element={<StoreListPage />} />
 
+          <Route path="/stores/new" element={<StoreNewPage />} />
+
+          <Route path="/stores/me" element={<StoreMePage />} />
+
           <Route path="/stores/:id" element={<StoreDetailPage />} />
+
+          <Route path="/stores/:id/edit" element={<StoreEditPage />} />
 
           <Route path="/stores/:id/items" element={<StoreItemsPage />} />
 
