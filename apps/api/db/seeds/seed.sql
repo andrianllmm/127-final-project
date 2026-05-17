@@ -4,6 +4,19 @@
 
 BEGIN;
 
+-- Reset all tables
+TRUNCATE TABLE
+  order_item,
+  "order",
+  store_item,
+  store,
+  account,
+  session,
+  verification,
+  "user",
+  schema_migrations
+RESTART IDENTITY CASCADE;
+
 -- =========================
 -- USERS
 -- =========================
