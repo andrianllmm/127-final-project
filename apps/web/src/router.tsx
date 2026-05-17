@@ -10,8 +10,6 @@ import { HealthPage } from './pages/HealthPage';
 import { SignInPage } from './features/auth/pages/SignInPage';
 import { SignUpPage } from './features/auth/pages/SignUpPage';
 
-import { UserProfilePage } from './features/users/pages/UserProfilePage';
-
 import { StoreListPage } from './features/stores/pages/StoreListPage';
 import { StoreDetailPage } from './features/stores/pages/StoreDetailPage';
 import { StoreNewPage } from './features/stores/pages/StoreNewPage';
@@ -43,7 +41,6 @@ export function AppRouter() {
           <Route path="/" element={<HomePage />} />
 
           {/* SHARED */}
-          <Route path="/profile" element={<UserProfilePage />} />
           <Route path="/health" element={<HealthPage />} />
 
           {/* STORES */}
