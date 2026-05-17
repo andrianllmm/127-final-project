@@ -22,6 +22,8 @@ import {
   PackageSearchIcon,
   MotorbikeIcon,
   ClockIcon,
+  ShoppingCartIcon,
+  AnalyticsIcon,
 } from '@hugeicons/core-free-icons';
 import { Logo } from '../brand/Logo';
 import { Link } from 'react-router-dom';
@@ -40,6 +42,11 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
       url: '/orders',
       icon: <HugeiconsIcon icon={ShoppingBagIcon} strokeWidth={2} />,
     },
+    {
+      name: 'Cart',
+      url: '/cart',
+      icon: <HugeiconsIcon icon={ShoppingCartIcon} strokeWidth={2} />,
+    },
   ],
   vendor: [
     {
@@ -52,16 +59,21 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
       url: '/stores/me/items',
       icon: <HugeiconsIcon icon={DishIcon} strokeWidth={2} />,
     },
+    {
+      name: 'Analytics',
+      url: '/store-analytics',
+      icon: <HugeiconsIcon icon={AnalyticsIcon} strokeWidth={2} />,
+    },
   ],
   rider: [
     {
-      name: 'Explore Jobs',
-      url: '/deliveries/jobs',
+      name: 'Offers',
+      url: '/offers',
       icon: <HugeiconsIcon icon={PackageSearchIcon} strokeWidth={2} />,
     },
     {
-      name: 'Active Deliveries',
-      url: '/deliveries/active',
+      name: 'Deliveries',
+      url: '/deliveries',
       icon: <HugeiconsIcon icon={MotorbikeIcon} strokeWidth={2} />,
     },
     {
