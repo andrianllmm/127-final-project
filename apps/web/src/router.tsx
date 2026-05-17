@@ -25,6 +25,7 @@ import { DeliveriesJobsPage } from './features/deliveries/pages/DeliveriesJobsPa
 import { DeliveriesJobDetailPage } from './features/deliveries/pages/DeliveriesJobDetailPage';
 import { DeliveriesActivePage } from './features/deliveries/pages/DeliveriesActivePage';
 import { DeliveriesHistoryPage } from './features/deliveries/pages/DeliveriesHistoryPage';
+import ProtectedRoute from './features/auth/components/ProtectedRoute';
 
 export function AppRouter() {
   return (
@@ -37,37 +38,39 @@ export function AppRouter() {
 
       {/* APP */}
       <Route element={<RootLayout />}>
-        {/* DASHBOARD */}
-        <Route path="/" element={<HomePage />} />
+        <Route element={<ProtectedRoute />}>
+          {/* DASHBOARD */}
+          <Route path="/" element={<HomePage />} />
 
-        {/* SHARED */}
-        <Route path="/profile" element={<UserProfilePage />} />
-        <Route path="/health" element={<HealthPage />} />
+          {/* SHARED */}
+          <Route path="/profile" element={<UserProfilePage />} />
+          <Route path="/health" element={<HealthPage />} />
 
-        {/* STORES */}
-        <Route path="/stores" element={<StoreListPage />} />
+          {/* STORES */}
+          <Route path="/stores" element={<StoreListPage />} />
 
-        <Route path="/stores/:id" element={<StoreDetailPage />} />
+          <Route path="/stores/:id" element={<StoreDetailPage />} />
 
-        <Route path="/stores/:id/items" element={<StoreItemsPage />} />
+          <Route path="/stores/:id/items" element={<StoreItemsPage />} />
 
-        <Route path="/stores/:id/items/:itemId" element={<StoreItemPage />} />
+          <Route path="/stores/:id/items/:itemId" element={<StoreItemPage />} />
 
-        {/* ORDERS */}
-        <Route path="/cart" element={<CartPage />} />
+          {/* ORDERS */}
+          <Route path="/cart" element={<CartPage />} />
 
-        <Route path="/orders" element={<OrderListPage />} />
+          <Route path="/orders" element={<OrderListPage />} />
 
-        <Route path="/orders/:id" element={<OrderDetailPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
 
-        {/* DELIVERIES */}
-        <Route path="/deliveries/jobs" element={<DeliveriesJobsPage />} />
+          {/* DELIVERIES */}
+          <Route path="/deliveries/jobs" element={<DeliveriesJobsPage />} />
 
-        <Route path="/deliveries/jobs/:id" element={<DeliveriesJobDetailPage />} />
+          <Route path="/deliveries/jobs/:id" element={<DeliveriesJobDetailPage />} />
 
-        <Route path="/deliveries/active" element={<DeliveriesActivePage />} />
+          <Route path="/deliveries/active" element={<DeliveriesActivePage />} />
 
-        <Route path="/deliveries/history" element={<DeliveriesHistoryPage />} />
+          <Route path="/deliveries/history" element={<DeliveriesHistoryPage />} />
+        </Route>
       </Route>
 
       {/* 404 */}
