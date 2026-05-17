@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { NavUser } from './NavUser';
 import { Logo } from '../brand/Logo';
 
 export function Navbar() {
@@ -10,9 +9,6 @@ export function Navbar() {
         <Link to="/">
           <Logo />
         </Link>
-
-        {/* Auth */}
-        <NavUser />
       </div>
     </header>
   );
