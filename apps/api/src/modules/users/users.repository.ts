@@ -1,6 +1,6 @@
 import { sql } from 'slonik';
 import { getPool } from '../../db/pool.js';
-import { User, userSchema } from './users.types.js';
+import { User, userSchema } from '@repo/api';
 
 export class UsersRepository {
   async findAll(): Promise<User[]> {

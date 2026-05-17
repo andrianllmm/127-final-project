@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import validate from 'express-zod-safe';
 import { UsersController } from './users.controller.js';
-import { userIdParamSchema } from './users.types.js';
+import { userIdParamSchema } from '@repo/api';
 
 const router = Router();
 const controller = new UsersController();
