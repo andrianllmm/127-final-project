@@ -1,3 +1,36 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authClient } from '@/shared/lib/authClient';
+
 export const HomePage = () => {
-  return <div>Hello</div>;
+  const navigate = useNavigate();
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (isPending) return;
+
+    if (!session) {
+      navigate('/sign-in', { replace: true });
+      return;
+    }
+
+    const role = session.user.role;
+
+    switch (role) {
+      case 'customer':
+      default:
+        navigate('/stores', { replace: true });
+        break;
+
+      case 'vendor':
+        navigate('/stores/me', { replace: true });
+        break;
+
+      case 'rider':
+        navigate('/deliveries/jobs', { replace: true });
+        break;
+    }
+  }, [session, isPending, navigate]);
+
+  return null; // or loading UI
 };
