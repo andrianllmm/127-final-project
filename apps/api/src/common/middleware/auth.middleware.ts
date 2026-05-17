@@ -1,10 +1,10 @@
 import type { Request, Response, NextFunction } from 'express';
 import { fromNodeHeaders } from 'better-auth/node';
 import { auth } from '../../modules/auth/auth.config.js';
-import type { AuthUser } from '../../modules/auth/auth.types.js';
+import { User } from '@repo/api';
 
 export interface AuthRequest extends Request {
-  user?: AuthUser;
+  user?: User;
 }
 
 export async function requireAuth(
@@ -21,7 +21,7 @@ export async function requireAuth(
     return;
   }
 
-  req.user = session.user as AuthUser;
+  req.user = session.user as User;
   next();
 }
 
@@ -35,7 +35,7 @@ export async function optionalAuth(
   });
 
   if (session?.user) {
-    req.user = session.user as AuthUser;
+    req.user = session.user as User;
   }
 
   next();

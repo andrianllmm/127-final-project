@@ -1,18 +1,14 @@
 import { cn } from '@/shared/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
+import { authClient } from '@/shared/lib/authClient';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-import { authClient } from '@/shared/lib/authClient';
+import { signUpSchema, SignUpInput } from '@repo/api';
 
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/shared/components/ui/field';
-
 import { Input } from '@/shared/components/ui/input';
-
 import {
   Select,
   SelectContent,
@@ -20,21 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-
-const signUpSchema = z
-  .object({
-    name: z.string().min(2, 'Name is too short'),
-    email: z.string().email('Invalid email'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(6),
-    role: z.enum(['customer', 'vendor', 'rider']),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type SignUpInput = z.infer<typeof signUpSchema>;
 
 export function SignUpForm({ className, ...props }: React.ComponentProps<typeof Card>) {
   const navigate = useNavigate();

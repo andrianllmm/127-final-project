@@ -1,5 +1,7 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import turboPlugin from 'eslint-plugin-turbo';
 import { defineConfig } from 'eslint/config';
@@ -7,24 +9,20 @@ import { defineConfig } from 'eslint/config';
 export default defineConfig([
   js.configs.recommended,
   eslintConfigPrettier,
+
   {
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: { globals: globals.browser },
-  },
-  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsparser,
+      globals: {
+        ...globals.node,
+      },
+    },
     plugins: {
-      turbo: turboPlugin,
+      '@typescript-eslint': tseslint,
     },
     rules: {
-      'turbo/no-undeclared-env-vars': 'warn',
-    },
-  },
-  {
-    ignores: ['dist/**'],
-  },
-  {
-    rules: {
+      'no-undef': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -35,5 +33,27 @@ export default defineConfig([
         },
       ],
     },
+  },
+
+  {
+    files: ['**/*.tsx'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+
+  {
+    plugins: {
+      turbo: turboPlugin,
+    },
+    rules: {
+      'turbo/no-undeclared-env-vars': 'warn',
+    },
+  },
+
+  {
+    ignores: ['dist/**'],
   },
 ]);

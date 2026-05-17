@@ -1,25 +1,15 @@
 import { cn } from '@/shared/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { authClient } from '@/shared/lib/authClient';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-import { authClient } from '@/shared/lib/authClient';
+import { signInSchema, SignInInput } from '@repo/api';
 
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/shared/components/ui/field';
-
 import { Input } from '@/shared/components/ui/input';
 import { Link } from 'react-router-dom';
-
-const signInSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-type SignInInput = z.infer<typeof signInSchema>;
 
 export function SignInForm({ className, ...props }: React.ComponentProps<'div'>) {
   const navigate = useNavigate();
