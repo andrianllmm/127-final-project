@@ -1,11 +1,14 @@
 import { z } from 'zod';
+import { UserRoleSchema } from '../enums';
 
 export const userSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.email(),
   emailVerified: z.boolean(),
+  role: UserRoleSchema,
   image: z.string().nullable().optional(),
+  phoneNumber: z.string().nullable().optional(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
