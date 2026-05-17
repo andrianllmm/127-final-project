@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import { RiderService } from './rider.service.js';
+import { DeliveriesService } from './deliveries.service.js';
 
-export class RiderController {
-  private service = new RiderService();
+export class DeliveriesController {
+  private service = new DeliveriesService();
 
   getAll = async (_req: Request, res: Response): Promise<Response> => {
     const data = await this.service.getAll();

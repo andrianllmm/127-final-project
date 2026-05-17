@@ -18,9 +18,9 @@ It replaces fragmented Messenger/Facebook-based ordering workflows with a struct
 
 ### Key Features
 
-- Customer, rider, and vendor role-based system
+- Customer, vendor, and rider role-based system
 - Food ordering via centralized delivery requests
-- Rider job marketplace (browse and accept deliveries)
+- Deliveries job marketplace (browse and accept deliveries)
 - Vendor item listings and order preparation workflow
 - Order lifecycle tracking (request → accepted → picked up → delivered)
 - Structured dispatch system replacing informal coordination
