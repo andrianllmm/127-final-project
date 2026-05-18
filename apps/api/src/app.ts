@@ -9,6 +9,7 @@ import { swaggerSpec } from './config/swagger.js';
 import usersRoutes from './modules/users/users.routes.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import storesRoutes from './modules/stores/stores.routes.js';
+import storeItemsRoutes from './modules/store-items/store-items.routes.js';
 import ordersRoutes from './modules/orders/orders.routes.js';
 import deliveriesRoutes from './modules/deliveries/deliveries.routes.js';
 
@@ -48,6 +49,7 @@ app.get('/health', (_req, res) => {
 app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/stores', storesRoutes);
+app.use('/stores', storeItemsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/deliveries', deliveriesRoutes);
 
