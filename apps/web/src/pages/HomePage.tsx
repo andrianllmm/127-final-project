@@ -10,7 +10,7 @@ export const HomePage = () => {
     if (isPending) return;
 
     if (!session) {
-      navigate('/sign-in', { replace: true });
+      navigate('/stores', { replace: true });
       return;
     }
 
