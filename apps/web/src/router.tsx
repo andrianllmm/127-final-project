@@ -21,6 +21,7 @@ import { StoreItemNewPage } from './features/stores/pages/StoreItemNewPage';
 import { StoreItemEditPage } from './features/stores/pages/StoreItemEditPage';
 import { CartPage } from './features/orders/pages/CartPage';
 import { OrderListPage } from './features/orders/pages/OrderListPage';
+import { OrderDetailPage } from './features/orders/pages/OrderDetailPage';
 import { OffersPage } from './features/deliveries/pages/OffersPage';
 import { DeliveriesPage } from './features/deliveries/pages/DeliveriesPage';
 import { DeliveriesHistoryPage } from './features/deliveries/pages/DeliveriesHistoryPage';
@@ -70,6 +71,8 @@ export function AppRouter() {
           <Route path="/cart" element={<CartPage />} />
 
           <Route path="/orders" element={<OrderListPage />} />
+          
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
 
           <Route path="/offers" element={<OffersPage />} />
 

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import validate from 'express-zod-safe';
 import z from 'zod';
 
+import { addCartItemSchema } from '@repo/api';
 import { OrdersController } from './orders.controller.js';
 import { requireAuth } from '../../common/middleware/auth.middleware.js';
 
@@ -10,6 +11,20 @@ const controller = new OrdersController();
 
 router.get('/me', requireAuth, controller.getMine);
 router.get('/cart', requireAuth, controller.getCart);
+
+router.post(
+  '/cart/items',
+  requireAuth,
+  validate({ body: addCartItemSchema }),
+  controller.addCartItem,
+);
+
+router.delete(
+  '/cart/items/:orderItemId',
+  requireAuth,
+  validate({ params: z.object({ orderItemId: z.uuid() }) }),
+  controller.removeCartItem,
+);
 
 router.get(
   '/:id',

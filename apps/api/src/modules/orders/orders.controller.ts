@@ -26,4 +26,27 @@ export class OrdersController {
 
     return res.json(data);
   };
+
+  addCartItem = async (req: AuthRequest, res: Response): Promise<Response> => {
+    try {
+      const data = await this.service.addCartItem(req.user!.id, req.body);
+      return res.status(201).json(data);
+    } catch (error) {
+      return res.status(400).json({
+        message: error instanceof Error ? error.message : 'Failed to add item to cart',
+      });
+    }
+  };
+
+  removeCartItem = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const { orderItemId } = req.params as { orderItemId: string };
+
+    const data = await this.service.removeCartItem(req.user!.id, orderItemId);
+
+    if (!data) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    return res.json(data);
+  };
 }

@@ -105,4 +105,67 @@ export class OrdersRepository {
 
     return rows as OrderItem[];
   }
+  
+  async findStoreItemById(storeItemId: string) {
+    const pool = await getPool();
+
+    return pool.maybeOne(sql.unsafe`
+      SELECT store_item_id, store_id, price, is_available
+      FROM store_item
+      WHERE store_item_id = ${storeItemId}
+    `);
+  }
+
+  async createOpenOrder(customerId: string, storeId: string) {
+    const pool = await getPool();
+
+    return pool.one(sql.unsafe`
+      INSERT INTO "order" (
+        customer_id,
+        store_id,
+        payment_method,
+        delivery_address,
+        status
+      )
+      VALUES (
+        ${customerId},
+        ${storeId},
+        'cash',
+        'To be provided at checkout',
+        'open'
+      )
+      RETURNING order_id
+    `);
+  }
+
+  async addItem(orderId: string, storeItemId: string, priceSnapshot: number, quantity: number) {
+    const pool = await getPool();
+
+    return pool.one(sql.unsafe`
+      INSERT INTO order_item (
+        order_id,
+        store_item_id,
+        price_snapshot,
+        quantity
+      )
+      VALUES (
+        ${orderId},
+        ${storeItemId},
+        ${priceSnapshot},
+        ${quantity}
+      )
+      RETURNING order_item_id
+    `);
+  }
+
+  async deleteItem(orderItemId: string, orderId: string) {
+    const pool = await getPool();
+
+    return pool.maybeOne(sql.unsafe`
+      DELETE FROM order_item
+      WHERE order_item_id = ${orderItemId}
+        AND order_id = ${orderId}
+      RETURNING order_item_id
+    `);
+  }
 }
