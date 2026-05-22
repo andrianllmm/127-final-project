@@ -1,29 +1,27 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { OrdersService } from './orders.service.js';
+import { AuthRequest } from '../../common/middleware/auth.middleware.js';
 
 export class OrdersController {
   private service = new OrdersService();
 
-  getAll = async (_req: Request, res: Response): Promise<Response> => {
-    const data = await this.service.getAll();
+  getMine = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const data = await this.service.getByCustomerId(req.user!.id);
     return res.json(data);
   };
 
-  getById = async (req: Request, res: Response): Promise<Response> => {
-    const { id } = req.params;
+  getCart = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const data = await this.service.getOpenCart(req.user!.id);
+    return res.json(data);
+  };
 
-    if (typeof id !== 'string') {
-      return res.status(400).json({
-        message: 'Invalid id',
-      });
-    }
+  getById = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const { id } = req.params as { id: string };
 
     const data = await this.service.getById(id);
 
-    if (!data) {
-      return res.status(404).json({
-        message: 'Not found',
-      });
+    if (!data || data.customer_id !== req.user!.id) {
+      return res.status(404).json({ message: 'Not found' });
     }
 
     return res.json(data);

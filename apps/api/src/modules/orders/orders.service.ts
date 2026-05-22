@@ -7,11 +7,26 @@ export class OrdersService {
     this.repo = repo ?? new OrdersRepository();
   }
 
-  async getAll() {
-    return this.repo.findAll();
+  async getByCustomerId(customerId: string) {
+    return this.repo.findByCustomerId(customerId);
   }
 
   async getById(id: string) {
     return this.repo.findById(id);
+  }
+
+  async getOpenCart(customerId: string) {
+    const cart = await this.repo.findOpenCart(customerId);
+
+    if (!cart) {
+      return null;
+    }
+
+    const items = await this.repo.findItemsByOrderId(cart.order_id);
+
+    return {
+      ...cart,
+      items,
+    };
   }
 }
