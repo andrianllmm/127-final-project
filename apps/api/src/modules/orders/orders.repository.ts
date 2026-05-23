@@ -188,6 +188,25 @@ export class OrdersRepository {
       RETURNING order_item_id
     `);
   }
+
+  async updateCartItemQuantity(
+    customerId: string,
+    orderItemId: string,
+    quantity: number,
+  ) {
+    const pool = await getPool();
+
+    return pool.maybeOne(sql.unsafe`
+      UPDATE order_item oi
+      SET quantity = ${quantity}
+      FROM "order" o
+      WHERE oi.order_item_id = ${orderItemId}
+        AND oi.order_id = o.order_id
+        AND o.customer_id = ${customerId}
+        AND o.status = 'open'
+      RETURNING oi.*
+    `);
+  }
   
   async checkoutCart(orderId: string, paymentMethod: string, deliveryAddress: string) {
     const pool = await getPool();

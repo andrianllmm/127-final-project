@@ -50,6 +50,26 @@ export class OrdersController {
     return res.json(data);
   };
 
+  updateCartItemQuantity = async (
+    req: AuthRequest,
+    res: Response,
+  ): Promise<Response> => {
+    const { orderItemId } = req.params as { orderItemId: string };
+    const { quantity } = req.body as { quantity: number };
+
+    const data = await this.service.updateCartItemQuantity(
+      req.user!.id,
+      orderItemId,
+      quantity,
+    );
+
+    if (!data) {
+      return res.status(404).json({ message: 'Cart item not found' });
+    }
+
+    return res.json(data);
+  };
+  
   checkoutCart = async (req: AuthRequest, res: Response): Promise<Response> => {
     const data = await this.service.checkoutCart(req.user!.id, req.body);
 

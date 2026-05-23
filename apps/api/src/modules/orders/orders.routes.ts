@@ -27,6 +27,18 @@ router.delete(
 );
 
 router.patch(
+  '/cart/items/:orderItemId',
+  requireAuth,
+  validate({
+    params: z.object({ orderItemId: z.uuid() }),
+    body: z.object({
+      quantity: z.number().int().positive(),
+    }),
+  }),
+  controller.updateCartItemQuantity,
+);
+
+router.patch(
   '/cart/checkout',
   requireAuth,
   validate({ body: checkoutCartSchema }),

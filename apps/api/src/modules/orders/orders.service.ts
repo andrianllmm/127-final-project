@@ -73,6 +73,18 @@ export class OrdersService {
 
     return this.getOpenCart(customerId);
   }
+
+  async updateCartItemQuantity(
+    customerId: string,
+    orderItemId: string,
+    quantity: number,
+  ) {
+    return this.repo.updateCartItemQuantity(
+      customerId,
+      orderItemId,
+      quantity,
+    );
+  }
   
   async checkoutCart(customerId: string, input: { payment_method: string; delivery_address: string }) {
     const cart = await this.repo.findOpenCart(customerId);

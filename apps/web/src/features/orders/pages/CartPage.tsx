@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/use-cart';
 import { useRemoveCartItem } from '../hooks/use-remove-cart-item';
 import { useCheckoutCart } from '../hooks/use-checkout-cart';
+import { useUpdateCartItemQuantity } from '../hooks/use-update-cart-item-quantity';
 
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
@@ -18,6 +19,7 @@ function formatCurrency(value: number) {
 export function CartPage() {
   const { data: cart, isPending } = useCart();
   const removeCartItem = useRemoveCartItem();
+  const updateQuantity = useUpdateCartItemQuantity();
   const checkoutCart = useCheckoutCart();
   const navigate = useNavigate();
 
@@ -86,18 +88,45 @@ export function CartPage() {
                   </p>
                 </div>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const confirmed = window.confirm(`Remove "${item.name}" from your cart?`);
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={updateQuantity.isPending || removeCartItem.isPending}
+                    onClick={() => {
+                      if (item.quantity === 1) {
+                        const confirmed = window.confirm(`Remove "${item.name}" from your cart?`);
 
-                    if (confirmed) {removeCartItem.mutate(item.order_item_id);}
-                  }}
-                  disabled={removeCartItem.isPending}
-                >
-                  {removeCartItem.isPending ? 'Removing...' : 'Remove'}
-                </Button>
+                        if (confirmed) {removeCartItem.mutate(item.order_item_id);}return;
+                      
+                      } else {
+                        updateQuantity.mutate({
+                          orderItemId: item.order_item_id,
+                          quantity: item.quantity - 1,
+                        });
+                      }
+                    }}
+                  >
+                    -
+                  </Button>
+
+                  <span className="w-8 text-center">{item.quantity}</span>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={updateQuantity.isPending || removeCartItem.isPending}
+                    onClick={() =>
+                      updateQuantity.mutate({
+                        orderItemId: item.order_item_id,
+                        quantity: item.quantity + 1,
+                      })
+                    }
+                  >
+                    +
+                  </Button>
+
+                </div>
               </div>
             </div>
           ))}
