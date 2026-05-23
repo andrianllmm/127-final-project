@@ -1,5 +1,6 @@
 import {
   type AddCartItemInput,
+  type CheckoutCartInput,
   type Order,
   type OrderItem,
 } from '@repo/api';
@@ -20,4 +21,10 @@ export const removeCartItem = (orderItemId: string) =>
   apiClient.delete<CartResponse>(`/orders/cart/items/${orderItemId}`);
 
 export const getOrder = (orderId: string) =>
-  apiClient.get<Order>(`/orders/${orderId}`);
+  apiClient.get<CartResponse>(`/orders/${orderId}`);
+
+export const checkoutCart = (input: CheckoutCartInput) =>
+  apiClient.patch<CartResponse, CheckoutCartInput>('/orders/cart/checkout', input);
+
+export const cancelOrder = (orderId: string) =>
+  apiClient.patch<CartResponse, object>(`/orders/${orderId}/cancel`, {});

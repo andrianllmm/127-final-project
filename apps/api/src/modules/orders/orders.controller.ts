@@ -49,4 +49,28 @@ export class OrdersController {
 
     return res.json(data);
   };
+
+  checkoutCart = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const data = await this.service.checkoutCart(req.user!.id, req.body);
+
+    if (!data) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    return res.json(data);
+  };
+
+  cancelOrder = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const { id } = req.params as { id: string };
+
+    const data = await this.service.cancelOrder(req.user!.id, id);
+
+    if (!data) {
+      return res.status(404).json({
+        message: 'Order cannot be cancelled',
+      });
+    }
+
+    return res.json(data);
+  };
 }

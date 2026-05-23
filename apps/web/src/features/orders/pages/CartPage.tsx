@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useCart } from '../hooks/use-cart';
 import { useRemoveCartItem } from '../hooks/use-remove-cart-item';
+import { useCheckoutCart } from '../hooks/use-checkout-cart';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 
@@ -17,6 +18,8 @@ function formatCurrency(value: number) {
 export function CartPage() {
   const { data: cart, isPending } = useCart();
   const removeCartItem = useRemoveCartItem();
+  const checkoutCart = useCheckoutCart();
+  const navigate = useNavigate();
 
   if (isPending) {
     return (
@@ -26,10 +29,13 @@ export function CartPage() {
     );
   }
 
-  if (!cart) {
+  if (!cart || cart.items.length === 0) {
     return (
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-8">
-        <h1 className="font-heading text-3xl font-semibold">Cart</h1>
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+        <div>
+          <h1 className="font-heading text-3xl font-semibold">Cart</h1>
+          <p className="text-sm text-muted-foreground">Review items before placing an order.</p>
+        </div>
 
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
@@ -50,52 +56,94 @@ export function CartPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
       <div>
         <h1 className="font-heading text-3xl font-semibold">Cart</h1>
-        <p className="text-sm text-muted-foreground">{cart.store_name}</p>
-      </div>
-
-      <div className="grid gap-4">
-        {cart.items.map((item) => (
-          <Card key={item.order_item_id}>
-            <CardHeader>
-              <CardTitle>{item.name}</CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>Quantity: {item.quantity}</p>
-              <p>Unit Price: {formatCurrency(item.price_snapshot)}</p>
-              <p>Total: {formatCurrency(item.subtotal)}</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const confirmed = window.confirm(
-                    `Remove "${item.name}" from your cart?`,
-                  );
-
-                  if (confirmed) {
-                    removeCartItem.mutate(item.order_item_id);
-                  }
-                }}
-                disabled={removeCartItem.isPending}
-              >
-                {removeCartItem.isPending ? 'Removing...' : 'Remove'}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+        <p className="text-sm text-muted-foreground">Ordering from {cart.store_name}</p>
       </div>
 
       <Card>
-        <CardContent className="flex items-center justify-between py-6">
+        <CardContent className="space-y-4 py-6">
+          {cart.items.map((item) => (
+            <div
+              key={item.order_item_id}
+              className="flex items-center justify-between gap-6 rounded-2xl border p-5"
+            >
+              <div className="space-y-2">
+                <h3 className="font-heading text-lg font-semibold">{item.name}</h3>
+
+                <div className="space-y-1 text-sm text-muted-foreground">
+                  <p>Qty: {item.quantity}</p>
+                  <p>Unit Price: {formatCurrency(item.price_snapshot)}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 text-right">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Subtotal</p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {formatCurrency(item.subtotal)}
+                  </p>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const confirmed = window.confirm(`Remove "${item.name}" from your cart?`);
+
+                    if (confirmed) {removeCartItem.mutate(item.order_item_id);}
+                  }}
+                  disabled={removeCartItem.isPending}
+                >
+                  {removeCartItem.isPending ? 'Removing...' : 'Remove'}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="flex items-center justify-between gap-6 py-6">
           <div>
             <p className="text-sm text-muted-foreground">Order Total</p>
-            <p className="text-2xl font-bold">{formatCurrency(cart.total_price)}</p>
+            <p className="text-3xl font-bold">{formatCurrency(cart.total_price)}</p>
           </div>
 
-          <Button disabled>Place Order</Button>
+          <Button
+            size="lg"
+            disabled={checkoutCart.isPending || cart.items.length === 0}
+            onClick={() => {
+              const deliveryAddress = window.prompt('Enter delivery address:');
+
+              if (!deliveryAddress?.trim()) { window.alert('Delivery address is required.'); return;}
+
+              const paymentMethod = window.prompt('Payment method: cash or gcash', 'cash');
+
+              if (paymentMethod !== 'cash' && paymentMethod !== 'gcash') {
+                window.alert('Payment method must be cash or gcash.');
+                return;
+              }
+
+              checkoutCart.mutate(
+                {
+                  delivery_address: deliveryAddress,
+                  payment_method: paymentMethod,
+                },
+                {
+                  onSuccess: () => {
+                    const goToOrders = window.confirm('Order placed successfully. View your orders now?',);
+
+                    if (goToOrders) {navigate('/orders');}
+                  },
+                  onError: (error) => {console.error(error); window.alert('Failed to place order.');},
+                },
+              );
+            }}
+          >
+            {checkoutCart.isPending ? 'Placing Order...' : 'Place Order'}
+          </Button>
         </CardContent>
       </Card>
     </div>

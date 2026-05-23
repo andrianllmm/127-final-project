@@ -13,22 +13,23 @@ export class OrdersService {
   }
 
   async getById(id: string) {
-    return this.repo.findById(id);
+    const order = await this.repo.findById(id);
+
+    if (!order) {return null;}
+
+    const items = await this.repo.findItemsByOrderId(order.order_id);
+
+    return {...order,items,};
   }
 
   async getOpenCart(customerId: string) {
     const cart = await this.repo.findOpenCart(customerId);
 
-    if (!cart) {
-      return null;
-    }
+    if (!cart) {return null;}
 
     const items = await this.repo.findItemsByOrderId(cart.order_id);
 
-    return {
-      ...cart,
-      items,
-    };
+    return {...cart,items,};
   }
 
   async addCartItem(customerId: string, input: AddCartItemInput) {
@@ -66,12 +67,29 @@ export class OrdersService {
   async removeCartItem(customerId: string, orderItemId: string) {
     const cart = await this.repo.findOpenCart(customerId);
 
-    if (!cart) {
-      return null;
-    }
+    if (!cart) {return null;}
 
     await this.repo.deleteItem(orderItemId, cart.order_id);
 
     return this.getOpenCart(customerId);
   }
+  
+  async checkoutCart(customerId: string, input: { payment_method: string; delivery_address: string }) {
+    const cart = await this.repo.findOpenCart(customerId);
+
+    if (!cart) {return null;}
+
+    await this.repo.checkoutCart(cart.order_id, input.payment_method, input.delivery_address);
+
+    return this.repo.findById(cart.order_id);
+  }
+
+  async cancelOrder(customerId: string, orderId: string) {
+    const result = await this.repo.cancelOrder(orderId, customerId);
+
+    if (!result) {return null;}
+
+    return this.getById(orderId);
+  }
+
 }

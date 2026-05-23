@@ -77,6 +77,7 @@ export class OrdersRepository {
       LEFT JOIN order_item oi ON oi.order_id = o.order_id
       WHERE o.customer_id = ${customerId}
         AND o.status = 'open'
+        AND o.delivery_address = 'To be provided at checkout'
       GROUP BY o.order_id, s.store_name
       ORDER BY o.created_at DESC
       LIMIT 1
@@ -105,7 +106,7 @@ export class OrdersRepository {
 
     return rows as OrderItem[];
   }
-  
+
   async findStoreItemById(storeItemId: string) {
     const pool = await getPool();
 
@@ -141,6 +142,25 @@ export class OrdersRepository {
   async addItem(orderId: string, storeItemId: string, priceSnapshot: number, quantity: number) {
     const pool = await getPool();
 
+    const existingItem = await pool.maybeOne(sql.unsafe`
+      SELECT order_item_id
+      FROM order_item
+      WHERE order_id = ${orderId}
+        AND store_item_id = ${storeItemId}
+    `);
+
+    if (existingItem) {
+      return pool.one(sql.unsafe`
+        UPDATE order_item
+        SET
+          quantity = quantity + ${quantity},
+          price_snapshot = ${priceSnapshot}
+        WHERE order_id = ${orderId}
+          AND store_item_id = ${storeItemId}
+        RETURNING order_item_id
+      `);
+    }
+
     return pool.one(sql.unsafe`
       INSERT INTO order_item (
         order_id,
@@ -166,6 +186,36 @@ export class OrdersRepository {
       WHERE order_item_id = ${orderItemId}
         AND order_id = ${orderId}
       RETURNING order_item_id
+    `);
+  }
+  
+  async checkoutCart(orderId: string, paymentMethod: string, deliveryAddress: string) {
+    const pool = await getPool();
+
+    return pool.one(sql.unsafe`
+      UPDATE "order"
+      SET
+        payment_method = ${paymentMethod},
+        delivery_address = ${deliveryAddress},
+        updated_at = CURRENT_TIMESTAMP
+      WHERE order_id = ${orderId}
+        AND status = 'open'
+      RETURNING order_id
+    `);
+  }
+
+  async cancelOrder(orderId: string, customerId: string) {
+    const pool = await getPool();
+
+    return pool.maybeOne(sql.unsafe`
+      UPDATE "order"
+      SET
+        status = 'cancelled',
+        updated_at = CURRENT_TIMESTAMP
+      WHERE order_id = ${orderId}
+        AND customer_id = ${customerId}
+        AND status = 'open'
+      RETURNING order_id
     `);
   }
 }
