@@ -212,10 +212,10 @@ export class OrdersRepository {
     return pool.maybeOne(sql.type(orderItemSchema)`
       UPDATE order_item oi
       SET quantity = ${quantity}
-      FROM "order" o
-      JOIN store_item si ON si.store_item_id = oi.store_item_id
+      FROM "order" o, store_item si
       WHERE oi.order_item_id = ${orderItemId}
         AND oi.order_id = o.order_id
+        AND si.store_item_id = oi.store_item_id
         AND o.customer_id = ${customerId}
         AND o.status = 'open'
       RETURNING
@@ -240,6 +240,19 @@ export class OrdersRepository {
         updated_at = CURRENT_TIMESTAMP
       WHERE order_id = ${orderId}
         AND status = 'open'
+      RETURNING order_id
+    `);
+  }
+
+  async deleteOpenCart(orderId: string, customerId: string) {
+    const pool = await getPool();
+
+    return pool.maybeOne(sql.type(orderIdSchema)`
+      DELETE FROM "order"
+      WHERE order_id = ${orderId}
+        AND customer_id = ${customerId}
+        AND status = 'open'
+        AND delivery_address = 'To be provided at checkout'
       RETURNING order_id
     `);
   }

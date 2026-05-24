@@ -50,8 +50,25 @@ export class OrdersService {
       throw new Error('Failed to create cart');
     }
 
-    if (cart.store_id !== storeItem.store_id) {
+    const cartItems = await this.repo.findItemsByOrderId(cart.order_id);
+
+    if (cart.store_id !== storeItem.store_id && cartItems.length > 0) {
       throw new Error('Cart can only contain items from one store');
+    }
+
+    if (cart.store_id !== storeItem.store_id && cartItems.length === 0) {
+      await this.repo.deleteOpenCart(cart.order_id, customerId);
+
+      const createdOrder = await this.repo.createOpenOrder(
+        customerId,
+        storeItem.store_id as string,
+      );
+
+      cart = await this.repo.findById(createdOrder.order_id as string);
+
+      if (!cart) {
+        throw new Error('Failed to create cart');
+      }
     }
 
     await this.repo.addItem(
