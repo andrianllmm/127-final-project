@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useCart } from '../hooks/use-cart';
@@ -8,6 +9,9 @@ import { useUpdateCartItemQuantity } from '../hooks/use-update-cart-item-quantit
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/shared/components/ui/select';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-PH', {
@@ -22,6 +26,8 @@ export function CartPage() {
   const updateQuantity = useUpdateCartItemQuantity();
   const checkoutCart = useCheckoutCart();
   const navigate = useNavigate();
+  const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'gcash'>('cash');
 
   if (isPending) {
     return (
@@ -137,45 +143,77 @@ export function CartPage() {
       </Card>
 
       <Card>
-        <CardContent className="flex items-center justify-between gap-6 py-6">
-          <div>
-            <p className="text-sm text-muted-foreground">Order Total</p>
-            <p className="text-3xl font-bold">{formatCurrency(cart.total_price)}</p>
+        <CardContent className="space-y-6 py-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="delivery-address">Delivery Address</Label>
+              <Input
+                id="delivery-address"
+                value={deliveryAddress}
+                onChange={(event) => setDeliveryAddress(event.target.value)}
+                placeholder="Enter your delivery address"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Payment Method</Label>
+              <Select
+                value={paymentMethod}
+                onValueChange={(value) => setPaymentMethod(value as 'cash' | 'gcash')}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select payment method" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="gcash">GCash</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <Button
-            size="lg"
-            disabled={checkoutCart.isPending || cart.items.length === 0}
-            onClick={() => {
-              const deliveryAddress = window.prompt('Enter delivery address:');
+          <div className="flex items-center justify-between gap-6 border-t pt-6">
+            <div>
+              <p className="text-sm text-muted-foreground">Order Total</p>
+              <p className="text-3xl font-bold">{formatCurrency(cart.total_price)}</p>
+            </div>
 
-              if (!deliveryAddress?.trim()) { window.alert('Delivery address is required.'); return;}
+            <Button
+              size="lg"
+              disabled={checkoutCart.isPending || cart.items.length === 0}
+              onClick={() => {
+                if (!deliveryAddress.trim()) {
+                  window.alert('Delivery address is required.');
+                  return;
+                }
 
-              const paymentMethod = window.prompt('Payment method: cash or gcash', 'cash');
-
-              if (paymentMethod !== 'cash' && paymentMethod !== 'gcash') {
-                window.alert('Payment method must be cash or gcash.');
-                return;
-              }
-
-              checkoutCart.mutate(
-                {
-                  delivery_address: deliveryAddress,
-                  payment_method: paymentMethod,
-                },
-                {
-                  onSuccess: () => {
-                    const goToOrders = window.confirm('Order placed successfully. View your orders now?',);
-
-                    if (goToOrders) {navigate('/orders');}
+                checkoutCart.mutate(
+                  {
+                    delivery_address: deliveryAddress.trim(),
+                    payment_method: paymentMethod,
                   },
-                  onError: (error) => {console.error(error); window.alert('Failed to place order.');},
-                },
-              );
-            }}
-          >
-            {checkoutCart.isPending ? 'Placing Order...' : 'Place Order'}
-          </Button>
+                  {
+                    onSuccess: () => {
+                      const goToOrders = window.confirm(
+                        'Order placed successfully. View your orders now?',
+                      );
+
+                      if (goToOrders) {
+                        navigate('/orders');
+                      }
+                    },
+                    onError: (error) => {
+                      console.error(error);
+                      window.alert('Failed to place order.');
+                    },
+                  },
+                );
+              }}
+            >
+              {checkoutCart.isPending ? 'Placing Order...' : 'Place Order'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
