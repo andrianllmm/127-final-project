@@ -89,11 +89,19 @@ export class OrdersService {
   async checkoutCart(customerId: string, input: { payment_method: string; delivery_address: string }) {
     const cart = await this.repo.findOpenCart(customerId);
 
-    if (!cart) {return null;}
+    if (!cart) {
+      return null;
+    }
+
+    const items = await this.repo.findItemsByOrderId(cart.order_id);
+
+    if (items.length === 0) {
+      throw new Error('Cannot checkout an empty cart');
+    }
 
     await this.repo.checkoutCart(cart.order_id, input.payment_method, input.delivery_address);
 
-    return this.repo.findById(cart.order_id);
+    return this.getById(cart.order_id);
   }
 
   async cancelOrder(customerId: string, orderId: string) {

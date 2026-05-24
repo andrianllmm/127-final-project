@@ -97,14 +97,17 @@ export function CartPage() {
                       if (item.quantity === 1) {
                         const confirmed = window.confirm(`Remove "${item.name}" from your cart?`);
 
-                        if (confirmed) {removeCartItem.mutate(item.order_item_id);}return;
-                      
-                      } else {
-                        updateQuantity.mutate({
-                          orderItemId: item.order_item_id,
-                          quantity: item.quantity - 1,
-                        });
+                        if (confirmed) {
+                          removeCartItem.mutate(item.order_item_id);
+                        }
+
+                        return;
                       }
+
+                      updateQuantity.mutate({
+                        orderItemId: item.order_item_id,
+                        quantity: item.quantity - 1,
+                      });
                     }}
                   >
                     -

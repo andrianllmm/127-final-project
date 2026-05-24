@@ -1,6 +1,23 @@
 import { sql } from 'slonik';
+import { z } from 'zod';
+
 import { getPool } from '../../db/pool.js';
 import { Order, OrderItem, orderItemSchema, orderSchema } from '@repo/api';
+
+const storeItemLookupSchema = z.object({
+  store_item_id: z.string(),
+  store_id: z.string(),
+  price: z.coerce.number(),
+  is_available: z.boolean(),
+});
+
+const orderIdSchema = z.object({
+  order_id: z.string(),
+});
+
+const orderItemIdSchema = z.object({
+  order_item_id: z.string(),
+});
 
 export class OrdersRepository {
   async findByCustomerId(customerId: string): Promise<Order[]> {
@@ -110,7 +127,7 @@ export class OrdersRepository {
   async findStoreItemById(storeItemId: string) {
     const pool = await getPool();
 
-    return pool.maybeOne(sql.unsafe`
+    return pool.maybeOne(sql.type(storeItemLookupSchema)`
       SELECT store_item_id, store_id, price, is_available
       FROM store_item
       WHERE store_item_id = ${storeItemId}
@@ -120,7 +137,7 @@ export class OrdersRepository {
   async createOpenOrder(customerId: string, storeId: string) {
     const pool = await getPool();
 
-    return pool.one(sql.unsafe`
+    return pool.one(sql.type(orderIdSchema)`
       INSERT INTO "order" (
         customer_id,
         store_id,
@@ -142,7 +159,7 @@ export class OrdersRepository {
   async addItem(orderId: string, storeItemId: string, priceSnapshot: number, quantity: number) {
     const pool = await getPool();
 
-    const existingItem = await pool.maybeOne(sql.unsafe`
+    const existingItem = await pool.maybeOne(sql.type(orderItemIdSchema)`
       SELECT order_item_id
       FROM order_item
       WHERE order_id = ${orderId}
@@ -150,7 +167,7 @@ export class OrdersRepository {
     `);
 
     if (existingItem) {
-      return pool.one(sql.unsafe`
+      return pool.one(sql.type(orderItemIdSchema)`
         UPDATE order_item
         SET
           quantity = quantity + ${quantity},
@@ -161,7 +178,7 @@ export class OrdersRepository {
       `);
     }
 
-    return pool.one(sql.unsafe`
+    return pool.one(sql.type(orderItemIdSchema)`
       INSERT INTO order_item (
         order_id,
         store_item_id,
@@ -181,7 +198,7 @@ export class OrdersRepository {
   async deleteItem(orderItemId: string, orderId: string) {
     const pool = await getPool();
 
-    return pool.maybeOne(sql.unsafe`
+    return pool.maybeOne(sql.type(orderItemIdSchema)`
       DELETE FROM order_item
       WHERE order_item_id = ${orderItemId}
         AND order_id = ${orderId}
@@ -189,29 +206,33 @@ export class OrdersRepository {
     `);
   }
 
-  async updateCartItemQuantity(
-    customerId: string,
-    orderItemId: string,
-    quantity: number,
-  ) {
+  async updateCartItemQuantity(customerId: string, orderItemId: string, quantity: number) {
     const pool = await getPool();
 
-    return pool.maybeOne(sql.unsafe`
+    return pool.maybeOne(sql.type(orderItemSchema)`
       UPDATE order_item oi
       SET quantity = ${quantity}
       FROM "order" o
+      JOIN store_item si ON si.store_item_id = oi.store_item_id
       WHERE oi.order_item_id = ${orderItemId}
         AND oi.order_id = o.order_id
         AND o.customer_id = ${customerId}
         AND o.status = 'open'
-      RETURNING oi.*
+      RETURNING
+        oi.order_item_id,
+        oi.order_id,
+        oi.store_item_id,
+        si.name,
+        oi.price_snapshot,
+        oi.quantity,
+        oi.price_snapshot * oi.quantity AS subtotal
     `);
   }
-  
+
   async checkoutCart(orderId: string, paymentMethod: string, deliveryAddress: string) {
     const pool = await getPool();
 
-    return pool.one(sql.unsafe`
+    return pool.one(sql.type(orderIdSchema)`
       UPDATE "order"
       SET
         payment_method = ${paymentMethod},
@@ -226,7 +247,7 @@ export class OrdersRepository {
   async cancelOrder(orderId: string, customerId: string) {
     const pool = await getPool();
 
-    return pool.maybeOne(sql.unsafe`
+    return pool.maybeOne(sql.type(orderIdSchema)`
       UPDATE "order"
       SET
         status = 'cancelled',
