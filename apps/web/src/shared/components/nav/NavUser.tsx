@@ -24,6 +24,7 @@ import { UnfoldMoreIcon, CheckmarkBadgeIcon, LogoutIcon } from '@hugeicons/core-
 
 import { authClient } from '@/shared/lib/authClient';
 import { Button } from '../ui/button';
+import { UserAvatar } from '../UserAvatar';
 
 export function NavUser() {
   const navigate = useNavigate();
@@ -87,12 +88,7 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.image || ''} alt={user.name || 'User'} />
-                  <AvatarFallback className="rounded-lg">
-                    {user.name?.slice(0, 2)?.toUpperCase() || 'CN'}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar name={user.name} image={user.image} />
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -104,9 +100,11 @@ export function NavUser() {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <HugeiconsIcon icon={CheckmarkBadgeIcon} strokeWidth={2} />
-                Account
+              <DropdownMenuItem asChild>
+                <Link to="/account" className="flex items-center gap-1">
+                  <HugeiconsIcon icon={CheckmarkBadgeIcon} strokeWidth={2} />
+                  Account
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
 
