@@ -18,7 +18,7 @@ export const topItemsSchema = z.array(
     total_quantity_sold: z.string(),
     total_revenue: z.string(),
     order_count: z.number().int(),
-  })
+  }),
 );
 
 export type TopItems = z.infer<typeof topItemsSchema>;
@@ -39,7 +39,7 @@ export const dailyMetricsSchema = z.array(
     order_count: z.number().int(),
     revenue: z.string(),
     completed_count: z.number().int(),
-  })
+  }),
 );
 
 export type DailyMetrics = z.infer<typeof dailyMetricsSchema>;

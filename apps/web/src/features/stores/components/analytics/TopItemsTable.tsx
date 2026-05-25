@@ -12,7 +12,7 @@ export function TopItemsTable({ items, isLoading = false }: TopItemsTableProps) 
       <div className="border-b border-gray-200 px-6 py-4">
         <h3 className="font-semibold text-gray-900">Top Performing Items</h3>
       </div>
-      
+
       {isLoading ? (
         <div className="flex justify-center px-6 py-8">
           <div className="text-sm text-gray-500">Loading...</div>

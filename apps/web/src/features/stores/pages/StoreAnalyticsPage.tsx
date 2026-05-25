@@ -21,7 +21,10 @@ export function StoreAnalyticsPage() {
   const store = stores?.[0];
   const storeId = store?.store_id ?? '';
 
-  const { data: analyticsData, isPending: isAnalyticsPending } = useStoreAnalytics(storeId, analyticsQuery);
+  const { data: analyticsData, isPending: isAnalyticsPending } = useStoreAnalytics(
+    storeId,
+    analyticsQuery,
+  );
 
   if (isSessionPending || isStoresPending) {
     return (

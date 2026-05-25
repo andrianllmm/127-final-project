@@ -1,5 +1,11 @@
 import { apiClient } from '@/shared/lib/apiClient';
-import { type Store, type CreateStoreInput, type UpdateStoreInput, type AnalyticsResponse, type AnalyticsQuery } from '@repo/api';
+import {
+  type Store,
+  type CreateStoreInput,
+  type UpdateStoreInput,
+  type AnalyticsResponse,
+  type AnalyticsQuery,
+} from '@repo/api';
 
 export const getStores = () => apiClient.get<Store[]>('/stores');
 

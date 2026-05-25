@@ -20,7 +20,7 @@ export function OrderStatusBreakdownCard({ data, isLoading = false }: OrderStatu
   return (
     <Card className="p-6">
       <h3 className="mb-4 font-semibold text-gray-900">Order Status Breakdown</h3>
-      
+
       {isLoading ? (
         <div className="flex justify-center py-8">
           <div className="text-sm text-gray-500">Loading...</div>
@@ -34,7 +34,7 @@ export function OrderStatusBreakdownCard({ data, isLoading = false }: OrderStatu
           {Object.entries(statusConfig).map(([key, config]) => {
             const count = data[key as keyof OrderStatusBreakdown];
             const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : '0';
-            
+
             return (
               <div key={key}>
                 <div className="mb-2 flex items-center justify-between">

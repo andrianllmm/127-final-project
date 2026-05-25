@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Card } from '@/shared/components/ui/card';
@@ -12,6 +12,13 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
+  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const thirtyDaysAgo = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date.toISOString().split('T')[0];
+  }, []);
+
   const handleApply = () => {
     onRangeChange(startDate || undefined, endDate || undefined);
   };
@@ -22,17 +29,15 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
     onRangeChange(undefined, undefined);
   };
 
-  const today = new Date().toISOString().split('T')[0] || '';
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || '';
-
   const handleLast30Days = () => {
-    setStartDate(thirtyDaysAgo as string);
-    setEndDate(today as string);
+    setStartDate(thirtyDaysAgo);
+    setEndDate(today);
     onRangeChange(thirtyDaysAgo, today);
   };
 
   const handleLastWeek = () => {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || '';
+    const sevenDaysAgo =
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || '';
     setStartDate(sevenDaysAgo as string);
     setEndDate(today as string);
     onRangeChange(sevenDaysAgo, today);
@@ -42,7 +47,7 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
     <Card className="p-4">
       <div className="space-y-4">
         <h3 className="font-semibold text-gray-900">Filter by Date Range</h3>
-        
+
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col space-y-2">
             <label className="text-sm font-medium text-gray-700">Start Date</label>
@@ -65,19 +70,10 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
         </div>
 
         <div className="flex gap-2">
-          <Button
-            onClick={handleApply}
-            disabled={isLoading}
-            className="flex-1"
-            variant="default"
-          >
+          <Button onClick={handleApply} disabled={isLoading} className="flex-1" variant="default">
             Apply
           </Button>
-          <Button
-            onClick={handleClear}
-            disabled={isLoading}
-            variant="outline"
-          >
+          <Button onClick={handleClear} disabled={isLoading} variant="outline">
             Clear
           </Button>
         </div>
@@ -85,20 +81,10 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
         <div className="border-t border-gray-200 pt-4">
           <p className="mb-2 text-xs font-medium text-gray-600">Quick Filters</p>
           <div className="flex gap-2">
-            <Button
-              onClick={handleLastWeek}
-              disabled={isLoading}
-              variant="outline"
-              size="sm"
-            >
+            <Button onClick={handleLastWeek} disabled={isLoading} variant="outline" size="sm">
               Last 7 Days
             </Button>
-            <Button
-              onClick={handleLast30Days}
-              disabled={isLoading}
-              variant="outline"
-              size="sm"
-            >
+            <Button onClick={handleLast30Days} disabled={isLoading} variant="outline" size="sm">
               Last 30 Days
             </Button>
           </div>
@@ -107,4 +93,3 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
     </Card>
   );
 }
-

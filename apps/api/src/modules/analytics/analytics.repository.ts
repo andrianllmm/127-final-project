@@ -1,14 +1,13 @@
 import { sql } from 'slonik';
 import { getPool } from '../../db/pool.js';
-import {
-  AnalyticsMetrics,
-  TopItems,
-  OrderStatusBreakdown,
-  DailyMetrics,
-} from '@repo/api';
+import { AnalyticsMetrics, TopItems, OrderStatusBreakdown, DailyMetrics } from '@repo/api';
 
 export class AnalyticsRepository {
-  async getMetrics(storeId: string, startDate?: string, endDate?: string): Promise<AnalyticsMetrics> {
+  async getMetrics(
+    storeId: string,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<AnalyticsMetrics> {
     const pool = await getPool();
 
     const startDateFilter = startDate ?? '1970-01-01';
@@ -49,7 +48,12 @@ export class AnalyticsRepository {
     };
   }
 
-  async getTopItems(storeId: string, limit: number = 10, startDate?: string, endDate?: string): Promise<TopItems> {
+  async getTopItems(
+    storeId: string,
+    limit: number = 10,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<TopItems> {
     const pool = await getPool();
 
     const startDateFilter = startDate ?? '1970-01-01';
@@ -82,7 +86,11 @@ export class AnalyticsRepository {
     }));
   }
 
-  async getOrderStatusBreakdown(storeId: string, startDate?: string, endDate?: string): Promise<OrderStatusBreakdown> {
+  async getOrderStatusBreakdown(
+    storeId: string,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<OrderStatusBreakdown> {
     const pool = await getPool();
 
     const startDateFilter = startDate ?? '1970-01-01';
@@ -116,10 +124,16 @@ export class AnalyticsRepository {
     };
   }
 
-  async getDailyMetrics(storeId: string, days: number = 30, startDate?: string, endDate?: string): Promise<DailyMetrics> {
+  async getDailyMetrics(
+    storeId: string,
+    days: number = 30,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<DailyMetrics> {
     const pool = await getPool();
 
-    const startDateFilter = startDate ?? new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const startDateFilter =
+      startDate ?? new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const endDateFilter = endDate ?? new Date().toISOString().split('T')[0];
 
     // @ts-ignore - Slonik sql tag typing issue
@@ -146,8 +160,3 @@ export class AnalyticsRepository {
     }));
   }
 }
-
-
-
-
-
