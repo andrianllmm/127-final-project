@@ -12,6 +12,7 @@ import storesRoutes from './modules/stores/stores.routes.js';
 import storeItemsRoutes from './modules/store-items/store-items.routes.js';
 import ordersRoutes from './modules/orders/orders.routes.js';
 import deliveriesRoutes from './modules/deliveries/deliveries.routes.js';
+import analyticsRoutes from './modules/analytics/analytics.routes.js';
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/stores', storesRoutes);
 app.use('/stores', storeItemsRoutes);
+app.use('/analytics', analyticsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/deliveries', deliveriesRoutes);
 
