@@ -9,8 +9,8 @@ interface DateRangePickerProps {
 }
 
 export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangePickerProps) {
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
+  const [startDate, setStartDate] = useState<string | undefined>(undefined);
+  const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
   const thirtyDaysAgo = useMemo(() => {
@@ -20,12 +20,12 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
   }, []);
 
   const handleApply = () => {
-    onRangeChange(startDate || undefined, endDate || undefined);
+    onRangeChange(startDate, endDate);
   };
 
   const handleClear = () => {
-    setStartDate('');
-    setEndDate('');
+    setStartDate(undefined);
+    setEndDate(undefined);
     onRangeChange(undefined, undefined);
   };
 
@@ -36,10 +36,11 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
   };
 
   const handleLastWeek = () => {
-    const sevenDaysAgo =
-      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || '';
-    setStartDate(sevenDaysAgo as string);
-    setEndDate(today as string);
+    const date = new Date();
+    date.setDate(date.getDate() - 7);
+    const sevenDaysAgo = date.toISOString().split('T')[0];
+    setStartDate(sevenDaysAgo);
+    setEndDate(today);
     onRangeChange(sevenDaysAgo, today);
   };
 
@@ -53,7 +54,7 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
             <label className="text-sm font-medium text-gray-700">Start Date</label>
             <Input
               type="date"
-              value={startDate}
+              value={startDate ?? ''}
               onChange={(e) => setStartDate(e.target.value)}
               disabled={isLoading}
             />
@@ -62,7 +63,7 @@ export function DateRangePicker({ onRangeChange, isLoading = false }: DateRangeP
             <label className="text-sm font-medium text-gray-700">End Date</label>
             <Input
               type="date"
-              value={endDate}
+              value={endDate ?? ''}
               onChange={(e) => setEndDate(e.target.value)}
               disabled={isLoading}
             />
