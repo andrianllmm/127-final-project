@@ -4,6 +4,7 @@ import { useOrder } from '../hooks/use-order';
 import { useCancelOrder } from '../hooks/use-cancel-order';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { OrderActionDialog } from '../component/OrderActionDialog';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 import { toast } from 'sonner';
@@ -32,72 +33,75 @@ export function OrderDetailPage() {
     );
   }
 
-  if (!order) {return <Navigate to="/orders" replace />;}
+  if (!order) {
+    return <Navigate to="/orders" replace />;
+  }
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-3xl font-semibold">Order Details</h1>
-          <p className="text-sm text-muted-foreground">
-            Order #{order.order_id.slice(0, 8)}
-          </p>
+          <p className="text-sm text-muted-foreground">Order #{order.order_id.slice(0, 8)}</p>
         </div>
 
-          <div className="flex gap-2">
-            {order.status === 'open' && (
-              <Button
-                variant="outline"
-                className="border-red-500 text-red-600 hover:bg-red-50"
-                disabled={cancelOrder.isPending}
-                onClick={() => { const confirmed = window.confirm('Cancel this order?');
+        <div className="flex gap-2">
+          {order.status === 'open' && (
+            <OrderActionDialog
+              triggerLabel="Cancel Order"
+              title="Cancel order?"
+              description="This will cancel the order. This action cannot be undone."
+              confirmLabel="Cancel Order"
+              pendingLabel="Cancelling..."
+              isPending={cancelOrder.isPending}
+              triggerClassName="border-red-500 text-red-600 hover:bg-red-50"
+              onConfirm={() =>
+                cancelOrder.mutate(order.order_id, {
+                  onSuccess: () => {
+                    toast.success('Order cancelled successfully.');
+                  },
+                })
+              }
+            />
+          )}
 
-                  if (confirmed) {
-                    cancelOrder.mutate(order.order_id, {
-                      onSuccess: () => {toast.success('Order cancelled successfully.');},
-                    });
-                  }
-                }}
-              >
-                {cancelOrder.isPending ? 'Cancelling...' : 'Cancel Order'}
-              </Button>
-            )}
-
-            <Button asChild variant="outline">
-              <Link to="/orders">Back to Orders</Link>
-            </Button>
-          </div>
+          <Button asChild variant="outline">
+            <Link to="/orders">Back to Orders</Link>
+          </Button>
         </div>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{order.store_name}</CardTitle>
-          </CardHeader>
+      <Card>
+        <CardHeader>
+          <CardTitle>{order.store_name}</CardTitle>
+        </CardHeader>
 
-          <CardContent>
-            <div className="grid gap-5 text-sm sm:grid-cols-2">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Status</p>
-                <p className="font-semibold">{formatStatus(order.status)}</p>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Payment</p>
-                <p className="font-semibold">{order.payment_method.toUpperCase()}</p>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Delivery Address</p>
-                <p className="font-semibold">{order.delivery_address}</p>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Total</p>
-                <p className="text-xl font-bold">{formatCurrency(order.total_price)}</p>
-              </div>
+        <CardContent>
+          <div className="grid gap-5 text-sm sm:grid-cols-2">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Status</p>
+              <p className="font-semibold">{formatStatus(order.status)}</p>
             </div>
-          </CardContent>
-        </Card>
+
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Payment</p>
+              <p className="font-semibold">{order.payment_method.toUpperCase()}</p>
+            </div>
+
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                Delivery Address
+              </p>
+              <p className="font-semibold">{order.delivery_address}</p>
+            </div>
+
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Total</p>
+              <p className="text-xl font-bold">{formatCurrency(order.total_price)}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

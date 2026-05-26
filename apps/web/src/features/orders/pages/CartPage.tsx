@@ -14,11 +14,11 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/shared/components/ui/select';
+import { OrderActionDialog } from '../component/OrderActionDialog';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-PH', {
-    style: 'currency',
-    currency: 'PHP',
+    style: 'currency', currency: 'PHP',
   }).format(value);
 }
 
@@ -73,18 +73,15 @@ export function CartPage() {
           <p className="text-sm text-muted-foreground mr-auto">Ordering from {cart.store_name}</p>
           <span className="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-800">Draft Order</span>
 
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={clearCart.isPending}
-            onClick={() => {
-              const confirmed = window.confirm('Clear all items from your cart?');
-
-              if (confirmed) {clearCart.mutate();}
-            }}
-          >
-            {clearCart.isPending ? 'Clearing...' : 'Clear Cart'}
-          </Button>
+          <OrderActionDialog
+            triggerLabel="Clear Cart"
+            title="Clear cart?"
+            description="This will remove all items from your cart."
+            confirmLabel="Clear Cart"
+            pendingLabel="Clearing..."
+            isPending={clearCart.isPending}
+            onConfirm={() => clearCart.mutate()}
+          />
         </div>
       </div>
 
@@ -111,26 +108,33 @@ export function CartPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={updateQuantity.isPending || removeCartItem.isPending}
-                    onClick={() => {
-                      if (item.quantity === 1) {
-                        const confirmed = window.confirm(`Remove "${item.name}" from your cart?`);
-
-                        if (confirmed) {removeCartItem.mutate(item.order_item_id);}
-                        return;
+                  {item.quantity === 1 ? (
+                    <OrderActionDialog
+                      triggerLabel="-"
+                      title="Remove item?"
+                      description={`Remove "${item.name}" from your cart?`}
+                      confirmLabel="Remove"
+                      pendingLabel="Removing..."
+                      isPending={removeCartItem.isPending}
+                      onConfirm={() => {
+                        removeCartItem.mutate(item.order_item_id);
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={updateQuantity.isPending}
+                      onClick={() =>
+                        updateQuantity.mutate({
+                          orderItemId: item.order_item_id,
+                          quantity: item.quantity - 1,
+                        })
                       }
-
-                      updateQuantity.mutate({
-                        orderItemId: item.order_item_id,
-                        quantity: item.quantity - 1,
-                      });
-                    }}
-                  >
-                    -
-                  </Button>
+                    >
+                      -
+                    </Button>
+                  )}
 
                   <span className="w-8 text-center">{item.quantity}</span>
 
