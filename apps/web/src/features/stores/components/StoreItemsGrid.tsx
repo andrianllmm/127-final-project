@@ -21,11 +21,7 @@ export function StoreItemsGrid({
   isLoading,
   isError,
 }: StoreItemsGridProps) {
-  const sortedItems = [...items].sort(
-    (left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime(),
-  );
-
-  const visibleItems = typeof limit === 'number' ? sortedItems.slice(0, limit) : sortedItems;
+  const visibleItems = typeof limit === 'number' ? items.slice(0, limit) : items;
 
   if (isError) {
     return (

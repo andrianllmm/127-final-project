@@ -28,9 +28,19 @@ export function SearchBar() {
     const formData = new FormData(event.currentTarget);
     const keyword = String(formData.get('keyword') ?? '').trim();
 
-    const params = new URLSearchParams();
+    const preserveParams = location.pathname === '/items';
+    const params = new URLSearchParams(preserveParams ? searchParams : undefined);
 
     if (keyword) params.set('q', keyword);
+    else params.delete('q');
+
+    if (!preserveParams) {
+      params.delete('sortBy');
+      params.delete('sortOrder');
+      params.delete('priceMin');
+      params.delete('priceMax');
+      params.delete('available');
+    }
 
     const pathname = storeId ? `/stores/${storeId}/items` : '/items';
 

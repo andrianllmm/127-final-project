@@ -1,4 +1,4 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { authClient } from '@/shared/lib/authClient';
 import { Button } from '@/shared/components/ui/button';
@@ -6,13 +6,25 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 
 import { useStore } from '../hooks/use-store';
 import { useStoreItems } from '../hooks/use-store-items';
+import { useStoreFilters } from '../hooks/use-store-filters';
+
 import { StoreItemsGrid } from '../components/StoreItemsGrid';
+import { StoreItemsFilters } from '../components/StoreItemsFilters';
 
 export function StoreItemsPage() {
   const { id: storeId = '' } = useParams();
-  const [searchParams] = useSearchParams();
 
-  const keyword = searchParams.get('q') ?? '';
+  const {
+    keyword,
+    sortBy,
+    sortOrder,
+    priceRange,
+    availableOnly,
+    setSortBy,
+    setSortOrder,
+    setPriceRange,
+    setAvailableOnly,
+  } = useStoreFilters();
 
   const { data: session } = authClient.useSession();
   const { data: store, isPending: isStorePending } = useStore(storeId);
@@ -24,6 +36,11 @@ export function StoreItemsPage() {
   } = useStoreItems({
     storeId,
     keyword,
+    sortBy,
+    sortOrder,
+    priceMin: priceRange[0],
+    priceMax: priceRange[1],
+    available: availableOnly ? true : undefined,
   });
 
   const canManage = Boolean(
@@ -36,6 +53,7 @@ export function StoreItemsPage() {
     return (
       <div className="mx-auto flex h-full w-full flex-col items-center justify-center gap-6 px-4 py-8">
         <h1 className="font-heading text-center text-2xl font-semibold">Store not found :(</h1>
+
         <Button asChild className="w-fit">
           <Link to="/stores">Browse stores</Link>
         </Button>
@@ -58,6 +76,7 @@ export function StoreItemsPage() {
               <h1 className="font-heading text-3xl font-semibold text-primary-foreground">
                 {store?.store_name}'s Menu
               </h1>
+
               <p className="max-w-2xl text-muted-foreground">{store?.store_address}</p>
             </>
           )}
@@ -82,12 +101,25 @@ export function StoreItemsPage() {
           <Skeleton className="h-4 w-24" />
         ) : (
           <span>
-            {items?.length || 0} item{items?.length === 1 ? '' : 's'}
+            {items?.length || 0} item
+            {items?.length === 1 ? '' : 's'}
           </span>
         )}
 
         {keyword && <span>Results for “{keyword}”</span>}
       </div>
+
+      {/* Filters */}
+      <StoreItemsFilters
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        priceRange={priceRange}
+        availableOnly={availableOnly}
+        onSortByChange={setSortBy}
+        onSortOrderChange={setSortOrder}
+        onPriceRangeCommit={setPriceRange}
+        onAvailabilityChange={setAvailableOnly}
+      />
 
       <StoreItemsGrid
         items={items || []}
