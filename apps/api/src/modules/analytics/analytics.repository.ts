@@ -11,6 +11,21 @@ import {
   DailyMetrics,
 } from '@repo/api';
 
+const DEFAULT_START_DATE = '1970-01-01';
+const DEFAULT_END_DATE = '2099-12-31';
+
+function buildDateFilters(startDate?: string, endDate?: string) {
+  return {
+    startDateFilter: startDate ?? DEFAULT_START_DATE,
+    endDateFilter: endDate ?? DEFAULT_END_DATE,
+  };
+}
+
+function formatDate(date: Date) {
+  const [datePart] = date.toISOString().split('T');
+  return datePart ?? DEFAULT_START_DATE;
+}
+
 export class AnalyticsRepository {
   async getMetrics(
     storeId: string,
@@ -19,8 +34,7 @@ export class AnalyticsRepository {
   ): Promise<AnalyticsMetrics> {
     const pool = await getPool();
 
-    const startDateFilter = startDate ?? '1970-01-01';
-    const endDateFilter = endDate ?? '2099-12-31';
+    const { startDateFilter, endDateFilter } = buildDateFilters(startDate, endDate);
 
     const result = await pool.maybeOne(sql.type(analyticsMetricsSchema)`
       SELECT
@@ -60,8 +74,7 @@ export class AnalyticsRepository {
   ): Promise<TopItems> {
     const pool = await getPool();
 
-    const startDateFilter = startDate ?? '1970-01-01';
-    const endDateFilter = endDate ?? '2099-12-31';
+    const { startDateFilter, endDateFilter } = buildDateFilters(startDate, endDate);
 
     const rows = await pool.any(sql.type(topItemsSchema.element)`
       SELECT
@@ -96,8 +109,7 @@ export class AnalyticsRepository {
   ): Promise<OrderStatusBreakdown> {
     const pool = await getPool();
 
-    const startDateFilter = startDate ?? '1970-01-01';
-    const endDateFilter = endDate ?? '2099-12-31';
+    const { startDateFilter, endDateFilter } = buildDateFilters(startDate, endDate);
 
     const result = await pool.maybeOne(sql.type(orderStatusBreakdownSchema)`
       SELECT
@@ -131,12 +143,11 @@ export class AnalyticsRepository {
   ): Promise<DailyMetrics> {
     const pool = await getPool();
 
-    const defaultStartDate =
-      new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '1970-01-01';
-    const defaultEndDate = new Date().toISOString().split('T')[0] ?? '2099-12-31';
+    const defaultStartDate = formatDate(new Date(Date.now() - days * 24 * 60 * 60 * 1000));
+    const defaultEndDate = formatDate(new Date());
 
-    const startDateFilter = startDate ?? defaultStartDate;
-    const endDateFilter = endDate ?? defaultEndDate;
+    const startDateFilter: string = startDate ?? defaultStartDate;
+    const endDateFilter: string = endDate ?? defaultEndDate;
 
     const rows = await pool.any(sql.type(dailyMetricsSchema.element)`
       SELECT
