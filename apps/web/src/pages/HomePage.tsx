@@ -10,7 +10,7 @@ export const HomePage = () => {
     if (isPending) return;
 
     if (!session) {
-      navigate('/stores', { replace: true });
+      navigate('/items', { replace: true });
       return;
     }
 
@@ -19,7 +19,7 @@ export const HomePage = () => {
     switch (role) {
       case 'customer':
       default:
-        navigate('/stores', { replace: true });
+        navigate('/items', { replace: true });
         break;
 
       case 'vendor':

@@ -11,7 +11,7 @@ export class StoreItemsController {
 
   getAll = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { storeId } = req.params as { storeId: string };
+      const { storeId } = req.query as { storeId?: string };
       const data = await this.service.getAll(storeId);
 
       if (!data) {
@@ -30,8 +30,8 @@ export class StoreItemsController {
 
   getById = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { storeId, itemId } = req.params as { storeId: string; itemId: string };
-      const data = await this.service.getById(storeId, itemId);
+      const { itemId } = req.params as { itemId: string };
+      const data = await this.service.getById(itemId);
 
       if (!data) {
         return res.status(404).json({ message: 'Not found' });
@@ -49,8 +49,7 @@ export class StoreItemsController {
 
   create = async (req: AuthRequest, res: Response): Promise<Response> => {
     try {
-      const { storeId } = req.params as { storeId: string };
-      const result = await this.service.create(req.user!.id, storeId, req.body);
+      const result = await this.service.create(req.user!.id, req.body);
 
       if (!result) {
         return res.status(404).json({ message: 'Not found' });
@@ -68,8 +67,8 @@ export class StoreItemsController {
 
   update = async (req: AuthRequest, res: Response): Promise<Response> => {
     try {
-      const { storeId, itemId } = req.params as { storeId: string; itemId: string };
-      const result = await this.service.update(req.user!.id, storeId, itemId, req.body);
+      const { itemId } = req.params as { itemId: string };
+      const result = await this.service.update(req.user!.id, itemId, req.body);
 
       if (!result) {
         return res.status(404).json({ message: 'Not found' });
@@ -87,8 +86,8 @@ export class StoreItemsController {
 
   delete = async (req: AuthRequest, res: Response): Promise<Response> => {
     try {
-      const { storeId, itemId } = req.params as { storeId: string; itemId: string };
-      const result = await this.service.delete(req.user!.id, storeId, itemId);
+      const { itemId } = req.params as { itemId: string };
+      const result = await this.service.delete(req.user!.id, itemId);
 
       if (!result) {
         return res.status(404).json({ message: 'Not found' });

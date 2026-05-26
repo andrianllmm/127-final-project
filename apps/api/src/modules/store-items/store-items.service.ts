@@ -15,64 +15,51 @@ export class StoreItemsService {
   private async assertVendorOwnsStore(storeId: string, userId: string) {
     const store = await this.storesRepo.findById(storeId);
 
-    if (!store) {
-      return null;
-    }
-
-    if (store.user_id !== userId) {
+    if (!store || store.user_id !== userId) {
       throw new Error('Forbidden');
     }
 
     return store;
   }
 
-  async getAll(storeId: string) {
-    const store = await this.storesRepo.findById(storeId);
+  async getAll(storeId?: string) {
+    if (storeId) {
+      const store = await this.storesRepo.findById(storeId);
 
-    if (!store) {
-      return null;
+      if (!store) {
+        return null;
+      }
     }
 
-    return this.storeItemsRepo.findAllByStoreId(storeId);
+    return this.storeItemsRepo.findAll(storeId);
   }
 
-  async getById(storeId: string, itemId: string) {
-    const store = await this.storesRepo.findById(storeId);
-
-    if (!store) {
-      return null;
-    }
-
-    return this.storeItemsRepo.findById(storeId, itemId);
+  async getById(itemId: string) {
+    return this.storeItemsRepo.findById(itemId);
   }
 
-  async create(userId: string, storeId: string, input: CreateStoreItemInput) {
-    const store = await this.assertVendorOwnsStore(storeId, userId);
+  async create(userId: string, input: CreateStoreItemInput) {
+    const store = await this.storesRepo.findByUserId(userId);
+    if (!store) return null;
 
-    if (!store) {
-      return null;
-    }
-
-    return this.storeItemsRepo.create(storeId, input);
+    return this.storeItemsRepo.create(store.store_id, input);
   }
 
-  async update(userId: string, storeId: string, itemId: string, input: UpdateStoreItemInput) {
-    const store = await this.assertVendorOwnsStore(storeId, userId);
+  async update(userId: string, itemId: string, input: UpdateStoreItemInput) {
+    const item = await this.storeItemsRepo.findById(itemId);
+    if (!item) return null;
+    const store = await this.assertVendorOwnsStore(item?.store_id, userId);
+    if (!store) return null;
 
-    if (!store) {
-      return null;
-    }
-
-    return this.storeItemsRepo.update(storeId, itemId, input);
+    return this.storeItemsRepo.update(itemId, input);
   }
 
-  async delete(userId: string, storeId: string, itemId: string) {
-    const store = await this.assertVendorOwnsStore(storeId, userId);
+  async delete(userId: string, itemId: string) {
+    const item = await this.storeItemsRepo.findById(itemId);
+    if (!item) return null;
+    const store = await this.assertVendorOwnsStore(item.store_id, userId);
+    if (!store) return null;
 
-    if (!store) {
-      return null;
-    }
-
-    return this.storeItemsRepo.delete(storeId, itemId);
+    return this.storeItemsRepo.delete(itemId);
   }
 }

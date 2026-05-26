@@ -6,7 +6,7 @@ import { Button } from '@/shared/components/ui/button';
 
 import { useStore } from '../hooks/use-store';
 import { useStoreItems } from '../hooks/use-store-items';
-import { StoreItemCard } from '../components/StoreItemCard';
+import { StoreItemsGrid } from '../components/StoreItemsGrid';
 
 export function StoreDetailPage() {
   const { id = '' } = useParams();
@@ -33,8 +33,6 @@ export function StoreDetailPage() {
     );
   }
 
-  const previewItems = items?.slice(0, 6) ?? [];
-  const hasMoreItems = (items?.length ?? 0) > 6;
   const canEdit = session?.user.id === store.user_id;
   const canManage = Boolean(
     session && session.user.role === 'vendor' && store.user_id === session.user.id,
@@ -68,32 +66,21 @@ export function StoreDetailPage() {
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-heading text-xl font-semibold">Featured items</h2>
 
-          {hasMoreItems && (
+          {(items?.length ?? 0) > 6 && (
             <Button asChild variant="outline">
               <Link to={`/stores/${id}/items`}>Show more</Link>
             </Button>
           )}
         </div>
 
-        {previewItems.length ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {previewItems.map((item) => (
-              <StoreItemCard
-                key={item.store_item_id}
-                item={item}
-                mode={
-                  canManage
-                    ? 'manager'
-                    : session && session.user.role !== 'vendor'
-                      ? 'customer'
-                      : 'guest'
-                }
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-muted-foreground">No items yet.</div>
-        )}
+        <StoreItemsGrid
+          items={items || []}
+          mode={
+            canManage ? 'manager' : session && session.user.role !== 'vendor' ? 'customer' : 'guest'
+          }
+          limit={6}
+          emptyState="No items yet."
+        />
       </section>
     </div>
   );

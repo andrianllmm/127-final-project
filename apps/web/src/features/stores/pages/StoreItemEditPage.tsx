@@ -23,7 +23,7 @@ export function StoreItemEditPage() {
     session && session.user.role === 'vendor' && store?.user_id === session.user.id,
   );
 
-  const { data: item, isPending: isItemPending } = useStoreItem(storeId, itemId, canManage);
+  const { data: item, isPending: isItemPending } = useStoreItem(itemId, canManage);
 
   const defaultValues = item
     ? {
@@ -34,8 +34,8 @@ export function StoreItemEditPage() {
         image_url: item.image_url ?? undefined,
       }
     : undefined;
-  const updateItemMutation = useUpdateStoreItem(storeId);
-  const deleteItemMutation = useDeleteStoreItem(storeId);
+  const updateItemMutation = useUpdateStoreItem();
+  const deleteItemMutation = useDeleteStoreItem();
 
   if (isSessionPending || isStorePending || (canManage && isItemPending)) {
     return (
@@ -59,6 +59,10 @@ export function StoreItemEditPage() {
 
   if (!item) {
     return <Navigate to={`/stores/${store.store_id}/items`} replace />;
+  }
+
+  if (item.store_id !== store.store_id) {
+    return <Navigate to={`/stores/${item.store_id}/items/${item.store_item_id}/edit`} replace />;
   }
 
   return (

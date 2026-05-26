@@ -15,7 +15,7 @@ export function StoreItemNewPage() {
   const { id: storeId = '' } = useParams();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const { data: store, isPending: isStorePending } = useStore(storeId);
-  const createItemMutation = useCreateStoreItem(storeId);
+  const createItemMutation = useCreateStoreItem();
 
   const canManage = Boolean(
     session && session.user.role === 'vendor' && store?.user_id === session.user.id,
