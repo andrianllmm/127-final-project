@@ -1,11 +1,12 @@
-\restrict vHDcd7HFXO1z8OK1yeIOvAArzEjTtIRlWbdhzqw3m4nS6hB5Jiv8nKQM0s5ndzv
+\restrict dbmate
 
--- Dumped from database version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
--- Dumped by pg_dump version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
+-- Dumped from database version 18.4
+-- Dumped by pg_dump version 18.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -33,6 +34,7 @@ COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 --
 
 CREATE TYPE public.order_status AS ENUM (
+    'draft',
     'open',
     'accepted',
     'picked_up',
@@ -204,6 +206,36 @@ CREATE TABLE public."user" (
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    email text NOT NULL
+);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
 -- Name: verification; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -215,6 +247,13 @@ CREATE TABLE public.verification (
     "createdAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
@@ -295,6 +334,22 @@ ALTER TABLE ONLY public."user"
 
 ALTER TABLE ONLY public."user"
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
@@ -458,7 +513,7 @@ ALTER TABLE ONLY public.session
 -- PostgreSQL database dump complete
 --
 
-\unrestrict vHDcd7HFXO1z8OK1yeIOvAArzEjTtIRlWbdhzqw3m4nS6hB5Jiv8nKQM0s5ndzv
+\unrestrict dbmate
 
 
 --
@@ -469,4 +524,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260509175040'),
     ('20260510051607'),
     ('20260511153205'),
-    ('20260511153313');
+    ('20260511153313'),
+    ('20260526101559');
