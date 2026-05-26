@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import type { AddCartItemInput } from '@repo/api';
 import { addCartItem } from '../api/orders-api';
@@ -19,9 +20,10 @@ export function useAddCartItem() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      toast.success('Item added to cart.');
     },
     onError: (error) => {
-      window.alert(getErrorMessage(error));
+      toast.error(getErrorMessage(error));
     },
   });
 }

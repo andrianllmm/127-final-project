@@ -6,6 +6,7 @@ import { useCancelOrder } from '../hooks/use-cancel-order';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
+import { toast } from 'sonner';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-PH', {
@@ -53,7 +54,7 @@ export function OrderDetailPage() {
 
                   if (confirmed) {
                     cancelOrder.mutate(order.order_id, {
-                      onSuccess: () => {window.alert('Order cancelled successfully.');},
+                      onSuccess: () => {toast.success('Order cancelled successfully.');},
                     });
                   }
                 }}

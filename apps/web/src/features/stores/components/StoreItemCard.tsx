@@ -102,9 +102,7 @@ function CustomerActions({item}: {item: StoreItem}) {
 
   return (
     <Button type="button" size="sm" className="w-full" disabled={!item.is_available || addCartItem.isPending} 
-    onClick={() =>addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,},
-      {onSuccess: () =>{window.alert(`${item.name} added to cart successfully.`);},},
-    )}
+    onClick={() =>addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,})}
     >
       {addCartItem.isPending ? 'Adding...' : 'Add to Cart'}
     </Button>

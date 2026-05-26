@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useCart } from '../hooks/use-cart';
 import { useRemoveCartItem } from '../hooks/use-remove-cart-item';
@@ -188,7 +189,7 @@ export function CartPage() {
               disabled={checkoutCart.isPending || cart.items.length === 0}
               onClick={() => {
                 if (!deliveryAddress.trim()) {
-                  window.alert('Delivery address is required.');
+                  toast.error('Delivery address is required.');
                   return;
                 }
 
@@ -199,17 +200,12 @@ export function CartPage() {
                   },
                   {
                     onSuccess: () => {
-                      const goToOrders = window.confirm(
-                        'Order placed successfully. View your orders now?',
-                      );
-
-                      if (goToOrders) {
-                        navigate('/orders');
-                      }
+                      toast.success('Order placed successfully.');
+                      navigate('/orders');
                     },
                     onError: (error) => {
                       console.error(error);
-                      window.alert('Failed to place order.');
+                      toast.error('Failed to place order.');
                     },
                   },
                 );

@@ -99,8 +99,7 @@ export function StoreItemDetailPage() {
       {canAddToCart && (
         <div className="mt-6 flex gap-3">
           <Button
-            onClick={() => addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,},
-              {onSuccess: () => {window.alert(`${item.name} added to cart successfully.`);},},)}
+            onClick={() => addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,})}
             disabled={addCartItem.isPending}
           >
             {addCartItem.isPending ? 'Adding...' : 'Add to Cart'}
