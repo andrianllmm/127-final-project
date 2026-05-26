@@ -4,15 +4,11 @@ import z from 'zod';
 
 import { requireAuth } from '../../common/middleware/auth.middleware.js';
 import { requireRole } from '../../common/middleware/rbac.middleware.js';
-import { createStoreItemSchema, updateStoreItemSchema } from '@repo/api';
+import { createStoreItemSchema, storeItemsQuerySchema, updateStoreItemSchema } from '@repo/api';
 import { StoreItemsController } from './store-items.controller.js';
 
 const router = Router();
 const controller = new StoreItemsController();
-
-const storeItemsQuerySchema = z.object({
-  storeId: z.uuid().optional(),
-});
 
 const storeItemParamsSchema = z.object({
   itemId: z.uuid(),
