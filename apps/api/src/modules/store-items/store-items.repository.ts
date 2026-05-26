@@ -2,43 +2,61 @@ import { sql } from 'slonik';
 import { getPool } from '../../db/pool.js';
 import {
   storeItemSchema,
+  StoreItemsQuery,
   type CreateStoreItemInput,
   type StoreItem,
   type UpdateStoreItemInput,
 } from '@repo/api';
 
 export class StoreItemsRepository {
-  async findAll(storeId?: string): Promise<StoreItem[]> {
+  async findAll(options: StoreItemsQuery = {}): Promise<StoreItem[]> {
     const pool = await getPool();
+    const {
+      storeId,
+      keyword,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      priceMin,
+      priceMax,
+      available,
+    } = options;
 
-    const rows = storeId
-      ? await pool.any(sql.type(storeItemSchema)`
-          SELECT
-            store_item_id,
-            store_id,
-            name,
-            description,
-            price,
-            COALESCE(is_available, true) AS is_available,
-            image_url,
-            created_at
-          FROM store_item
-          WHERE store_id = ${storeId}
-          ORDER BY created_at DESC
-        `)
-      : await pool.any(sql.type(storeItemSchema)`
-          SELECT
-            store_item_id,
-            store_id,
-            name,
-            description,
-            price,
-            COALESCE(is_available, true) AS is_available,
-            image_url,
-            created_at
-          FROM store_item
-          ORDER BY created_at DESC
-        `);
+    const normalizedStoreId = storeId ?? null;
+    const normalizedKeyword = keyword?.trim() ? keyword.trim() : null;
+    const normalizedPriceMin = typeof priceMin === 'number' ? priceMin : null;
+    const normalizedPriceMax = typeof priceMax === 'number' ? priceMax : null;
+    const normalizedAvailable = typeof available === 'boolean' ? available : null;
+    const sortDirection = sortOrder === 'asc' ? sql.fragment`ASC` : sql.fragment`DESC`;
+
+    const orderByClause =
+      sortBy === 'name'
+        ? sql.fragment`name ${sortDirection}, created_at DESC`
+        : sortBy === 'price'
+          ? sql.fragment`price ${sortDirection}, created_at DESC`
+          : sql.fragment`created_at ${sortDirection}, name ASC`;
+
+    const rows = await pool.any(sql.type(storeItemSchema)`
+      SELECT
+        store_item_id,
+        store_id,
+        name,
+        description,
+        price,
+        COALESCE(is_available, true) AS is_available,
+        image_url,
+        created_at
+      FROM store_item
+      WHERE (${normalizedStoreId}::uuid IS NULL OR store_id = ${normalizedStoreId})
+        AND (
+          ${normalizedKeyword}::text IS NULL
+          OR name ILIKE '%' || ${normalizedKeyword} || '%'
+          OR COALESCE(description, '') ILIKE '%' || ${normalizedKeyword} || '%'
+        )
+        AND (${normalizedPriceMin}::numeric IS NULL OR price >= ${normalizedPriceMin})
+        AND (${normalizedPriceMax}::numeric IS NULL OR price <= ${normalizedPriceMax})
+        AND (${normalizedAvailable}::boolean IS NULL OR is_available = ${normalizedAvailable})
+      ORDER BY ${orderByClause}
+    `);
 
     return rows as StoreItem[];
   }

@@ -1,9 +1,30 @@
 import { apiClient } from '@/shared/lib/apiClient';
-import type { CreateStoreItemInput, StoreItem, UpdateStoreItemInput } from '@repo/api';
+import type {
+  CreateStoreItemInput,
+  StoreItem,
+  StoreItemsQuery,
+  UpdateStoreItemInput,
+} from '@repo/api';
 
-export const getStoreItems = (storeId?: string) =>
+export const getStoreItems = ({
+  storeId,
+  keyword,
+  sortBy,
+  sortOrder,
+  priceMin,
+  priceMax,
+  available,
+}: StoreItemsQuery = {}) =>
   apiClient.get<StoreItem[]>(`/items`, {
-    params: storeId ? { storeId } : {},
+    params: {
+      ...(storeId ? { storeId } : {}),
+      ...(keyword ? { keyword } : {}),
+      ...(sortBy ? { sortBy } : {}),
+      ...(sortOrder ? { sortOrder } : {}),
+      ...(typeof priceMin === 'number' ? { priceMin } : {}),
+      ...(typeof priceMax === 'number' ? { priceMax } : {}),
+      ...(typeof available === 'boolean' ? { available } : {}),
+    },
   });
 
 export const getStoreItem = (itemId: string) => apiClient.get<StoreItem>(`/items/${itemId}`);

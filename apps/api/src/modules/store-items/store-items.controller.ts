@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { StoreItemsService } from './store-items.service.js';
 import { AuthRequest } from '../../common/middleware/auth.middleware.js';
+import { StoreItemsQuery } from '@repo/api';
 
 function isForbiddenError(error: unknown) {
   return error instanceof Error && error.message === 'Forbidden';
@@ -9,10 +10,17 @@ function isForbiddenError(error: unknown) {
 export class StoreItemsController {
   private service = new StoreItemsService();
 
-  getAll = async (req: Request, res: Response): Promise<Response> => {
+  getAll = async (req: Request<unknown, unknown, unknown, StoreItemsQuery>, res: Response) => {
     try {
-      const { storeId } = req.query as { storeId?: string };
-      const data = await this.service.getAll(storeId);
+      const data = await this.service.getAll({
+        storeId: req.query.storeId,
+        keyword: req.query.keyword,
+        sortBy: req.query.sortBy,
+        sortOrder: req.query.sortOrder,
+        priceMin: req.query.priceMin,
+        priceMax: req.query.priceMax,
+        available: req.query.available,
+      });
 
       if (!data) {
         return res.status(404).json({ message: 'Not found' });

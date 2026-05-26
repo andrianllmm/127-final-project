@@ -1,6 +1,6 @@
 import { StoresRepository } from '../stores/stores.repository.js';
 import { StoreItemsRepository } from './store-items.repository.js';
-import type { CreateStoreItemInput, UpdateStoreItemInput } from '@repo/api';
+import type { CreateStoreItemInput, StoreItemsQuery, UpdateStoreItemInput } from '@repo/api';
 
 export class StoreItemsService {
   private storeItemsRepo: StoreItemsRepository;
@@ -22,7 +22,9 @@ export class StoreItemsService {
     return store;
   }
 
-  async getAll(storeId?: string) {
+  async getAll(options: StoreItemsQuery = {}) {
+    const { storeId, keyword, sortBy, sortOrder, priceMin, priceMax, available } = options;
+
     if (storeId) {
       const store = await this.storesRepo.findById(storeId);
 
@@ -31,7 +33,15 @@ export class StoreItemsService {
       }
     }
 
-    return this.storeItemsRepo.findAll(storeId);
+    return this.storeItemsRepo.findAll({
+      storeId,
+      keyword,
+      sortBy,
+      sortOrder,
+      priceMin,
+      priceMax,
+      available,
+    });
   }
 
   async getById(itemId: string) {
