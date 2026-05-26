@@ -12,7 +12,7 @@ export function StoreDetailPage() {
   const { id = '' } = useParams();
   const { data: session } = authClient.useSession();
   const { data: store, isPending: isStorePending } = useStore(id);
-  const { data: items, isPending: isItemsPending } = useStoreItems(id);
+  const { data: items, isPending: isItemsPending } = useStoreItems({ storeId: id });
 
   if (isStorePending || isItemsPending) {
     return (

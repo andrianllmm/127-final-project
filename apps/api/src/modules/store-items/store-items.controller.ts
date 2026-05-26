@@ -11,8 +11,8 @@ export class StoreItemsController {
 
   getAll = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const { storeId } = req.query as { storeId?: string };
-      const data = await this.service.getAll(storeId);
+      const { storeId, keyword } = req.query as { storeId?: string; keyword?: string };
+      const data = await this.service.getAll(storeId, keyword);
 
       if (!data) {
         return res.status(404).json({ message: 'Not found' });

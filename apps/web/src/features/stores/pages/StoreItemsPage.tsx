@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 
 import { authClient } from '@/shared/lib/authClient';
 import { Spinner } from '@/shared/components/ui/spinner';
@@ -10,16 +10,23 @@ import { StoreItemsGrid } from '../components/StoreItemsGrid';
 
 export function StoreItemsPage() {
   const { id: storeId = '' } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const keyword = searchParams.get('q') ?? '';
+
   const { data: session } = authClient.useSession();
   const { data: store, isPending: isStorePending } = useStore(storeId);
+
+  const { data: items, isPending: isItemsPending } = useStoreItems({
+    storeId,
+    keyword: keyword,
+  });
 
   const canManage = Boolean(
     session && session.user.role === 'vendor' && store?.user_id === session.user.id,
   );
 
   const isCustomer = Boolean(session && session.user.role !== 'vendor');
-
-  const { data: items, isPending: isItemsPending } = useStoreItems(storeId);
 
   if (isStorePending || isItemsPending) {
     return (
@@ -67,6 +74,8 @@ export function StoreItemsPage() {
         <span>
           {items?.length || 0} item{items?.length === 1 ? '' : 's'}
         </span>
+
+        {keyword && <span>Results for “{keyword}”</span>}
       </div>
 
       <StoreItemsGrid

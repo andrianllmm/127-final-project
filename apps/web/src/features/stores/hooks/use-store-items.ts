@@ -2,10 +2,19 @@ import { useQuery } from '@tanstack/react-query';
 
 import { getStoreItems } from '../api/store-items-api';
 
-export function useStoreItems(storeId?: string, enabled = true) {
+interface UseStoreItemsOptions {
+  storeId?: string;
+  keyword?: string;
+  enabled?: boolean;
+}
+
+export function useStoreItems(options: UseStoreItemsOptions = {}) {
+  const { storeId, keyword, enabled = true } = options;
+  const normalizedKeyword = keyword?.trim() ? keyword.trim() : '';
+
   return useQuery({
-    queryKey: ['store-items', storeId ?? 'all'],
-    queryFn: () => getStoreItems(storeId),
+    queryKey: ['store-items', storeId ?? 'all', normalizedKeyword ?? ''],
+    queryFn: () => getStoreItems({ storeId, keyword: normalizedKeyword }),
     enabled: enabled && (storeId === undefined || storeId.length > 0),
   });
 }

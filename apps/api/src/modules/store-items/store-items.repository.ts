@@ -8,37 +8,30 @@ import {
 } from '@repo/api';
 
 export class StoreItemsRepository {
-  async findAll(storeId?: string): Promise<StoreItem[]> {
+  async findAll(storeId?: string, keyword?: string): Promise<StoreItem[]> {
     const pool = await getPool();
+    const normalizedStoreId = storeId ?? null;
+    const normalizedKeyword = keyword?.trim() ? keyword.trim() : null;
 
-    const rows = storeId
-      ? await pool.any(sql.type(storeItemSchema)`
-          SELECT
-            store_item_id,
-            store_id,
-            name,
-            description,
-            price,
-            COALESCE(is_available, true) AS is_available,
-            image_url,
-            created_at
-          FROM store_item
-          WHERE store_id = ${storeId}
-          ORDER BY created_at DESC
-        `)
-      : await pool.any(sql.type(storeItemSchema)`
-          SELECT
-            store_item_id,
-            store_id,
-            name,
-            description,
-            price,
-            COALESCE(is_available, true) AS is_available,
-            image_url,
-            created_at
-          FROM store_item
-          ORDER BY created_at DESC
-        `);
+    const rows = await pool.any(sql.type(storeItemSchema)`
+      SELECT
+        store_item_id,
+        store_id,
+        name,
+        description,
+        price,
+        COALESCE(is_available, true) AS is_available,
+        image_url,
+        created_at
+      FROM store_item
+      WHERE (${normalizedStoreId}::uuid IS NULL OR store_id = ${normalizedStoreId})
+        AND (
+          ${normalizedKeyword}::text IS NULL
+          OR name ILIKE '%' || ${normalizedKeyword} || '%'
+          OR COALESCE(description, '') ILIKE '%' || ${normalizedKeyword} || '%'
+        )
+      ORDER BY created_at DESC
+    `);
 
     return rows as StoreItem[];
   }

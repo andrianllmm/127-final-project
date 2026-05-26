@@ -12,6 +12,7 @@ const controller = new StoreItemsController();
 
 const storeItemsQuerySchema = z.object({
   storeId: z.uuid().optional(),
+  keyword: z.string().trim().min(1).max(100).optional(),
 });
 
 const storeItemParamsSchema = z.object({

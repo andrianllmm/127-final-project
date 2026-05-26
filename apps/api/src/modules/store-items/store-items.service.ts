@@ -22,7 +22,7 @@ export class StoreItemsService {
     return store;
   }
 
-  async getAll(storeId?: string) {
+  async getAll(storeId?: string, keyword?: string) {
     if (storeId) {
       const store = await this.storesRepo.findById(storeId);
 
@@ -31,7 +31,7 @@ export class StoreItemsService {
       }
     }
 
-    return this.storeItemsRepo.findAll(storeId);
+    return this.storeItemsRepo.findAll(storeId, keyword);
   }
 
   async getById(itemId: string) {
