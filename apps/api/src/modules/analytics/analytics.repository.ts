@@ -63,7 +63,7 @@ export class AnalyticsRepository {
     const startDateFilter = startDate ?? '1970-01-01';
     const endDateFilter = endDate ?? '2099-12-31';
 
-    const rows = await pool.any(sql.type(topItemsSchema)`
+    const rows = await pool.any(sql.type(topItemsSchema.element)`
       SELECT
         si.store_item_id,
         si.name,
@@ -80,7 +80,13 @@ export class AnalyticsRepository {
       LIMIT ${limit}
     `);
 
-    return rows as TopItems;
+    return rows.map((row) => ({
+      store_item_id: row.store_item_id,
+      name: row.name,
+      total_quantity_sold: row.total_quantity_sold,
+      total_revenue: row.total_revenue,
+      order_count: row.order_count,
+    }));
   }
 
   async getOrderStatusBreakdown(
@@ -125,11 +131,14 @@ export class AnalyticsRepository {
   ): Promise<DailyMetrics> {
     const pool = await getPool();
 
-    const startDateFilter =
-      startDate ?? new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const endDateFilter = endDate ?? new Date().toISOString().split('T')[0];
+    const defaultStartDate =
+      new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '1970-01-01';
+    const defaultEndDate = new Date().toISOString().split('T')[0] ?? '2099-12-31';
 
-    const rows = await pool.any(sql.type(dailyMetricsSchema)`
+    const startDateFilter = startDate ?? defaultStartDate;
+    const endDateFilter = endDate ?? defaultEndDate;
+
+    const rows = await pool.any(sql.type(dailyMetricsSchema.element)`
       SELECT
         DATE(o.created_at)::text as date,
         COUNT(DISTINCT o.order_id)::integer as order_count,
@@ -144,6 +153,11 @@ export class AnalyticsRepository {
       ORDER BY DATE(o.created_at) DESC
     `);
 
-    return rows as DailyMetrics;
+    return rows.map((row) => ({
+      date: row.date,
+      order_count: row.order_count,
+      revenue: row.revenue,
+      completed_count: row.completed_count,
+    }));
   }
 }
