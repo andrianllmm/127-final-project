@@ -1,6 +1,15 @@
 import { sql } from 'slonik';
 import { getPool } from '../../db/pool.js';
-import { AnalyticsMetrics, TopItems, OrderStatusBreakdown, DailyMetrics } from '@repo/api';
+import {
+  AnalyticsMetrics,
+  analyticsMetricsSchema,
+  topItemsSchema,
+  TopItems,
+  orderStatusBreakdownSchema,
+  OrderStatusBreakdown,
+  dailyMetricsSchema,
+  DailyMetrics,
+} from '@repo/api';
 
 export class AnalyticsRepository {
   async getMetrics(
@@ -13,8 +22,7 @@ export class AnalyticsRepository {
     const startDateFilter = startDate ?? '1970-01-01';
     const endDateFilter = endDate ?? '2099-12-31';
 
-    // @ts-ignore - Slonik sql tag typing issue
-    const result = await pool.maybeOne(sql`
+    const result = await pool.maybeOne(sql.type(analyticsMetricsSchema)`
       SELECT
         COUNT(DISTINCT o.order_id)::integer as total_orders,
         COALESCE(SUM(oi.price_snapshot * oi.quantity), 0) as total_revenue,
@@ -32,20 +40,16 @@ export class AnalyticsRepository {
         AND DATE(o.created_at) <= ${endDateFilter}
     `);
 
-    return {
-      // @ts-ignore
-      total_orders: (result?.total_orders as number) ?? 0,
-      // @ts-ignore
-      total_revenue: String((result?.total_revenue as number) ?? 0),
-      // @ts-ignore
-      average_order_value: String((result?.average_order_value as number) ?? 0),
-      // @ts-ignore
-      completed_orders: (result?.completed_orders as number) ?? 0,
-      // @ts-ignore
-      cancelled_orders: (result?.cancelled_orders as number) ?? 0,
-      // @ts-ignore
-      pending_orders: (result?.pending_orders as number) ?? 0,
-    };
+    return (
+      result ?? {
+        total_orders: 0,
+        total_revenue: '0',
+        average_order_value: '0',
+        completed_orders: 0,
+        cancelled_orders: 0,
+        pending_orders: 0,
+      }
+    );
   }
 
   async getTopItems(
@@ -59,8 +63,7 @@ export class AnalyticsRepository {
     const startDateFilter = startDate ?? '1970-01-01';
     const endDateFilter = endDate ?? '2099-12-31';
 
-    // @ts-ignore - Slonik sql tag typing issue
-    const rows = await pool.any(sql`
+    const rows = await pool.any(sql.type(topItemsSchema)`
       SELECT
         si.store_item_id,
         si.name,
@@ -77,13 +80,7 @@ export class AnalyticsRepository {
       LIMIT ${limit}
     `);
 
-    return rows.map((row: any) => ({
-      store_item_id: row.store_item_id,
-      name: row.name,
-      total_quantity_sold: String(row.total_quantity_sold ?? 0),
-      total_revenue: String(row.total_revenue ?? 0),
-      order_count: row.order_count ?? 0,
-    }));
+    return rows as TopItems;
   }
 
   async getOrderStatusBreakdown(
@@ -96,8 +93,7 @@ export class AnalyticsRepository {
     const startDateFilter = startDate ?? '1970-01-01';
     const endDateFilter = endDate ?? '2099-12-31';
 
-    // @ts-ignore - Slonik sql tag typing issue
-    const result = await pool.maybeOne(sql`
+    const result = await pool.maybeOne(sql.type(orderStatusBreakdownSchema)`
       SELECT
         COUNT(CASE WHEN status = 'open' THEN 1 END)::integer as open,
         COUNT(CASE WHEN status = 'accepted' THEN 1 END)::integer as accepted,
@@ -110,18 +106,15 @@ export class AnalyticsRepository {
         AND DATE(created_at) <= ${endDateFilter}
     `);
 
-    return {
-      // @ts-ignore
-      open: (result?.open as number) ?? 0,
-      // @ts-ignore
-      accepted: (result?.accepted as number) ?? 0,
-      // @ts-ignore
-      picked_up: (result?.picked_up as number) ?? 0,
-      // @ts-ignore
-      delivered: (result?.delivered as number) ?? 0,
-      // @ts-ignore
-      cancelled: (result?.cancelled as number) ?? 0,
-    };
+    return (
+      result ?? {
+        open: 0,
+        accepted: 0,
+        picked_up: 0,
+        delivered: 0,
+        cancelled: 0,
+      }
+    );
   }
 
   async getDailyMetrics(
@@ -136,8 +129,7 @@ export class AnalyticsRepository {
       startDate ?? new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const endDateFilter = endDate ?? new Date().toISOString().split('T')[0];
 
-    // @ts-ignore - Slonik sql tag typing issue
-    const rows = await pool.any(sql`
+    const rows = await pool.any(sql.type(dailyMetricsSchema)`
       SELECT
         DATE(o.created_at)::text as date,
         COUNT(DISTINCT o.order_id)::integer as order_count,
@@ -152,11 +144,6 @@ export class AnalyticsRepository {
       ORDER BY DATE(o.created_at) DESC
     `);
 
-    return rows.map((row: any) => ({
-      date: row.date,
-      order_count: row.order_count,
-      revenue: String(row.revenue),
-      completed_count: row.completed_count,
-    }));
+    return rows as DailyMetrics;
   }
 }
