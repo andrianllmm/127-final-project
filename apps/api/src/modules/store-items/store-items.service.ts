@@ -1,16 +1,6 @@
 import { StoresRepository } from '../stores/stores.repository.js';
 import { StoreItemsRepository } from './store-items.repository.js';
-import type { CreateStoreItemInput, UpdateStoreItemInput } from '@repo/api';
-
-interface GetAllStoreItemsOptions {
-  storeId?: string | undefined;
-  keyword?: string | undefined;
-  sortBy?: 'created_at' | 'name' | 'price' | undefined;
-  sortOrder?: 'asc' | 'desc' | undefined;
-  priceMin?: number | undefined;
-  priceMax?: number | undefined;
-  available?: boolean | undefined;
-}
+import type { CreateStoreItemInput, StoreItemsQuery, UpdateStoreItemInput } from '@repo/api';
 
 export class StoreItemsService {
   private storeItemsRepo: StoreItemsRepository;
@@ -32,7 +22,7 @@ export class StoreItemsService {
     return store;
   }
 
-  async getAll(options: GetAllStoreItemsOptions = {}) {
+  async getAll(options: StoreItemsQuery = {}) {
     const { storeId, keyword, sortBy, sortOrder, priceMin, priceMax, available } = options;
 
     if (storeId) {

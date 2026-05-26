@@ -1,16 +1,7 @@
 import type { Request, Response } from 'express';
 import { StoreItemsService } from './store-items.service.js';
 import { AuthRequest } from '../../common/middleware/auth.middleware.js';
-
-type StoreItemsQuery = {
-  storeId?: string | undefined;
-  keyword?: string | undefined;
-  sortBy?: 'created_at' | 'name' | 'price' | undefined;
-  sortOrder?: 'asc' | 'desc' | undefined;
-  priceMin?: number | undefined;
-  priceMax?: number | undefined;
-  available?: boolean | undefined;
-};
+import { StoreItemsQuery } from '@repo/api';
 
 function isForbiddenError(error: unknown) {
   return error instanceof Error && error.message === 'Forbidden';

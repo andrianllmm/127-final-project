@@ -2,23 +2,14 @@ import { sql } from 'slonik';
 import { getPool } from '../../db/pool.js';
 import {
   storeItemSchema,
+  StoreItemsQuery,
   type CreateStoreItemInput,
   type StoreItem,
   type UpdateStoreItemInput,
 } from '@repo/api';
 
-interface FindAllStoreItemsOptions {
-  storeId?: string | undefined;
-  keyword?: string | undefined;
-  sortBy?: 'created_at' | 'name' | 'price' | undefined;
-  sortOrder?: 'asc' | 'desc' | undefined;
-  priceMin?: number | undefined;
-  priceMax?: number | undefined;
-  available?: boolean | undefined;
-}
-
 export class StoreItemsRepository {
-  async findAll(options: FindAllStoreItemsOptions = {}): Promise<StoreItem[]> {
+  async findAll(options: StoreItemsQuery = {}): Promise<StoreItem[]> {
     const pool = await getPool();
     const {
       storeId,

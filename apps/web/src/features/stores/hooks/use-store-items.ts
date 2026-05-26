@@ -1,17 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { getStoreItems } from '../api/store-items-api';
+import { StoreItemsQuery } from '@repo/api';
 
-interface UseStoreItemsOptions {
-  storeId?: string;
-  keyword?: string;
-  sortBy?: 'created_at' | 'name' | 'price';
-  sortOrder?: 'asc' | 'desc';
-  priceMin?: number;
-  priceMax?: number;
-  available?: boolean | undefined;
+type UseStoreItemsOptions = StoreItemsQuery & {
   enabled?: boolean;
-}
+};
 
 export function useStoreItems(options: UseStoreItemsOptions = {}) {
   const {
@@ -24,6 +18,7 @@ export function useStoreItems(options: UseStoreItemsOptions = {}) {
     available,
     enabled = true,
   } = options;
+
   const normalizedKeyword = keyword?.trim() ? keyword.trim() : undefined;
 
   return useQuery({

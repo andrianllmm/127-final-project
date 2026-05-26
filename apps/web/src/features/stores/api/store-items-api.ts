@@ -1,15 +1,10 @@
 import { apiClient } from '@/shared/lib/apiClient';
-import type { CreateStoreItemInput, StoreItem, UpdateStoreItemInput } from '@repo/api';
-
-interface GetStoreItemsParams {
-  storeId?: string | undefined;
-  keyword?: string | undefined;
-  sortBy?: 'created_at' | 'name' | 'price' | undefined;
-  sortOrder?: 'asc' | 'desc' | undefined;
-  priceMin?: number | undefined;
-  priceMax?: number | undefined;
-  available?: boolean | undefined;
-}
+import type {
+  CreateStoreItemInput,
+  StoreItem,
+  StoreItemsQuery,
+  UpdateStoreItemInput,
+} from '@repo/api';
 
 export const getStoreItems = ({
   storeId,
@@ -19,7 +14,7 @@ export const getStoreItems = ({
   priceMin,
   priceMax,
   available,
-}: GetStoreItemsParams = {}) =>
+}: StoreItemsQuery = {}) =>
   apiClient.get<StoreItem[]>(`/items`, {
     params: {
       ...(storeId ? { storeId } : {}),
