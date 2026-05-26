@@ -6,6 +6,7 @@ import { useCart } from '../hooks/use-cart';
 import { useRemoveCartItem } from '../hooks/use-remove-cart-item';
 import { useCheckoutCart } from '../hooks/use-checkout-cart';
 import { useUpdateCartItemQuantity } from '../hooks/use-update-cart-item-quantity';
+import { useClearCart } from '../hooks/use-clear-cart';
 
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
@@ -25,6 +26,7 @@ export function CartPage() {
   const { data: cart, isPending } = useCart();
   const removeCartItem = useRemoveCartItem();
   const updateQuantity = useUpdateCartItemQuantity();
+  const clearCart = useClearCart();
   const checkoutCart = useCheckoutCart();
   const navigate = useNavigate();
   const [deliveryAddress, setDeliveryAddress] = useState('');
@@ -50,9 +52,7 @@ export function CartPage() {
           <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
             <div>
               <h2 className="font-heading text-xl font-semibold">Your cart is empty</h2>
-              <p className="text-sm text-muted-foreground">
-                Add food items from stores to begin your order.
-              </p>
+              <p className="text-sm text-muted-foreground">Add food items from stores to begin your order.</p>
             </div>
 
             <Button asChild>
@@ -69,9 +69,22 @@ export function CartPage() {
       <div>
         <h1 className="font-heading text-3xl font-semibold">Cart</h1>
         
-        <div className="mt-2 flex items-center gap-3">
-          <p className="text-sm text-muted-foreground">Ordering from {cart.store_name}</p>
+        <div className="mt-2 flex items-center gap-4">
+          <p className="text-sm text-muted-foreground mr-auto">Ordering from {cart.store_name}</p>
           <span className="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-800">Draft Order</span>
+
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={clearCart.isPending}
+            onClick={() => {
+              const confirmed = window.confirm('Clear all items from your cart?');
+
+              if (confirmed) {clearCart.mutate();}
+            }}
+          >
+            {clearCart.isPending ? 'Clearing...' : 'Clear Cart'}
+          </Button>
         </div>
       </div>
 
@@ -94,9 +107,7 @@ export function CartPage() {
               <div className="space-y-3 text-right">
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Subtotal</p>
-                  <p className="text-lg font-semibold text-foreground">
-                    {formatCurrency(item.subtotal)}
-                  </p>
+                  <p className="text-lg font-semibold text-foreground">{formatCurrency(item.subtotal)}</p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -108,10 +119,7 @@ export function CartPage() {
                       if (item.quantity === 1) {
                         const confirmed = window.confirm(`Remove "${item.name}" from your cart?`);
 
-                        if (confirmed) {
-                          removeCartItem.mutate(item.order_item_id);
-                        }
-
+                        if (confirmed) {removeCartItem.mutate(item.order_item_id);}
                         return;
                       }
 

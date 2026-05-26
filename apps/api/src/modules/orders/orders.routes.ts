@@ -38,6 +38,12 @@ router.patch(
   controller.updateCartItemQuantity,
 );
 
+router.delete(
+  '/cart',
+  requireAuth,
+  controller.clearCart,
+);
+
 router.patch(
   '/cart/checkout',
   requireAuth,

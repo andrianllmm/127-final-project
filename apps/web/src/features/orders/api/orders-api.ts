@@ -20,14 +20,12 @@ export const addCartItem = (input: AddCartItemInput) =>
 export const removeCartItem = (orderItemId: string) =>
   apiClient.delete<CartResponse>(`/orders/cart/items/${orderItemId}`);
 
-export const updateCartItemQuantity = (orderItemId: string, quantity: number) =>
-  apiClient.patch<CartResponse, { quantity: number }>(
-    `/orders/cart/items/${orderItemId}`,
-    { quantity },
-  );
+export const clearCart = () => apiClient.delete<void>('/orders/cart');
 
-export const getOrder = (orderId: string) =>
-  apiClient.get<CartResponse>(`/orders/${orderId}`);
+export const updateCartItemQuantity = (orderItemId: string, quantity: number) =>
+  apiClient.patch<CartResponse, { quantity: number }>(`/orders/cart/items/${orderItemId}`, { quantity },);
+
+export const getOrder = (orderId: string) => apiClient.get<CartResponse>(`/orders/${orderId}`);
 
 export const checkoutCart = (input: CheckoutCartInput) =>
   apiClient.patch<CartResponse, CheckoutCartInput>('/orders/cart/checkout', input);

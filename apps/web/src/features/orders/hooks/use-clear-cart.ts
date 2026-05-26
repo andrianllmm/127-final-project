@@ -1,20 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-import { removeCartItem } from '../api/orders-api';
+import { clearCart } from '../api/orders-api';
 
-export function useRemoveCartItem() {
+export function useClearCart() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderItemId: string) => removeCartItem(orderItemId),
+    mutationFn: () => clearCart(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      toast.success('Item removed from cart.');
+      toast.success('Cart cleared.');
     },
     onError: () => {
-      toast.error('Failed to remove item from cart.');
+      toast.error('Failed to clear cart.');
     },
   });
 }

@@ -95,6 +95,16 @@ export class OrdersService {
     return this.getDraftCart(customerId);
   }
 
+  async clearCart(customerId: string) {
+    const cart = await this.repo.findDraftCart(customerId);
+
+    if (!cart) {return null;}
+
+    await this.repo.deleteDraftCart(cart.order_id, customerId);
+
+    return true;
+  }
+
   async updateCartItemQuantity(
     customerId: string,
     orderItemId: string,

@@ -50,6 +50,14 @@ export class OrdersController {
     return res.json(data);
   };
 
+  clearCart = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const data = await this.service.clearCart(req.user!.id);
+
+    if (!data) {return res.status(404).json({ message: 'Cart not found' });}
+
+    return res.status(204).send();
+  };
+
   updateCartItemQuantity = async (
     req: AuthRequest,
     res: Response,
