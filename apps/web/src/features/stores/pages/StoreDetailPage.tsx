@@ -61,7 +61,7 @@ export function StoreDetailPage() {
           )}
         </div>
 
-        {canManage && (
+        {canManage ? (
           <div className="flex flex-wrap gap-3">
             <Button asChild variant="outline">
               <Link to={`/stores/${id}/items`}>Manage items</Link>
@@ -69,6 +69,12 @@ export function StoreDetailPage() {
 
             <Button asChild>
               <Link to={`/stores/${id}/edit`}>Edit</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-3">
+            <Button asChild>
+              <Link to={`/stores/${id}/items`}>Menu</Link>
             </Button>
           </div>
         )}
