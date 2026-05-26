@@ -4,7 +4,7 @@ import { authClient } from '@/shared/lib/authClient';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 
-import { useStoresByUser } from '../hooks/use-store-by-user';
+import { useStoreByUser } from '../hooks/use-store-by-user';
 import { useCreateStore } from '../hooks/use-create-store';
 import { StoreProfileForm } from '../components/StoreProfileForm';
 
@@ -12,7 +12,7 @@ export function StoreNewPage() {
   const navigate = useNavigate();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const userId = session?.user?.id ?? '';
-  const { data: stores, isPending: isStoresPending } = useStoresByUser(userId);
+  const { data: store, isPending: isStoresPending } = useStoreByUser(userId);
   const createStoreMutation = useCreateStore();
 
   if (isSessionPending || isStoresPending) {
@@ -27,7 +27,7 @@ export function StoreNewPage() {
     return <Navigate to="/stores" replace />;
   }
 
-  if (stores?.length) {
+  if (store) {
     return <Navigate to="/stores/me" replace />;
   }
 
