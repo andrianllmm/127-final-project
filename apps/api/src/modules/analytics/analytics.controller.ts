@@ -1,11 +1,14 @@
 import type { Request, Response } from 'express';
+import type { AuthRequest } from '../../common/middleware/auth.middleware.js';
 import { AnalyticsService } from './analytics.service.js';
+import { StoresService } from '../stores/stores.service.js';
 import { analyticsQuerySchema, analyticsResponseSchema } from '@repo/api';
 
 export class AnalyticsController {
   private service = new AnalyticsService();
+  private storesService = new StoresService();
 
-  getStoreAnalytics = async (req: Request, res: Response): Promise<Response> => {
+  getStoreAnalytics = async (req: AuthRequest, res: Response): Promise<Response> => {
     const { storeId } = req.params;
     const { startDate, endDate, limit } = req.query;
 
@@ -27,6 +30,15 @@ export class AnalyticsController {
           message: 'Invalid query parameters',
           errors: queryValidation.error.flatten(),
         });
+      }
+
+      const store = await this.storesService.getById(storeId);
+      if (!store) {
+        return res.status(404).json({ message: 'Store not found' });
+      }
+
+      if (!req.user || store.user_id !== req.user.id) {
+        return res.status(403).json({ message: 'Forbidden' });
       }
 
       const data = await this.service.getStoreAnalytics(storeId, queryValidation.data);
