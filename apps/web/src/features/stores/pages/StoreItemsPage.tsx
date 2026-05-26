@@ -6,7 +6,7 @@ import { Button } from '@/shared/components/ui/button';
 
 import { useStore } from '../hooks/use-store';
 import { useStoreItems } from '../hooks/use-store-items';
-import { StoreItemCard } from '../components/StoreItemCard';
+import { StoreItemsGrid } from '../components/StoreItemsGrid';
 
 export function StoreItemsPage() {
   const { id: storeId = '' } = useParams();
@@ -69,22 +69,11 @@ export function StoreItemsPage() {
         </span>
       </div>
 
-      {items?.length ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {items.map((item) => (
-            <StoreItemCard
-              key={item.store_item_id}
-              item={item}
-              mode={canManage ? 'manager' : isCustomer ? 'customer' : 'guest'}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center font-medium">
-          <br />
-          This store might be new ^~^
-        </div>
-      )}
+      <StoreItemsGrid
+        items={items || []}
+        mode={canManage ? 'manager' : isCustomer ? 'customer' : 'guest'}
+        emptyState="This store might be new ^~^"
+      />
     </div>
   );
 }

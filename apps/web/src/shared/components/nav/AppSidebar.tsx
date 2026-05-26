@@ -33,6 +33,11 @@ type UserRole = 'customer' | 'vendor' | 'rider';
 const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNode }[]> = {
   customer: [
     {
+      name: 'Browse Items',
+      url: '/items',
+      icon: <HugeiconsIcon icon={DishIcon} strokeWidth={2} />,
+    },
+    {
       name: 'Browse Stores',
       url: '/stores',
       icon: <HugeiconsIcon icon={StoreIcon} strokeWidth={2} />,

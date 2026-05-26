@@ -19,7 +19,7 @@ export const HomePage = () => {
     switch (role) {
       case 'customer':
       default:
-        navigate('/stores', { replace: true });
+        navigate('/items', { replace: true });
         break;
 
       case 'vendor':

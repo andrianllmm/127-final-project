@@ -15,7 +15,7 @@ export function StoreItemDetailPage() {
   const { id: storeId = '', itemId = '' } = useParams();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const { data: store, isPending: isStorePending } = useStore(storeId);
-  const { data: item, isPending: isItemPending } = useStoreItem(storeId, itemId, true);
+  const { data: item, isPending: isItemPending } = useStoreItem(itemId, true);
 
   const canManage = Boolean(
     session && session.user.role === 'vendor' && store?.user_id === session.user.id,
@@ -35,6 +35,10 @@ export function StoreItemDetailPage() {
 
   if (!item) {
     return <Navigate to={`/stores/${store.store_id}/items`} replace />;
+  }
+
+  if (item.store_id !== store.store_id) {
+    return <Navigate to={`/stores/${item.store_id}/items/${item.store_item_id}`} replace />;
   }
 
   return (
