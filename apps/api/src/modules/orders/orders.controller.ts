@@ -11,7 +11,7 @@ export class OrdersController {
   };
 
   getCart = async (req: AuthRequest, res: Response): Promise<Response> => {
-    const data = await this.service.getOpenCart(req.user!.id);
+    const data = await this.service.getDraftCart(req.user!.id);
     return res.json(data);
   };
 

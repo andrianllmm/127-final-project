@@ -73,7 +73,7 @@ export class OrdersRepository {
     return row as Order | null;
   }
 
-  async findOpenCart(customerId: string): Promise<Order | null> {
+  async findDraftCart(customerId: string): Promise<Order | null> {
     const pool = await getPool();
 
     const row = await pool.maybeOne(sql.type(orderSchema)`
@@ -93,8 +93,7 @@ export class OrdersRepository {
       JOIN store s ON s.store_id = o.store_id
       LEFT JOIN order_item oi ON oi.order_id = o.order_id
       WHERE o.customer_id = ${customerId}
-        AND o.status = 'open'
-        AND o.delivery_address = 'To be provided at checkout'
+        AND o.status = 'draft'
       GROUP BY o.order_id, s.store_name
       ORDER BY o.created_at DESC
       LIMIT 1
@@ -134,7 +133,7 @@ export class OrdersRepository {
     `);
   }
 
-  async createOpenOrder(customerId: string, storeId: string) {
+  async createDraftOrder(customerId: string, storeId: string) {
     const pool = await getPool();
 
     return pool.one(sql.type(orderIdSchema)`
@@ -150,7 +149,7 @@ export class OrdersRepository {
         ${storeId},
         'cash',
         'To be provided at checkout',
-        'open'
+        'draft'
       )
       RETURNING order_id
     `);
@@ -217,7 +216,7 @@ export class OrdersRepository {
         AND oi.order_id = o.order_id
         AND si.store_item_id = oi.store_item_id
         AND o.customer_id = ${customerId}
-        AND o.status = 'open'
+        AND o.status = 'draft'
       RETURNING
         oi.order_item_id,
         oi.order_id,
@@ -235,24 +234,24 @@ export class OrdersRepository {
     return pool.one(sql.type(orderIdSchema)`
       UPDATE "order"
       SET
+        status = 'open',
         payment_method = ${paymentMethod},
         delivery_address = ${deliveryAddress},
         updated_at = CURRENT_TIMESTAMP
       WHERE order_id = ${orderId}
-        AND status = 'open'
+        AND status = 'draft'
       RETURNING order_id
     `);
   }
 
-  async deleteOpenCart(orderId: string, customerId: string) {
+  async deleteDraftCart(orderId: string, customerId: string) {
     const pool = await getPool();
 
     return pool.maybeOne(sql.type(orderIdSchema)`
       DELETE FROM "order"
       WHERE order_id = ${orderId}
         AND customer_id = ${customerId}
-        AND status = 'open'
-        AND delivery_address = 'To be provided at checkout'
+        AND status = 'draft'
       RETURNING order_id
     `);
   }

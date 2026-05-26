@@ -67,7 +67,11 @@ export function CartPage() {
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
       <div>
         <h1 className="font-heading text-3xl font-semibold">Cart</h1>
-        <p className="text-sm text-muted-foreground">Ordering from {cart.store_name}</p>
+        
+        <div className="mt-2 flex items-center gap-3">
+          <p className="text-sm text-muted-foreground">Ordering from {cart.store_name}</p>
+          <span className="rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-800">Draft Order</span>
+        </div>
       </div>
 
       <Card>

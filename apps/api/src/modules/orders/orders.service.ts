@@ -19,17 +19,17 @@ export class OrdersService {
 
     const items = await this.repo.findItemsByOrderId(order.order_id);
 
-    return {...order,items,};
+    return {...order, items};
   }
 
-  async getOpenCart(customerId: string) {
-    const cart = await this.repo.findOpenCart(customerId);
+  async getDraftCart(customerId: string) {
+    const cart = await this.repo.findDraftCart(customerId);
 
     if (!cart) {return null;}
 
     const items = await this.repo.findItemsByOrderId(cart.order_id);
 
-    return {...cart,items,};
+    return {...cart, items};
   }
 
   async addCartItem(customerId: string, input: AddCartItemInput) {
@@ -39,10 +39,14 @@ export class OrdersService {
       throw new Error('Store item is unavailable');
     }
 
-    let cart = await this.repo.findOpenCart(customerId);
+    let cart = await this.repo.findDraftCart(customerId);
 
     if (!cart) {
-      const createdOrder = await this.repo.createOpenOrder(customerId, storeItem.store_id as string);
+      const createdOrder = await this.repo.createDraftOrder(
+        customerId,
+        storeItem.store_id as string,
+      );
+
       cart = await this.repo.findById(createdOrder.order_id as string);
     }
 
@@ -57,9 +61,9 @@ export class OrdersService {
     }
 
     if (cart.store_id !== storeItem.store_id && cartItems.length === 0) {
-      await this.repo.deleteOpenCart(cart.order_id, customerId);
+      await this.repo.deleteDraftCart(cart.order_id, customerId);
 
-      const createdOrder = await this.repo.createOpenOrder(
+      const createdOrder = await this.repo.createDraftOrder(
         customerId,
         storeItem.store_id as string,
       );
@@ -78,17 +82,17 @@ export class OrdersService {
       input.quantity,
     );
 
-    return this.getOpenCart(customerId);
+    return this.getDraftCart(customerId);
   }
 
   async removeCartItem(customerId: string, orderItemId: string) {
-    const cart = await this.repo.findOpenCart(customerId);
+    const cart = await this.repo.findDraftCart(customerId);
 
     if (!cart) {return null;}
 
     await this.repo.deleteItem(orderItemId, cart.order_id);
 
-    return this.getOpenCart(customerId);
+    return this.getDraftCart(customerId);
   }
 
   async updateCartItemQuantity(
@@ -102,9 +106,9 @@ export class OrdersService {
       quantity,
     );
   }
-  
+
   async checkoutCart(customerId: string, input: { payment_method: string; delivery_address: string }) {
-    const cart = await this.repo.findOpenCart(customerId);
+    const cart = await this.repo.findDraftCart(customerId);
 
     if (!cart) {
       return null;
@@ -128,5 +132,4 @@ export class OrdersService {
 
     return this.getById(orderId);
   }
-
 }

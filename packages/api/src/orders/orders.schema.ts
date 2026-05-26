@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const orderStatusSchema = z.enum(['open', 'accepted', 'picked_up', 'delivered', 'cancelled']);
+export const orderStatusSchema = z.enum(['draft', 'open', 'accepted', 'picked_up', 'delivered', 'cancelled']);
 export const paymentMethodSchema = z.enum(['cash', 'gcash']);
 
 export const orderItemSchema = z.object({

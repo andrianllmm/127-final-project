@@ -128,12 +128,7 @@ export function OrderListPage() {
   const { data: orders, isPending } = useOrders();
   const [activeLimit, setActiveLimit] = useState(3);
   const [historyLimit, setHistoryLimit] = useState(3);
-  const validOrders =
-  orders?.filter(
-    (order) =>
-      order.total_price > 0 &&
-      order.delivery_address !== 'To be provided at checkout',
-  ) ?? [];
+  
 
   if (isPending) {
     return (
@@ -142,12 +137,13 @@ export function OrderListPage() {
       </div>
     );
   }
+  const orderList = orders ?? [];
 
   const activeOrders =
-    validOrders.filter((order) => ['open', 'accepted', 'picked_up'].includes(order.status)) ?? [];
+    orderList.filter((order) => ['open', 'accepted', 'picked_up'].includes(order.status));
 
   const orderHistory =
-    validOrders.filter((order) => ['delivered', 'cancelled'].includes(order.status)) ?? [];
+    orderList.filter((order) => ['delivered', 'cancelled'].includes(order.status));
 
   const visibleActiveOrders = activeOrders.slice(0, activeLimit);
   const visibleOrderHistory = orderHistory.slice(0, historyLimit);
@@ -161,7 +157,7 @@ export function OrderListPage() {
         </p>
       </div>
 
-      {validOrders.length ? (
+      {activeOrders.length || orderHistory.length ? (
         <div className="grid gap-6">
           <OrderSection
             title="Active Orders"
