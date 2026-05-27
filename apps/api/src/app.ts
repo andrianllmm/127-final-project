@@ -12,12 +12,27 @@ import storesRoutes from './modules/stores/stores.routes.js';
 import storeItemsRoutes from './modules/store-items/store-items.routes.js';
 import ordersRoutes from './modules/orders/orders.routes.js';
 import deliveriesRoutes from './modules/deliveries/deliveries.routes.js';
+import analyticsRoutes from './modules/analytics/analytics.routes.js';
 
 const app = express();
 
+const allowedWebOrigins = [env.WEB_URL];
+
+if (env.WEB_URL.startsWith('http://localhost:') || env.WEB_URL.startsWith('https://localhost:')) {
+  const url = new URL(env.WEB_URL);
+  allowedWebOrigins.push(`${url.protocol}//127.0.0.1:${url.port}`);
+}
+
 app.use(
   cors({
-    origin: env.WEB_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedWebOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   }),
 );
@@ -50,6 +65,7 @@ app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/stores', storesRoutes);
 app.use('/items', storeItemsRoutes);
+app.use('/analytics', analyticsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/deliveries', deliveriesRoutes);
 
