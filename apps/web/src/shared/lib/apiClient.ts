@@ -68,6 +68,16 @@ function buildQuery(params?: QueryParams): string {
  * @template TResponse - Expected response type
  * @template TBody - Request body type
  */
+
+function getApiErrorMessage(data: unknown) {
+  if (
+    typeof data === 'object' && data !== null && 'message' in data &&
+    typeof data.message === 'string'
+  ) { return data.message; }
+
+  return 'Request failed';
+}
+
 async function request<TResponse, TBody = unknown>(
   endpoint: string,
   method: HttpMethod,
@@ -104,7 +114,7 @@ async function request<TResponse, TBody = unknown>(
     : await res.text();
 
   if (!res.ok) {
-    throw new ApiError('Request failed', res.status, data);
+    throw new ApiError(getApiErrorMessage(data), res.status, data);
   }
 
   return data as TResponse;

@@ -1,11 +1,12 @@
-\restrict vHDcd7HFXO1z8OK1yeIOvAArzEjTtIRlWbdhzqw3m4nS6hB5Jiv8nKQM0s5ndzv
+\restrict dbmate
 
--- Dumped from database version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
--- Dumped by pg_dump version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
+-- Dumped from database version 18.4
+-- Dumped by pg_dump version 18.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -33,6 +34,7 @@ COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 --
 
 CREATE TYPE public.order_status AS ENUM (
+    'draft',
     'open',
     'accepted',
     'picked_up',
@@ -458,7 +460,7 @@ ALTER TABLE ONLY public.session
 -- PostgreSQL database dump complete
 --
 
-\unrestrict vHDcd7HFXO1z8OK1yeIOvAArzEjTtIRlWbdhzqw3m4nS6hB5Jiv8nKQM0s5ndzv
+\unrestrict dbmate
 
 
 --
@@ -469,4 +471,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260509175040'),
     ('20260510051607'),
     ('20260511153205'),
-    ('20260511153313');
+    ('20260511153313'),
+    ('20260526101559');
