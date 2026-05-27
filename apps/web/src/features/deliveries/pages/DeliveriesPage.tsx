@@ -47,28 +47,28 @@ export function DeliveriesPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {active.map((delivery) => (
             <OrderCard
-              key={delivery.id}
+              key={delivery.order_id}
               mode="rider"
               order={{
-                id: delivery.id,
-                title: delivery.vendorName,
+                id: delivery.order_id,
+                title: delivery.store_name,
                 status: delivery.status,
                 referenceLabel: 'Delivery',
-                referenceValue: delivery.id.slice(0, 8),
-                dropoffLocation: delivery.dropoffLocation,
+                referenceValue: delivery.order_id.slice(0, 8),
+                dropoffLocation: delivery.delivery_address,
               }}
               action={
                 delivery.status === 'accepted' ? (
                   <Button
                     className="w-full"
-                    onClick={() => handleUpdateStatus(delivery.id, 'picked_up')}
+                    onClick={() => handleUpdateStatus(delivery.order_id, 'picked_up')}
                   >
                     Mark as picked up
                   </Button>
                 ) : delivery.status === 'picked_up' ? (
                   <Button
                     className="w-full"
-                    onClick={() => handleUpdateStatus(delivery.id, 'delivered')}
+                    onClick={() => handleUpdateStatus(delivery.order_id, 'delivered')}
                   >
                     Mark as delivered
                   </Button>

@@ -45,23 +45,21 @@ export function OffersPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {offerList.map((offer) => (
             <OrderCard
-              key={offer.id}
+              key={offer.order_id}
               mode="rider"
               order={{
-                id: offer.id,
-                title: offer.vendorName,
-                status: 'open',
-                referenceLabel: 'Offer',
-                referenceValue: offer.id.slice(0, 8),
-                pickupLocation: offer.pickupLocation,
-                dropoffLocation: offer.dropoffLocation,
-                totalPrice: offer.totalPrice,
-                itemCount: offer.itemCount,
+                id: offer.order_id,
+                title: offer.store_name,
+                status: offer.status,
+                referenceLabel: 'Order',
+                referenceValue: offer.order_id.slice(0, 8),
+                dropoffLocation: offer.delivery_address,
+                totalPrice: offer.total_price,
               }}
               action={
                 <Button
                   className="w-full"
-                  onClick={() => handleAcceptDelivery(offer.id)}
+                  onClick={() => handleAcceptDelivery(offer.order_id)}
                   disabled={acceptDelivery.isPending}
                 >
                   Accept delivery

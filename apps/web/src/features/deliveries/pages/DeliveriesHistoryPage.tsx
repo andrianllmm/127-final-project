@@ -26,19 +26,17 @@ export function DeliveriesHistoryPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {deliveryList.map((delivery) => (
             <OrderCard
-              key={delivery.id}
+              key={delivery.order_id}
               mode="rider"
               muted
               order={{
-                id: delivery.id,
-                title: delivery.vendorName,
+                id: delivery.order_id,
+                title: delivery.store_name,
                 status: delivery.status,
                 referenceLabel: 'Delivery',
-                referenceValue: delivery.id.slice(0, 8),
-                pickupLocation: delivery.pickupLocation,
-                dropoffLocation: delivery.dropoffLocation,
-                totalPrice: delivery.totalPrice,
-                itemCount: delivery.itemCount,
+                referenceValue: delivery.order_id.slice(0, 8),
+                dropoffLocation: delivery.delivery_address,
+                totalPrice: delivery.total_price,
               }}
             />
           ))}
