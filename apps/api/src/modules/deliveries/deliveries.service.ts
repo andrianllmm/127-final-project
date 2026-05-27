@@ -14,4 +14,8 @@ export class DeliveriesService {
   async getById(id: string) {
     return this.repo.findById(id);
   }
+
+  async getOpenOffers() {
+    return await this.repo.findOpenOffers();
+  }
 }

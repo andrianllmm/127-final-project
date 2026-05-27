@@ -9,6 +9,18 @@ export class DeliveriesController {
     return res.json(data);
   };
 
+  // Specifically handles requests for the Rider Offers Page
+  // It catches errors so server doesn't crash if the database is asleep
+  getOpenOffers = async (_req: Request, res: Response): Promise<Response> => {
+    try {
+      const data = await this.service.getOpenOffers();
+      return res.json(data);
+    } catch (error) {
+      console.error('Error fetching open offers:', error);
+      return res.status(500).json({ message: 'Failed to fetch available deliveries' });
+    }
+  };
+
   getById = async (req: Request, res: Response): Promise<Response> => {
     const { id } = req.params;
 
