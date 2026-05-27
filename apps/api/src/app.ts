@@ -1,5 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import multer from 'multer';
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { env } from './config/env.js';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './modules/auth/auth.config.js';
@@ -15,6 +18,9 @@ import deliveriesRoutes from './modules/deliveries/deliveries.routes.js';
 import analyticsRoutes from './modules/analytics/analytics.routes.js';
 
 const app = express();
+const uploadsDir = join(process.cwd(), 'uploads');
+
+mkdirSync(uploadsDir, { recursive: true });
 
 const allowedWebOrigins = [env.WEB_URL];
 
@@ -40,6 +46,7 @@ app.use(
 app.all('/api/auth/{*any}', toNodeHandler(auth));
 
 app.use(express.json());
+app.use('/uploads', express.static(uploadsDir));
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -68,5 +75,24 @@ app.use('/items', storeItemsRoutes);
 app.use('/analytics', analyticsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/deliveries', deliveriesRoutes);
+
+app.use(
+  (error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    if (error instanceof multer.MulterError) {
+      if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'Image must be 5MB or smaller' });
+      }
+
+      return res.status(400).json({ message: error.message });
+    }
+
+    if (error instanceof Error) {
+      console.error(error);
+      return res.status(500).json({ message: error.message || 'Internal server error' });
+    }
+
+    return res.status(500).json({ message: 'Internal server error' });
+  },
+);
 
 export default app;

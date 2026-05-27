@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +19,8 @@ import {
 interface StoreItemFormProps {
   submitLabel: string;
   defaultValues?: Partial<CreateStoreItemInput> | undefined;
-  onSubmit: (values: CreateStoreItemInput) => Promise<void> | void;
+  defaultImageUrl?: string | undefined;
+  onSubmit: (values: FormData) => Promise<void> | void;
   actions?: ReactNode;
   resetOnSuccess?: boolean;
 }
@@ -35,10 +36,15 @@ const EMPTY_VALUES: CreateStoreItemInput = {
 export function StoreItemForm({
   submitLabel,
   defaultValues,
+  defaultImageUrl,
   onSubmit,
   actions,
   resetOnSuccess = false,
 }: StoreItemFormProps) {
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(defaultImageUrl ?? null);
+
   const {
     register,
     control,
@@ -51,12 +57,46 @@ export function StoreItemForm({
     defaultValues: defaultValues ? { ...EMPTY_VALUES, ...defaultValues } : EMPTY_VALUES,
   });
 
+  useEffect(() => {
+    if (selectedImage) {
+      const objectUrl = URL.createObjectURL(selectedImage);
+      setPreviewUrl(objectUrl);
+
+      return () => URL.revokeObjectURL(objectUrl);
+    }
+
+    setPreviewUrl(defaultImageUrl ?? null);
+    return undefined;
+  }, [defaultImageUrl, selectedImage]);
+
   async function submit(values: CreateStoreItemInput) {
     try {
-      await onSubmit(values);
+      const formData = new FormData();
+
+      formData.append('name', values.name);
+      formData.append('price', String(values.price));
+      formData.append('is_available', String(values.is_available ?? true));
+
+      if (values.description) {
+        formData.append('description', values.description);
+      }
+
+      if (values.image_url) {
+        formData.append('image_url', values.image_url);
+      }
+
+      if (selectedImage) {
+        formData.append('image', selectedImage);
+      }
+
+      await onSubmit(formData);
 
       if (resetOnSuccess) {
         reset(EMPTY_VALUES);
+        setSelectedImage(null);
+        if (imageInputRef.current) {
+          imageInputRef.current.value = '';
+        }
       }
     } catch (error) {
       setError('root', {
@@ -135,25 +175,27 @@ export function StoreItemForm({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="itemImageUrl">Image URL</FieldLabel>
+          <FieldLabel htmlFor="itemImage">Item image</FieldLabel>
           <Input
-            id="itemImageUrl"
-            placeholder="https://..."
-            {...register('image_url', {
-              setValueAs: (value) => {
-                if (typeof value !== 'string') {
-                  return undefined;
-                }
-
-                const trimmed = value.trim();
-                return trimmed ? trimmed : undefined;
-              },
-            })}
+            ref={imageInputRef}
+            id="itemImage"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(event) => {
+              setSelectedImage(event.target.files?.[0] ?? null);
+            }}
           />
-          {errors.image_url && (
-            <FieldDescription className="text-destructive">
-              {errors.image_url.message}
-            </FieldDescription>
+          <FieldDescription>
+            JPEG, PNG, or WebP up to 5MB. Leave blank to keep the current image.
+          </FieldDescription>
+          {previewUrl && (
+            <div className="overflow-hidden rounded-2xl border border-border/60 bg-muted/40">
+              <img
+                src={previewUrl}
+                alt="Selected item preview"
+                className="aspect-video w-full object-cover"
+              />
+            </div>
           )}
         </Field>
 

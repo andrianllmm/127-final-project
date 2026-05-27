@@ -71,9 +71,13 @@ function buildQuery(params?: QueryParams): string {
 
 function getApiErrorMessage(data: unknown) {
   if (
-    typeof data === 'object' && data !== null && 'message' in data &&
+    typeof data === 'object' &&
+    data !== null &&
+    'message' in data &&
     typeof data.message === 'string'
-  ) { return data.message; }
+  ) {
+    return data.message;
+  }
 
   return 'Request failed';
 }
@@ -89,8 +93,9 @@ async function request<TResponse, TBody = unknown>(
   const url = `${baseUrl}${endpoint}${buildQuery(params)}`;
 
   const headers = new Headers(restOptions.headers);
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
 
-  if (body !== undefined) {
+  if (body !== undefined && !isFormData) {
     headers.set('Content-Type', 'application/json');
   }
 
@@ -102,7 +107,7 @@ async function request<TResponse, TBody = unknown>(
   };
 
   if (body !== undefined) {
-    requestOptions.body = JSON.stringify(body);
+    requestOptions.body = isFormData ? (body as BodyInit) : JSON.stringify(body);
   }
 
   const res = await fetch(url, requestOptions);
