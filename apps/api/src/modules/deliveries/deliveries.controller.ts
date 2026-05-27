@@ -51,14 +51,21 @@ export class DeliveriesController {
   };
 
   acceptDelivery = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    try {
+      // This handles the string/array type issue simply
+      const id = typeof req.params.id === 'string' ? req.params.id : (req.params.id as string[])[0];
 
-    if (!id) {
-      return res.status(400).json({ message: 'Delivery ID is required' });
+      if (!id) return res.status(400).json({ message: 'Delivery ID is required' });
+
+      const result = await this.service.acceptDelivery(id);
+
+      if (!result) return res.status(409).json({ message: 'Delivery already accepted or invalid' });
+
+      return res.json(result);
+    } catch (error) {
+      console.error('Failed to accept delivery:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-
-    const result = await this.service.acceptDelivery(id);
-    return res.json(result);
   };
 
   getActiveDeliveries = async (_req: Request, res: Response) => {

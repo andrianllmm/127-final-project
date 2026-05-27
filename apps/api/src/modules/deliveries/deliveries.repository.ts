@@ -1,4 +1,5 @@
 import { sql } from 'slonik';
+import { z } from 'zod';
 import { getPool } from '../../db/pool.js';
 
 export class DeliveriesRepository {
@@ -38,13 +39,13 @@ export class DeliveriesRepository {
   }
 
   async updateStatus(id: string, status: string) {
-    const query = sql.unsafe`
-    UPDATE "order" 
-    SET status = ${status} 
-    WHERE order_id = ${id} AND status = 'open'
-    RETURNING *
-  `;
     const pool = await getPool();
+    const query = sql.type(z.any())`
+      UPDATE "order"
+      SET status = ${status}
+      WHERE order_id = ${id} AND status = 'open'
+      RETURNING *
+    `;
     return await pool.one(query);
   }
 
@@ -57,7 +58,7 @@ export class DeliveriesRepository {
       o.status
     FROM "order" o
     JOIN store s ON o.store_id = s.store_id
-    WHERE o.status = 'accepted'
+    WHERE o.status IN ('accepted', 'picked_up')
     ORDER BY o.created_at DESC
   `;
     const pool = await getPool();
