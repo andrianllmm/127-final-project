@@ -42,6 +42,8 @@ export function StoreItemForm({
   resetOnSuccess = false,
 }: StoreItemFormProps) {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const previewObjectUrlRef = useRef<string | null>(null);
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(defaultImageUrl ?? null);
 
@@ -58,16 +60,31 @@ export function StoreItemForm({
   });
 
   useEffect(() => {
-    if (selectedImage) {
-      const objectUrl = URL.createObjectURL(selectedImage);
-      setPreviewUrl(objectUrl);
+    return () => {
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
+        previewObjectUrlRef.current = null;
+      }
+    };
+  }, []);
 
-      return () => URL.revokeObjectURL(objectUrl);
+  function updateSelectedImage(file: File | null) {
+    if (previewObjectUrlRef.current) {
+      URL.revokeObjectURL(previewObjectUrlRef.current);
+      previewObjectUrlRef.current = null;
+    }
+
+    setSelectedImage(file);
+
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      previewObjectUrlRef.current = objectUrl;
+      setPreviewUrl(objectUrl);
+      return;
     }
 
     setPreviewUrl(defaultImageUrl ?? null);
-    return undefined;
-  }, [defaultImageUrl, selectedImage]);
+  }
 
   async function submit(values: CreateStoreItemInput) {
     try {
@@ -93,7 +110,8 @@ export function StoreItemForm({
 
       if (resetOnSuccess) {
         reset(EMPTY_VALUES);
-        setSelectedImage(null);
+        updateSelectedImage(null);
+
         if (imageInputRef.current) {
           imageInputRef.current.value = '';
         }
@@ -106,7 +124,12 @@ export function StoreItemForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} noValidate>
+    <form
+      noValidate
+      onSubmit={(event) => {
+        void handleSubmit(submit)(event);
+      }}
+    >
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="itemName">Item name</FieldLabel>
@@ -182,12 +205,13 @@ export function StoreItemForm({
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={(event) => {
-              setSelectedImage(event.target.files?.[0] ?? null);
+              updateSelectedImage(event.target.files?.[0] ?? null);
             }}
           />
           <FieldDescription>
             JPEG, PNG, or WebP up to 5MB. Leave blank to keep the current image.
           </FieldDescription>
+
           {previewUrl && (
             <div className="overflow-hidden rounded-2xl border border-border/60 bg-muted/40">
               <img
