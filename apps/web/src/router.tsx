@@ -29,6 +29,7 @@ import { StoreAnalyticsPage } from './features/stores/pages/StoreAnalyticsPage';
 import { StoreItemDetailPage } from './features/stores/pages/StoreItemDetailPage';
 import { ItemsPage } from './features/stores/pages/ItemsPage';
 import { AccountPage } from './pages/AccountPage';
+import { ActiveDeliveriesPage } from './features/deliveries/pages/ActiveDeliveriesPage';
 
 export function AppRouter() {
   return (
@@ -82,6 +83,8 @@ export function AppRouter() {
           <Route path="/deliveries/history" element={<DeliveriesHistoryPage />} />
 
           <Route path="/account" element={<AccountPage />} />
+
+          <Route path="/deliveries/active" element={<ActiveDeliveriesPage />} />
         </Route>
       </Route>
 
