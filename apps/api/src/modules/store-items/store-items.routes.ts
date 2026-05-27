@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import validate from 'express-zod-safe';
 import z from 'zod';
+import { storeItemImageUpload } from './store-items.upload.js';
 
 import { requireAuth } from '../../common/middleware/auth.middleware.js';
 import { requireRole } from '../../common/middleware/rbac.middleware.js';
-import { createStoreItemSchema, storeItemsQuerySchema, updateStoreItemSchema } from '@repo/api';
+import { storeItemsQuerySchema } from '@repo/api';
 import { StoreItemsController } from './store-items.controller.js';
 
 const router = Router();
@@ -22,7 +23,7 @@ router.post(
   '/',
   requireAuth,
   requireRole('vendor'),
-  validate({ body: createStoreItemSchema }),
+  storeItemImageUpload.single('image'),
   controller.create,
 );
 
@@ -30,12 +31,8 @@ router.patch(
   '/:itemId',
   requireAuth,
   requireRole('vendor'),
-  validate({
-    params: z.object({
-      itemId: z.uuid(),
-    }),
-    body: updateStoreItemSchema,
-  }),
+  validate({ params: z.object({ itemId: z.uuid() }) }),
+  storeItemImageUpload.single('image'),
   controller.update,
 );
 

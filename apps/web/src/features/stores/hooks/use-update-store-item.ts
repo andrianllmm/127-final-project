@@ -7,7 +7,7 @@ export function useUpdateStoreItem() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ itemId, input }: { itemId: string; input: UpdateStoreItemInput }) =>
+    mutationFn: ({ itemId, input }: { itemId: string; input: UpdateStoreItemInput | FormData }) =>
       updateStoreItem(itemId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['store-items'] });

@@ -30,7 +30,6 @@ export function StoreItemEditPage() {
         description: item.description ?? undefined,
         price: item.price,
         is_available: item.is_available,
-        image_url: item.image_url ?? undefined,
       }
     : undefined;
   const updateItemMutation = useUpdateStoreItem();
@@ -71,6 +70,7 @@ export function StoreItemEditPage() {
         <StoreItemForm
           submitLabel="Save changes"
           defaultValues={defaultValues}
+          defaultImageUrl={item.image_url ?? undefined}
           onSubmit={async (values) => {
             await updateItemMutation.mutateAsync({
               itemId: item.store_item_id,

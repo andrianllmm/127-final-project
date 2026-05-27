@@ -7,7 +7,7 @@ export function useCreateStoreItem() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: CreateStoreItemInput) => createStoreItem(input),
+    mutationFn: (input: CreateStoreItemInput | FormData) => createStoreItem(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['store-items'] });
     },
