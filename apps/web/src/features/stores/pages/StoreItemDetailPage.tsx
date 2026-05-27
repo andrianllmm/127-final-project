@@ -4,6 +4,7 @@ import { authClient } from '@/shared/lib/authClient';
 
 import { useStore } from '../hooks/use-store';
 import { useStoreItem } from '../hooks/use-store-item';
+import { useAddCartItem } from '../../orders/hooks/use-add-cart-item';
 
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
@@ -19,6 +20,12 @@ export function StoreItemDetailPage() {
 
   const canManage = Boolean(
     session && session.user.role === 'vendor' && store?.user_id === session.user.id,
+  );
+
+  const addCartItem = useAddCartItem();
+
+  const canAddToCart = Boolean(
+    session && session.user.role === 'customer' && item?.is_available,
   );
 
   if (isSessionPending || isStorePending || isItemPending) {
@@ -92,6 +99,21 @@ export function StoreItemDetailPage() {
           {item.description || 'No description available for this item.'}
         </p>
       </div>
+      
+      {canAddToCart && (
+        <div className="mt-6 flex gap-3">
+          <Button
+            onClick={() => addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,})}
+            disabled={addCartItem.isPending}
+          >
+            {addCartItem.isPending ? 'Adding...' : 'Add to Cart'}
+          </Button>
+
+          <Button asChild variant="outline">
+            <Link to="/cart">View Cart</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

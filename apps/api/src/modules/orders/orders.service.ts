@@ -1,3 +1,4 @@
+import { AddCartItemInput } from '@repo/api';
 import { OrdersRepository } from './orders.repository.js';
 
 export class OrdersService {
@@ -7,11 +8,138 @@ export class OrdersService {
     this.repo = repo ?? new OrdersRepository();
   }
 
-  async getAll() {
-    return this.repo.findAll();
+  async getByCustomerId(customerId: string) {
+    return this.repo.findByCustomerId(customerId);
   }
 
   async getById(id: string) {
-    return this.repo.findById(id);
+    const order = await this.repo.findById(id);
+
+    if (!order) {return null;}
+
+    const items = await this.repo.findItemsByOrderId(order.order_id);
+
+    return {...order, items};
+  }
+
+  async getDraftCart(customerId: string) {
+    const cart = await this.repo.findDraftCart(customerId);
+
+    if (!cart) {return null;}
+
+    const items = await this.repo.findItemsByOrderId(cart.order_id);
+
+    return {...cart, items};
+  }
+
+  async addCartItem(customerId: string, input: AddCartItemInput) {
+    const storeItem = await this.repo.findStoreItemById(input.store_item_id);
+
+    if (!storeItem || storeItem.is_available !== true) {
+      throw new Error('Store item is unavailable');
+    }
+
+    let cart = await this.repo.findDraftCart(customerId);
+
+    if (!cart) {
+      const createdOrder = await this.repo.createDraftOrder(
+        customerId,
+        storeItem.store_id as string,
+      );
+
+      cart = await this.repo.findById(createdOrder.order_id as string);
+    }
+
+    if (!cart) {
+      throw new Error('Failed to create cart');
+    }
+
+    const cartItems = await this.repo.findItemsByOrderId(cart.order_id);
+
+    if (cart.store_id !== storeItem.store_id && cartItems.length > 0) {
+      throw new Error('Cart can only contain items from one store');
+    }
+
+    if (cart.store_id !== storeItem.store_id && cartItems.length === 0) {
+      await this.repo.deleteDraftCart(cart.order_id, customerId);
+
+      const createdOrder = await this.repo.createDraftOrder(
+        customerId,
+        storeItem.store_id as string,
+      );
+
+      cart = await this.repo.findById(createdOrder.order_id as string);
+
+      if (!cart) {
+        throw new Error('Failed to create cart');
+      }
+    }
+
+    await this.repo.addItem(
+      cart.order_id,
+      input.store_item_id,
+      Number(storeItem.price),
+      input.quantity,
+    );
+
+    return this.getDraftCart(customerId);
+  }
+
+  async removeCartItem(customerId: string, orderItemId: string) {
+    const cart = await this.repo.findDraftCart(customerId);
+
+    if (!cart) {return null;}
+
+    await this.repo.deleteItem(orderItemId, cart.order_id);
+
+    return this.getDraftCart(customerId);
+  }
+
+  async clearCart(customerId: string) {
+    const cart = await this.repo.findDraftCart(customerId);
+
+    if (!cart) {return null;}
+
+    await this.repo.deleteDraftCart(cart.order_id, customerId);
+
+    return true;
+  }
+
+  async updateCartItemQuantity(
+    customerId: string,
+    orderItemId: string,
+    quantity: number,
+  ) {
+    return this.repo.updateCartItemQuantity(
+      customerId,
+      orderItemId,
+      quantity,
+    );
+  }
+
+  async checkoutCart(customerId: string, input: { payment_method: string; delivery_address: string }) {
+    const cart = await this.repo.findDraftCart(customerId);
+
+    if (!cart) {
+      return null;
+    }
+
+    const items = await this.repo.findItemsByOrderId(cart.order_id);
+
+    if (items.length === 0) {
+      throw new Error('Cannot checkout an empty cart');
+    }
+
+    await this.repo.checkoutCart(cart.order_id, input.payment_method, input.delivery_address);
+
+    return this.getById(cart.order_id);
+  }
+
+  async cancelOrder(customerId: string, orderId: string) {
+    const result = await this.repo.cancelOrder(orderId, customerId);
+
+    if (!result) {return null;}
+
+    return this.getById(orderId);
   }
 }

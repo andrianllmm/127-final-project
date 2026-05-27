@@ -1,6 +1,7 @@
 import type { StoreItem } from '@repo/api';
 
 import { useNavigate } from 'react-router-dom';
+import { useAddCartItem } from '../../orders/hooks/use-add-cart-item';
 import { Button } from '@/shared/components/ui/button';
 import { Toggle } from '@/shared/components/ui/toggle';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -96,10 +97,14 @@ function ManagerActions({
   );
 }
 
-function CustomerActions() {
+function CustomerActions({item}: {item: StoreItem}) {
+  const addCartItem = useAddCartItem();
+
   return (
-    <Button type="button" size="sm" className="w-full">
-      Add to Cart
+    <Button type="button" size="sm" className="w-full" disabled={!item.is_available || addCartItem.isPending} 
+    onClick={() =>addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,})}
+    >
+      {addCartItem.isPending ? 'Adding...' : 'Add to Cart'}
     </Button>
   );
 }
@@ -117,7 +122,7 @@ export function StoreItemCard({ item, mode }: StoreItemCardProps) {
     }
 
     if (mode === 'customer') {
-      return <CustomerActions />;
+      return <CustomerActions item={item}/>;
     }
 
     return null;

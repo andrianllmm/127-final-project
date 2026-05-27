@@ -1,11 +1,12 @@
 \restrict dbmate
 
--- Dumped from database version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
--- Dumped by pg_dump version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
+-- Dumped from database version 18.4
+-- Dumped by pg_dump version 18.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -33,6 +34,7 @@ COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 --
 
 CREATE TYPE public.order_status AS ENUM (
+    'draft',
     'open',
     'accepted',
     'picked_up',
@@ -469,4 +471,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260509175040'),
     ('20260510051607'),
     ('20260511153205'),
-    ('20260511153313');
+    ('20260511153313'),
+    ('20260526101559');
