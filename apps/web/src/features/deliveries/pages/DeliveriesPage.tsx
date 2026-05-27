@@ -17,10 +17,16 @@ export function DeliveriesPage() {
   const { data: activeDeliveries, isPending } = useActiveDeliveries();
   const updateDeliveryStatus = useUpdateDeliveryStatus();
 
-  const handleUpdateStatus = async (id: string) => {
+  const handleUpdateStatus = async (id: string, status: 'picked_up' | 'delivered') => {
     try {
-      await updateDeliveryStatus.mutateAsync({ id, input: { status: 'picked_up' } });
-      toast.success('Delivery marked as picked up');
+      await updateDeliveryStatus.mutateAsync({ id, input: { status } });
+
+      if (status === 'picked_up') {
+        toast.success('Delivery marked as picked up');
+        return;
+      }
+
+      toast.success('Delivery marked as delivered');
     } catch (err) {
       console.error('Error updating status:', err);
       toast.error('Failed to update delivery status');
@@ -63,17 +69,29 @@ export function DeliveriesPage() {
               </CardHeader>
 
               <CardContent className="py-4 text-sm text-muted-foreground">
-                Monitor the rider handoff and update the order when you have picked it up.
+                {delivery.status === 'accepted'
+                  ? 'Mark the order once you have picked it up from the store.'
+                  : 'Confirm completion after you hand the order to the customer.'}
               </CardContent>
 
               <CardFooter>
                 {delivery.status === 'accepted' ? (
-                  <Button className="w-full" onClick={() => handleUpdateStatus(delivery.id)}>
+                  <Button
+                    className="w-full"
+                    onClick={() => handleUpdateStatus(delivery.id, 'picked_up')}
+                  >
                     Mark as picked up
+                  </Button>
+                ) : delivery.status === 'picked_up' ? (
+                  <Button
+                    className="w-full"
+                    onClick={() => handleUpdateStatus(delivery.id, 'delivered')}
+                  >
+                    Mark as delivered
                   </Button>
                 ) : (
                   <Button className="w-full" variant="outline" disabled>
-                    Already picked up
+                    Completed
                   </Button>
                 )}
               </CardFooter>
