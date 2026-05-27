@@ -7,9 +7,11 @@ export function DeliveriesHistoryPage() {
   const deliveryList = Array.isArray(deliveries) ? deliveries : [];
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 md:px-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <div className="space-y-2">
-        <h1 className="font-heading text-3xl font-semibold tracking-tight">Delivery History</h1>
+        <h1 className="font-heading text-3xl font-semibold text-primary-foreground">
+          Delivery History
+        </h1>
         <p className="text-sm text-muted-foreground">
           Review past and current delivery records in one place.
         </p>

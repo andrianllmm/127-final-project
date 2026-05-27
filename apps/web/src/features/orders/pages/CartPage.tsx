@@ -30,11 +30,11 @@ export function CartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
         <div>
           <div className="flex items-center gap-2 text-primary-foreground">
             <HugeiconsIcon icon={ShoppingCartIcon} strokeWidth={3} />
-            <h1 className="font-heading text-3xl font-semibold">Cart</h1>
+            <h1 className="font-heading text-3xl font-semibold text-primary-foreground">Cart</h1>
           </div>
           <p className="text-sm text-muted-foreground">Review items before placing an order.</p>
         </div>
@@ -56,9 +56,9 @@ export function CartPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <div>
-        <h1 className="font-heading text-3xl font-semibold">Cart</h1>
+        <h1 className="font-heading text-3xl font-semibold text-primary-foreground">Cart</h1>
 
         <div className="mt-2 flex items-center gap-4">
           <p className="text-muted-foreground mr-auto">

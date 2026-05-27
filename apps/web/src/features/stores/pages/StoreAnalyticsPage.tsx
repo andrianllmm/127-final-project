@@ -51,9 +51,9 @@ export function StoreAnalyticsPage() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 space">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <div className="space-y-2">
-        <h1 className="text-3xl font-heading font-semibold text-primary-foreground tracking-tight">
+        <h1 className="font-heading text-3xl font-semibold text-primary-foreground">
           {store.store_name}'s Analytics
         </h1>
         <p className="text-muted-foreground">Track your store performance and insights.</p>

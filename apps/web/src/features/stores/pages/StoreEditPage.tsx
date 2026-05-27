@@ -42,8 +42,8 @@ export function StoreEditPage() {
   };
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 px-4 py-8">
-      <h1 className="font-heading text-2xl font-semibold">Edit store</h1>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
+      <h1 className="font-heading text-3xl font-semibold text-primary-foreground">Edit store</h1>
 
       <StoreProfileForm
         submitLabel="Save changes"

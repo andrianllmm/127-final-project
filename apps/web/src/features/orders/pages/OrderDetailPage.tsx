@@ -28,10 +28,12 @@ export function OrderDetailPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-8 space-y-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-3xl font-semibold">Order Details</h1>
+          <h1 className="font-heading text-3xl font-semibold text-primary-foreground">
+            Order Details
+          </h1>
           <p className="text-sm text-muted-foreground">Order #{order.order_id.slice(0, 8)}</p>
         </div>
 

@@ -24,9 +24,7 @@ export function StoreItemDetailPage() {
 
   const addCartItem = useAddCartItem();
 
-  const canAddToCart = Boolean(
-    session && session.user.role === 'customer' && item?.is_available,
-  );
+  const canAddToCart = Boolean(session && session.user.role === 'customer' && item?.is_available);
 
   if (isSessionPending || isStorePending || isItemPending) {
     return (
@@ -49,7 +47,7 @@ export function StoreItemDetailPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col px-4 py-8">
       <div className="mb-4 flex items-center justify-between">
         <Button asChild variant="ghost" size="sm">
           <Link to={`/stores/${store.store_id}/items`}>
@@ -74,9 +72,7 @@ export function StoreItemDetailPage() {
       )}
 
       <div className="mb-4 flex items-start justify-between gap-3">
-        <h1 className="text-primary-foreground font-heading text-4xl font-semibold leading-tight">
-          {item.name}
-        </h1>
+        <h1 className="font-heading text-3xl font-semibold text-primary-foreground">{item.name}</h1>
 
         {!item.is_available && (
           <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
@@ -99,11 +95,16 @@ export function StoreItemDetailPage() {
           {item.description || 'No description available for this item.'}
         </p>
       </div>
-      
+
       {canAddToCart && (
         <div className="mt-6 flex gap-3">
           <Button
-            onClick={() => addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,})}
+            onClick={() =>
+              addCartItem.mutate({
+                store_item_id: item.store_item_id,
+                quantity: 1,
+              })
+            }
             disabled={addCartItem.isPending}
           >
             {addCartItem.isPending ? 'Adding...' : 'Add to Cart'}
