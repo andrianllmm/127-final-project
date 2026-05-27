@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { authClient } from '@/shared/lib/authClient';
 import { Spinner } from '@/shared/components/ui/spinner';
-import { useStoresByUser } from '../hooks/use-store-by-user';
+import { useStoreByUser } from '../hooks/use-store-by-user';
 import { useStoreAnalytics } from '../hooks/use-store-analytics';
 import { AnalyticsQuery } from '@repo/api';
 import { MetricCard } from '../components/analytics/MetricCard';
@@ -15,10 +15,9 @@ export function StoreAnalyticsPage() {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
   const userId = session?.user?.id ?? '';
 
-  const { data: stores, isPending: isStoresPending } = useStoresByUser(userId);
+  const { data: store, isPending: isStorePending } = useStoreByUser(userId);
   const [analyticsQuery, setAnalyticsQuery] = useState<AnalyticsQuery>({});
 
-  const store = stores?.[0];
   const storeId = store?.store_id ?? '';
 
   const { data: analyticsData, isPending: isAnalyticsPending } = useStoreAnalytics(
@@ -26,7 +25,7 @@ export function StoreAnalyticsPage() {
     analyticsQuery,
   );
 
-  if (isSessionPending || isStoresPending) {
+  if (isSessionPending || isStorePending) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Spinner />
