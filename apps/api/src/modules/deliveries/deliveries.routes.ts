@@ -7,5 +7,6 @@ const controller = new DeliveriesController();
 router.get('/', controller.getAll);
 router.get('/offers', controller.getOpenOffers);
 router.get('/:id', controller.getById);
+router.patch('/:id/accept', controller.acceptDelivery);
 
 export default router;
