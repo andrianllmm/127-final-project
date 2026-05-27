@@ -2,14 +2,38 @@ import { sql } from 'slonik';
 import { getPool } from '../../db/pool.js';
 import {
   storeItemSchema,
+  StoreItemsQuery,
   type CreateStoreItemInput,
   type StoreItem,
   type UpdateStoreItemInput,
 } from '@repo/api';
 
 export class StoreItemsRepository {
-  async findAllByStoreId(storeId: string): Promise<StoreItem[]> {
+  async findAll(options: StoreItemsQuery = {}): Promise<StoreItem[]> {
     const pool = await getPool();
+    const {
+      storeId,
+      keyword,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      priceMin,
+      priceMax,
+      available,
+    } = options;
+
+    const normalizedStoreId = storeId ?? null;
+    const normalizedKeyword = keyword?.trim() ? keyword.trim() : null;
+    const normalizedPriceMin = typeof priceMin === 'number' ? priceMin : null;
+    const normalizedPriceMax = typeof priceMax === 'number' ? priceMax : null;
+    const normalizedAvailable = typeof available === 'boolean' ? available : null;
+    const sortDirection = sortOrder === 'asc' ? sql.fragment`ASC` : sql.fragment`DESC`;
+
+    const orderByClause =
+      sortBy === 'name'
+        ? sql.fragment`name ${sortDirection}, created_at DESC`
+        : sortBy === 'price'
+          ? sql.fragment`price ${sortDirection}, created_at DESC`
+          : sql.fragment`created_at ${sortDirection}, name ASC`;
 
     const rows = await pool.any(sql.type(storeItemSchema)`
       SELECT
@@ -22,14 +46,22 @@ export class StoreItemsRepository {
         image_url,
         created_at
       FROM store_item
-      WHERE store_id = ${storeId}
-      ORDER BY created_at DESC
+      WHERE (${normalizedStoreId}::uuid IS NULL OR store_id = ${normalizedStoreId})
+        AND (
+          ${normalizedKeyword}::text IS NULL
+          OR name ILIKE '%' || ${normalizedKeyword} || '%'
+          OR COALESCE(description, '') ILIKE '%' || ${normalizedKeyword} || '%'
+        )
+        AND (${normalizedPriceMin}::numeric IS NULL OR price >= ${normalizedPriceMin})
+        AND (${normalizedPriceMax}::numeric IS NULL OR price <= ${normalizedPriceMax})
+        AND (${normalizedAvailable}::boolean IS NULL OR is_available = ${normalizedAvailable})
+      ORDER BY ${orderByClause}
     `);
 
     return rows as StoreItem[];
   }
 
-  async findById(storeId: string, itemId: string): Promise<StoreItem | null> {
+  async findById(itemId: string): Promise<StoreItem | null> {
     const pool = await getPool();
 
     const row = await pool.maybeOne(sql.type(storeItemSchema)`
@@ -43,8 +75,7 @@ export class StoreItemsRepository {
         image_url,
         created_at
       FROM store_item
-      WHERE store_id = ${storeId}
-        AND store_item_id = ${itemId}
+      WHERE store_item_id = ${itemId}
     `);
 
     return row as StoreItem | null;
@@ -84,11 +115,7 @@ export class StoreItemsRepository {
     return row as StoreItem;
   }
 
-  async update(
-    storeId: string,
-    itemId: string,
-    input: UpdateStoreItemInput,
-  ): Promise<StoreItem | null> {
+  async update(itemId: string, input: UpdateStoreItemInput): Promise<StoreItem | null> {
     const pool = await getPool();
 
     const row = await pool.maybeOne(sql.type(storeItemSchema)`
@@ -99,8 +126,7 @@ export class StoreItemsRepository {
         price = COALESCE(${input.price ?? null}, price),
         is_available = COALESCE(${input.is_available ?? null}, is_available),
         image_url = COALESCE(${input.image_url ?? null}, image_url)
-      WHERE store_id = ${storeId}
-        AND store_item_id = ${itemId}
+      WHERE store_item_id = ${itemId}
       RETURNING
         store_item_id,
         store_id,
@@ -115,13 +141,12 @@ export class StoreItemsRepository {
     return row as StoreItem | null;
   }
 
-  async delete(storeId: string, itemId: string): Promise<StoreItem | null> {
+  async delete(itemId: string): Promise<StoreItem | null> {
     const pool = await getPool();
 
     const row = await pool.maybeOne(sql.type(storeItemSchema)`
       DELETE FROM store_item
-      WHERE store_id = ${storeId}
-        AND store_item_id = ${itemId}
+      WHERE store_item_id = ${itemId}
       RETURNING
         store_item_id,
         store_id,

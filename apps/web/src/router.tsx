@@ -28,6 +28,8 @@ import { DeliveriesHistoryPage } from './features/deliveries/pages/DeliveriesHis
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
 import { StoreAnalyticsPage } from './features/stores/pages/StoreAnalyticsPage';
 import { StoreItemDetailPage } from './features/stores/pages/StoreItemDetailPage';
+import { ItemsPage } from './features/stores/pages/ItemsPage';
+import { AccountPage } from './pages/AccountPage';
 
 export function AppRouter() {
   return (
@@ -43,6 +45,8 @@ export function AppRouter() {
         <Route path="/health" element={<HealthPage />} />
 
         <Route path="/" element={<HomePage />} />
+
+        <Route path="/items" element={<ItemsPage />} />
 
         <Route path="/stores" element={<StoreListPage />} />
 
@@ -79,6 +83,8 @@ export function AppRouter() {
           <Route path="/deliveries" element={<DeliveriesPage />} />
 
           <Route path="/deliveries/history" element={<DeliveriesHistoryPage />} />
+
+          <Route path="/account" element={<AccountPage />} />
         </Route>
       </Route>
 

@@ -31,7 +31,7 @@ const moneyFormatter = new Intl.NumberFormat('en-PH', {
 
 function useStoreItemActions(item: StoreItem) {
   const navigate = useNavigate();
-  const updateItemMutation = useUpdateStoreItem(item.store_id);
+  const updateItemMutation = useUpdateStoreItem();
 
   const toggleAvailability = async () => {
     await updateItemMutation.mutateAsync({

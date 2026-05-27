@@ -3,14 +3,14 @@ import { Navigate } from 'react-router-dom';
 import { authClient } from '@/shared/lib/authClient';
 import { Spinner } from '@/shared/components/ui/spinner';
 
-import { useStoresByUser } from '../hooks/use-store-by-user';
+import { useStoreByUser } from '../hooks/use-store-by-user';
 
 export function StoreMePage() {
   const { data: session, isPending: isSessionPending } = authClient.useSession();
 
   const userId = session?.user?.id ?? '';
 
-  const { data: stores, isPending: isStoresPending } = useStoresByUser(userId);
+  const { data: store, isPending: isStoresPending } = useStoreByUser(userId);
 
   if (isSessionPending || isStoresPending) {
     return (
@@ -23,8 +23,6 @@ export function StoreMePage() {
   if (!session || session.user.role !== 'vendor') {
     return <Navigate to="/stores" replace />;
   }
-
-  const store = stores?.[0];
 
   if (!store) {
     return <Navigate to="/stores/new" replace />;
