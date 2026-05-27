@@ -67,6 +67,11 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
   ],
   vendor: [
     {
+      name: 'Analytics',
+      url: '/store-analytics',
+      icon: <HugeiconsIcon icon={AnalyticsIcon} strokeWidth={2} />,
+    },
+    {
       name: 'Store Profile',
       url: '/stores/me',
       icon: <HugeiconsIcon icon={StoreIcon} strokeWidth={2} />,
@@ -75,11 +80,6 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
       name: 'Store Items',
       url: '/stores/me/items',
       icon: <HugeiconsIcon icon={DishIcon} strokeWidth={2} />,
-    },
-    {
-      name: 'Analytics',
-      url: '/store-analytics',
-      icon: <HugeiconsIcon icon={AnalyticsIcon} strokeWidth={2} />,
     },
   ],
   rider: [
