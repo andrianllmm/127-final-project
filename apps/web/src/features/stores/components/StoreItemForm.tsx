@@ -33,6 +33,30 @@ const EMPTY_VALUES: CreateStoreItemInput = {
   image_url: undefined,
 };
 
+function sanitizePreviewUrl(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  // Allow only image-safe URL forms for previews.
+  // This avoids passing arbitrary untrusted text directly to <img src>.
+  if (
+    trimmed.startsWith('blob:') ||
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('/')
+  ) {
+    return trimmed;
+  }
+
+  return null;
+}
+
 export function StoreItemForm({
   submitLabel,
   defaultValues,
@@ -45,7 +69,7 @@ export function StoreItemForm({
   const previewObjectUrlRef = useRef<string | null>(null);
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(defaultImageUrl ?? null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(sanitizePreviewUrl(defaultImageUrl));
 
   const {
     register,
@@ -83,7 +107,7 @@ export function StoreItemForm({
       return;
     }
 
-    setPreviewUrl(defaultImageUrl ?? null);
+    setPreviewUrl(sanitizePreviewUrl(defaultImageUrl));
   }
 
   async function submit(values: CreateStoreItemInput) {
