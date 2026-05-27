@@ -38,14 +38,14 @@ export class DeliveriesRepository {
     return id;
   }
 
-  async updateStatus(id: string, status: string) {
+  async updateStatus(id: string, newStatus: string) {
     const pool = await getPool();
     const query = sql.type(z.any())`
-      UPDATE "order"
-      SET status = ${status}
-      WHERE order_id = ${id} AND status = 'open'
-      RETURNING *
-    `;
+    UPDATE "order"
+    SET status = ${newStatus}
+    WHERE order_id = ${id}
+    RETURNING *
+  `;
     return await pool.one(query);
   }
 

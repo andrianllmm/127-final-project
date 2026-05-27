@@ -25,4 +25,8 @@ export class DeliveriesService {
   async getActiveDeliveries() {
     return await this.repo.findActiveDeliveries();
   }
+
+  async updateDeliveryStatus(id: string, status: string) {
+    return await this.repo.updateStatus(id, status);
+  }
 }
