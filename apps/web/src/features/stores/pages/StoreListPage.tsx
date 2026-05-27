@@ -14,15 +14,17 @@ export function StoreListPage() {
     );
   }
 
+  const storeList = Array.isArray(stores) ? stores : [];
+
   return (
     <div className="mx-auto flex w-full flex-col gap-6 px-4 py-8">
       <div className="space-y-2">
         <h1 className="font-heading text-3xl font-semibold">Browse stores</h1>
       </div>
 
-      {stores?.length ? (
+      {storeList.length ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {stores.map((store) => (
+          {storeList.map((store) => (
             <StoreCard key={store.store_id} store={store} />
           ))}
         </div>
