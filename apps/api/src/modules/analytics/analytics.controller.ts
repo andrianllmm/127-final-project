@@ -1,56 +1,35 @@
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import type { AuthRequest } from '../../common/middleware/auth.middleware.js';
 import { AnalyticsService } from './analytics.service.js';
 import { StoresService } from '../stores/stores.service.js';
-import { analyticsQuerySchema, analyticsResponseSchema } from '@repo/api';
+import type { AnalyticsQuery } from '@repo/api';
 
 export class AnalyticsController {
   private service = new AnalyticsService();
   private storesService = new StoresService();
 
-  getStoreAnalytics = async (req: AuthRequest, res: Response): Promise<Response> => {
-    const { storeId } = req.params;
-    const { startDate, endDate, limit } = req.query;
-
-    if (typeof storeId !== 'string') {
-      return res.status(400).json({
-        message: 'Invalid store ID',
-      });
-    }
+  getStoreAnalytics = async (req: Request, res: Response): Promise<Response> => {
+    const { storeId } = req.params as { storeId: string };
+    const authReq = req as AuthRequest;
+    const { startDate, endDate, limit } = req.query as Partial<AnalyticsQuery>;
 
     try {
-      const queryValidation = analyticsQuerySchema.safeParse({
-        startDate,
-        endDate,
-        limit,
-      });
-
-      if (!queryValidation.success) {
-        return res.status(400).json({
-          message: 'Invalid query parameters',
-          errors: queryValidation.error.flatten(),
-        });
-      }
-
       const store = await this.storesService.getById(storeId);
       if (!store) {
         return res.status(404).json({ message: 'Store not found' });
       }
 
-      if (!req.user || store.user_id !== req.user.id) {
+      if (store.user_id !== authReq.user?.id) {
         return res.status(403).json({ message: 'Forbidden' });
       }
 
-      const data = await this.service.getStoreAnalytics(storeId, queryValidation.data);
+      const data = await this.service.getStoreAnalytics(storeId, {
+        startDate,
+        endDate,
+        limit: limit ?? 10,
+      });
 
-      const validatedData = analyticsResponseSchema.safeParse(data);
-      if (!validatedData.success) {
-        return res.status(500).json({
-          message: 'Invalid response data',
-        });
-      }
-
-      return res.json(validatedData.data);
+      return res.json(data);
     } catch (error) {
       console.error('Analytics error:', error);
       return res.status(500).json({

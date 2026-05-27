@@ -16,7 +16,7 @@ export function StoreAnalyticsPage() {
   const userId = session?.user?.id ?? '';
 
   const { data: store, isPending: isStorePending } = useStoreByUser(userId);
-  const [analyticsQuery, setAnalyticsQuery] = useState<AnalyticsQuery>({});
+  const [analyticsQuery, setAnalyticsQuery] = useState<AnalyticsQuery>({ limit: 10 });
 
   const storeId = store?.store_id ?? '';
 
