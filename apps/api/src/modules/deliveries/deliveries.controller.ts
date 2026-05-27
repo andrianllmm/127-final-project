@@ -9,6 +9,27 @@ export class DeliveriesController {
     return res.json(data);
   };
 
+  // Specifically handles requests for the Rider Offers Page
+  getOpenOffers = async (_req: Request, res: Response): Promise<Response> => {
+    try {
+      const data = await this.service.getOpenOffers();
+
+      const mappedData = data.map((order: any) => ({
+        id: order.id,
+        vendorName: order.vendorName,
+        pickupLocation: order.pickupLocation,
+        dropoffLocation: order.dropoffLocation,
+        totalPrice: Number(order.totalPrice),
+        itemCount: Number(order.itemCount),
+      }));
+
+      return res.json(mappedData);
+    } catch (error) {
+      console.error('Failed to fetch open offers:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
   getById = async (req: Request, res: Response): Promise<Response> => {
     const { id } = req.params;
 
@@ -27,5 +48,16 @@ export class DeliveriesController {
     }
 
     return res.json(data);
+  };
+
+  acceptDelivery = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+
+    if (!id) {
+      return res.status(400).json({ message: 'Delivery ID is required' });
+    }
+
+    const result = await this.service.acceptDelivery(id);
+    return res.json(result);
   };
 }

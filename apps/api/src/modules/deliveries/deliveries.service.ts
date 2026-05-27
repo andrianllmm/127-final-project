@@ -14,4 +14,12 @@ export class DeliveriesService {
   async getById(id: string) {
     return this.repo.findById(id);
   }
+
+  async getOpenOffers() {
+    return await this.repo.findOpenOffers();
+  }
+
+  async acceptDelivery(id: string) {
+    return await this.repo.updateStatus(id, 'accepted');
+  }
 }
