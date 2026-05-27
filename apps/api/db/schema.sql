@@ -1,7 +1,7 @@
-\restrict vHDcd7HFXO1z8OK1yeIOvAArzEjTtIRlWbdhzqw3m4nS6hB5Jiv8nKQM0s5ndzv
+\restrict dbmate
 
--- Dumped from database version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
--- Dumped by pg_dump version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
+-- Dumped from database version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
+-- Dumped by pg_dump version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -191,15 +191,16 @@ CREATE TABLE public.store_item (
 --
 
 CREATE TABLE public."user" (
-    id text NOT NULL,
+    user_id text NOT NULL,
     name text NOT NULL,
     email text NOT NULL,
     "emailVerified" boolean NOT NULL,
     image text,
     "createdAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updatedAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    role text,
-    phone_number text
+    password_hash text DEFAULT 'temporary_hash'::text NOT NULL,
+    phone_number character varying(50),
+    role public.user_role DEFAULT 'customer'::public.user_role NOT NULL
 );
 
 
@@ -294,7 +295,7 @@ ALTER TABLE ONLY public."user"
 --
 
 ALTER TABLE ONLY public."user"
-    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT user_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -387,7 +388,7 @@ CREATE TRIGGER trg_order_updated_at BEFORE UPDATE ON public."order" FOR EACH ROW
 --
 
 ALTER TABLE ONLY public.account
-    ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
+    ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(user_id) ON DELETE CASCADE;
 
 
 --
@@ -395,7 +396,7 @@ ALTER TABLE ONLY public.account
 --
 
 ALTER TABLE ONLY public."order"
-    ADD CONSTRAINT fk_order_customer FOREIGN KEY (customer_id) REFERENCES public."user"(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_order_customer FOREIGN KEY (customer_id) REFERENCES public."user"(user_id) ON DELETE CASCADE;
 
 
 --
@@ -419,7 +420,7 @@ ALTER TABLE ONLY public.order_item
 --
 
 ALTER TABLE ONLY public."order"
-    ADD CONSTRAINT fk_order_rider FOREIGN KEY (rider_id) REFERENCES public."user"(id) ON DELETE SET NULL;
+    ADD CONSTRAINT fk_order_rider FOREIGN KEY (rider_id) REFERENCES public."user"(user_id) ON DELETE SET NULL;
 
 
 --
@@ -443,7 +444,7 @@ ALTER TABLE ONLY public.store_item
 --
 
 ALTER TABLE ONLY public.store
-    ADD CONSTRAINT fk_store_user FOREIGN KEY (user_id) REFERENCES public."user"(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_store_user FOREIGN KEY (user_id) REFERENCES public."user"(user_id) ON DELETE CASCADE;
 
 
 --
@@ -451,14 +452,14 @@ ALTER TABLE ONLY public.store
 --
 
 ALTER TABLE ONLY public.session
-    ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
+    ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(user_id) ON DELETE CASCADE;
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict vHDcd7HFXO1z8OK1yeIOvAArzEjTtIRlWbdhzqw3m4nS6hB5Jiv8nKQM0s5ndzv
+\unrestrict dbmate
 
 
 --
@@ -469,4 +470,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260509175040'),
     ('20260510051607'),
     ('20260511153205'),
-    ('20260511153313');
+    ('20260511153313'),
+    ('20260511214300');

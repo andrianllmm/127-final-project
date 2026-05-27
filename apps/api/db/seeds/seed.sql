@@ -24,7 +24,7 @@ RESTART IDENTITY CASCADE;
 -- No session/account/verification seeding.
 
 INSERT INTO "user"
-    (id, name, email, "emailVerified", image, "createdAt", "updatedAt", phone_number, role)
+    (user_id, name, email, "emailVerified", image, "createdAt", "updatedAt", phone_number, role)
 VALUES
     -- Customers
     ('550e8400-e29b-41d4-a716-446655440001', 'Ana Reyes',       'ana.reyes@example.com',    TRUE,  NULL, NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days', '+639171111001', 'customer'),
@@ -38,7 +38,7 @@ VALUES
     -- Riders
     ('550e8400-e29b-41d4-a716-446655440006', 'Felix Cruz',      'felix.cruz@example.com',   TRUE,  NULL, NOW() - INTERVAL '45 days', NOW() - INTERVAL '45 days', '+639193333001', 'rider'),
     ('550e8400-e29b-41d4-a716-446655440007', 'Grace Lim',       'grace.lim@example.com',    TRUE,  NULL, NOW() - INTERVAL '40 days', NOW() - INTERVAL '40 days', '+639193333002', 'rider')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (user_id) DO NOTHING;
 
 
 -- =========================
