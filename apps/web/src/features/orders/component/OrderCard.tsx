@@ -114,11 +114,11 @@ export function OrderCard({ order, mode, action, muted = false, className }: Ord
       </CardContent>
 
       <CardFooter className="flex w-full flex-row gap-2">
+        {action ? <div className="flex flex-1 gap-2">{action}</div> : null}
+
         <Button asChild variant="outline" className="flex-1">
           <Link to={`/orders/${order.id}`}>View</Link>
         </Button>
-
-        {action ? <div className="flex flex-1 gap-2">{action}</div> : null}
       </CardFooter>
     </Card>
   );
