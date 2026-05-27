@@ -44,9 +44,7 @@ export class AnalyticsRepository {
           WHEN COUNT(DISTINCT o.order_id) > 0 THEN (COALESCE(SUM(oi.price_snapshot * oi.quantity), 0) / COUNT(DISTINCT o.order_id))::numeric(10,2)
           ELSE 0
         END as average_order_value,
-        COUNT(DISTINCT CASE WHEN o.status = 'delivered' THEN o.order_id END)::integer as completed_orders,
-        COUNT(DISTINCT CASE WHEN o.status = 'cancelled' THEN o.order_id END)::integer as cancelled_orders,
-        COUNT(DISTINCT CASE WHEN o.status IN ('open', 'accepted', 'picked_up') THEN o.order_id END)::integer as pending_orders
+        COUNT(DISTINCT CASE WHEN o.status = 'delivered' THEN o.order_id END)::integer as completed_orders
       FROM "order" o
       LEFT JOIN order_item oi ON o.order_id = oi.order_id
       WHERE o.store_id = ${storeId}
@@ -60,8 +58,6 @@ export class AnalyticsRepository {
         total_revenue: '0',
         average_order_value: '0',
         completed_orders: 0,
-        cancelled_orders: 0,
-        pending_orders: 0,
       }
     );
   }
@@ -80,8 +76,8 @@ export class AnalyticsRepository {
       SELECT
         si.store_item_id,
         si.name,
-        SUM(oi.quantity)::integer as total_quantity_sold,
-        SUM(oi.price_snapshot * oi.quantity) as total_revenue,
+        COALESCE(SUM(oi.quantity), 0)::integer as total_quantity_sold,
+        COALESCE(SUM(oi.price_snapshot * oi.quantity), 0) as total_revenue,
         COUNT(DISTINCT oi.order_id)::integer as order_count
       FROM store_item si
       LEFT JOIN order_item oi ON si.store_item_id = oi.store_item_id

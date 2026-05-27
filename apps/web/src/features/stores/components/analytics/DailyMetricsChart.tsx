@@ -1,5 +1,9 @@
+import { useMemo } from 'react';
+import { currencyFormatter } from '@/shared/lib/currencyFormatter';
 import { Card } from '@/shared/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shared/components/ui/chart';
 import { DailyMetrics } from '@repo/api';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 interface DailyMetricsChartProps {
   data: DailyMetrics;
@@ -7,68 +11,104 @@ interface DailyMetricsChartProps {
 }
 
 export function DailyMetricsChart({ data, isLoading = false }: DailyMetricsChartProps) {
-  const maxOrders = Math.max(...data.map((d) => d.order_count), 1);
+  const chartData = useMemo(
+    () => [...data].slice(-30).sort((a, b) => a.date.localeCompare(b.date)),
+    [data],
+  );
+
+  const chartConfig = {
+    orders: {
+      label: 'Orders',
+      color: 'var(--chart-1)',
+    },
+  } satisfies import('@/shared/components/ui/chart').ChartConfig;
+
+  const totalOrders = chartData.reduce((sum, day) => sum + day.order_count, 0);
+
+  const totalRevenue = chartData.reduce((sum, day) => sum + Number(day.revenue || 0), 0);
+
+  const averageOrders = chartData.length > 0 ? totalOrders / chartData.length : 0;
 
   return (
     <Card className="p-6">
-      <h3 className="mb-4 font-semibold text-gray-900">Daily Order Trends (Last 30 Days)</h3>
+      <div className="mb-5 space-y-1">
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">Daily Order Trends</h3>
+        <p className="text-sm text-muted-foreground">
+          Orders placed per day for the selected range.
+        </p>
+      </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-8">
-          <div className="text-sm text-gray-500">Loading...</div>
-        </div>
-      ) : data.length === 0 ? (
-        <div className="flex justify-center py-8">
-          <div className="text-sm text-gray-500">No data available</div>
+        <div className="flex justify-center py-8 text-sm text-muted-foreground">Loading...</div>
+      ) : chartData.length === 0 ? (
+        <div className="flex justify-center py-8 text-sm text-muted-foreground">
+          No data available
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="flex gap-1 overflow-x-auto pb-4">
-            {data
-              .slice(0, 30)
-              .reverse()
-              .map((day) => (
-                <div key={day.date} className="flex flex-col items-center gap-2">
-                  <div className="flex h-32 items-end justify-center">
-                    <div
-                      className="w-8 rounded-t bg-blue-500 transition-all hover:bg-blue-600"
-                      style={{
-                        height: `${Math.max((day.order_count / maxOrders) * 120, 4)}px`,
-                      }}
-                      title={`${day.date}: ${day.order_count} orders`}
-                    />
-                  </div>
-                  <span className="text-xs text-gray-600">
-                    {new Date(day.date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </span>
-                </div>
-              ))}
-          </div>
-          <div className="border-t border-gray-200 pt-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-xs text-gray-600">Total Orders</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {data.reduce((sum, d) => sum + d.order_count, 0)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-600">Avg Orders/Day</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {data.length > 0
-                    ? (data.reduce((sum, d) => sum + d.order_count, 0) / data.length).toFixed(1)
-                    : 0}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-600">Completed</p>
-                <p className="text-lg font-semibold text-green-600">
-                  {data.reduce((sum, d) => sum + d.completed_count, 0)}
-                </p>
-              </div>
+        <div className="space-y-6">
+          <ChartContainer config={chartConfig} className="aspect-[16/9] min-h-[18rem] w-full">
+            <BarChart data={chartData} margin={{ left: 4, right: 4, top: 8 }}>
+              <CartesianGrid vertical={false} stroke="var(--border)" />
+
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                minTickGap={24}
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                tickFormatter={(value) =>
+                  new Date(String(value)).toLocaleDateString('en-PH', {
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                }
+              />
+
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                width={36}
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+                labelFormatter={(value) =>
+                  new Date(String(value)).toLocaleDateString('en-PH', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                }
+              />
+
+              <Bar dataKey="order_count" fill="var(--color-orders)" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ChartContainer>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Orders</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+                {totalOrders.toLocaleString()}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">Average Orders / Day</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+                {averageOrders.toFixed(1)}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">Revenue in Range</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+                {currencyFormatter.format(totalRevenue)}
+              </p>
             </div>
           </div>
         </div>

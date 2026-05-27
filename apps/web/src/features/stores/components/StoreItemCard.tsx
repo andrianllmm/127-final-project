@@ -44,11 +44,11 @@ function useStoreItemActions(item: StoreItem) {
 
   const goToEdit = (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    navigate(`/stores/${item.store_id}/items/${item.store_item_id}/edit`);
+    navigate(`/items/${item.store_item_id}/edit`);
   };
 
   const goToDetail = () => {
-    navigate(`/stores/${item.store_id}/items/${item.store_item_id}`);
+    navigate(`/items/${item.store_item_id}`);
   };
 
   return {
@@ -97,12 +97,16 @@ function ManagerActions({
   );
 }
 
-function CustomerActions({item}: {item: StoreItem}) {
+function CustomerActions({ item }: { item: StoreItem }) {
   const addCartItem = useAddCartItem();
 
   return (
-    <Button type="button" size="sm" className="w-full" disabled={!item.is_available || addCartItem.isPending} 
-    onClick={() =>addCartItem.mutate({store_item_id: item.store_item_id, quantity: 1,})}
+    <Button
+      type="button"
+      size="sm"
+      className="w-full"
+      disabled={!item.is_available || addCartItem.isPending}
+      onClick={() => addCartItem.mutate({ store_item_id: item.store_item_id, quantity: 1 })}
     >
       {addCartItem.isPending ? 'Adding...' : 'Add to Cart'}
     </Button>
@@ -122,7 +126,7 @@ export function StoreItemCard({ item, mode }: StoreItemCardProps) {
     }
 
     if (mode === 'customer') {
-      return <CustomerActions item={item}/>;
+      return <CustomerActions item={item} />;
     }
 
     return null;

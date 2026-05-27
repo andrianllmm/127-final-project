@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { authClient } from '@/shared/lib/authClient';
+import { currencyFormatter } from '@/shared/lib/currencyFormatter';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { useStoreByUser } from '../hooks/use-store-by-user';
 import { useStoreAnalytics } from '../hooks/use-store-analytics';
@@ -16,7 +17,7 @@ export function StoreAnalyticsPage() {
   const userId = session?.user?.id ?? '';
 
   const { data: store, isPending: isStorePending } = useStoreByUser(userId);
-  const [analyticsQuery, setAnalyticsQuery] = useState<AnalyticsQuery>({});
+  const [analyticsQuery, setAnalyticsQuery] = useState<AnalyticsQuery>({ limit: 10 });
 
   const storeId = store?.store_id ?? '';
 
@@ -42,19 +43,27 @@ export function StoreAnalyticsPage() {
   }
 
   const handleDateRangeChange = (startDate?: string, endDate?: string) => {
-    setAnalyticsQuery({ ...analyticsQuery, startDate, endDate });
+    setAnalyticsQuery((current) => ({
+      ...current,
+      startDate,
+      endDate,
+    }));
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">{store.store_name} Analytics</h1>
-        <p className="mt-1 text-gray-600">Track your store performance and insights</p>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
+      <div className="space-y-2">
+        <h1 className="font-heading text-3xl font-semibold text-primary-foreground">
+          {store.store_name}'s Analytics
+        </h1>
+        <p className="text-muted-foreground">Track your store performance and insights.</p>
       </div>
 
-      {/* Filter Section */}
-      <DateRangePicker onRangeChange={handleDateRangeChange} isLoading={isAnalyticsPending} />
+      <DateRangePicker
+        value={{ startDate: analyticsQuery.startDate, endDate: analyticsQuery.endDate }}
+        onRangeChange={handleDateRangeChange}
+        isLoading={isAnalyticsPending}
+      />
 
       {isAnalyticsPending ? (
         <div className="flex min-h-[60vh] items-center justify-center">
@@ -62,7 +71,6 @@ export function StoreAnalyticsPage() {
         </div>
       ) : analyticsData ? (
         <>
-          {/* Metrics Grid */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               title="Total Orders"
@@ -71,12 +79,14 @@ export function StoreAnalyticsPage() {
             />
             <MetricCard
               title="Total Revenue"
-              value={`₱${parseFloat(analyticsData.metrics.total_revenue).toFixed(2)}`}
+              value={currencyFormatter.format(Number(analyticsData.metrics.total_revenue) || 0)}
               description="Total sales revenue"
             />
             <MetricCard
               title="Avg Order Value"
-              value={`₱${parseFloat(analyticsData.metrics.average_order_value).toFixed(2)}`}
+              value={currencyFormatter.format(
+                Number(analyticsData.metrics.average_order_value) || 0,
+              )}
               description="Average per order"
             />
             <MetricCard
@@ -86,41 +96,20 @@ export function StoreAnalyticsPage() {
             />
           </div>
 
-          {/* Status and Daily Charts */}
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <OrderStatusBreakdownCard data={analyticsData.order_status_breakdown} />
-            <div className="lg:col-span-2">
-              <DailyMetricsChart data={analyticsData.daily_metrics} />
-            </div>
+            <DailyMetricsChart data={analyticsData.daily_metrics} />
           </div>
 
-          {/* Top Items */}
           <TopItemsTable items={analyticsData.top_items} />
-
-          {/* Additional Metrics */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <MetricCard
-              title="Cancelled Orders"
-              value={analyticsData.metrics.cancelled_orders}
-              description="Cancelled in period"
-            />
-            <MetricCard
-              title="Pending Orders"
-              value={analyticsData.metrics.pending_orders}
-              description="Open or in transit"
-            />
-            <MetricCard
-              title="Top Item"
-              value={analyticsData.top_items[0]?.name ?? 'N/A'}
-              description={`${analyticsData.top_items[0]?.total_quantity_sold ?? 0} sold`}
-            />
-          </div>
         </>
       ) : (
-        <div className="flex justify-center rounded-lg border border-gray-200 py-12">
+        <div className="flex justify-center rounded-lg border border-border py-12">
           <div className="text-center">
-            <p className="text-gray-600">No analytics data available</p>
-            <p className="mt-1 text-sm text-gray-500">Place some orders to see analytics</p>
+            <p className="text-muted-foreground">No analytics data available</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Place some orders to see analytics.
+            </p>
           </div>
         </div>
       )}

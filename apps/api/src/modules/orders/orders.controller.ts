@@ -20,8 +20,12 @@ export class OrdersController {
 
     const data = await this.service.getById(id);
 
-    if (!data || data.customer_id !== req.user!.id) {
+    if (!data) {
       return res.status(404).json({ message: 'Not found' });
+    }
+
+    if (data.customer_id !== req.user!.id && req.user!.role !== 'rider') {
+      return res.status(403).json({ message: 'Forbidden' });
     }
 
     return res.json(data);
@@ -53,23 +57,18 @@ export class OrdersController {
   clearCart = async (req: AuthRequest, res: Response): Promise<Response> => {
     const data = await this.service.clearCart(req.user!.id);
 
-    if (!data) {return res.status(404).json({ message: 'Cart not found' });}
+    if (!data) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
 
     return res.status(204).send();
   };
 
-  updateCartItemQuantity = async (
-    req: AuthRequest,
-    res: Response,
-  ): Promise<Response> => {
+  updateCartItemQuantity = async (req: AuthRequest, res: Response): Promise<Response> => {
     const { orderItemId } = req.params as { orderItemId: string };
     const { quantity } = req.body as { quantity: number };
 
-    const data = await this.service.updateCartItemQuantity(
-      req.user!.id,
-      orderItemId,
-      quantity,
-    );
+    const data = await this.service.updateCartItemQuantity(req.user!.id, orderItemId, quantity);
 
     if (!data) {
       return res.status(404).json({ message: 'Cart item not found' });
@@ -77,7 +76,7 @@ export class OrdersController {
 
     return res.json(data);
   };
-  
+
   checkoutCart = async (req: AuthRequest, res: Response): Promise<Response> => {
     const data = await this.service.checkoutCart(req.user!.id, req.body);
 

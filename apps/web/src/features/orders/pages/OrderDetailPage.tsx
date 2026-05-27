@@ -1,24 +1,14 @@
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import { useOrder } from '../hooks/use-order';
 import { useCancelOrder } from '../hooks/use-cancel-order';
 
+import { currencyFormatter } from '@/shared/lib/currencyFormatter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { OrderActionDialog } from '../component/OrderActionDialog';
 import { Spinner } from '@/shared/components/ui/spinner';
-import { Button } from '@/shared/components/ui/button';
 import { toast } from 'sonner';
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-PH', {
-    style: 'currency',
-    currency: 'PHP',
-  }).format(value);
-}
-
-function formatStatus(status: string) {
-  return status.replace('_', ' ').toUpperCase();
-}
+import { OrderStatusBadge } from '../component/OrderStatusBadge';
 
 export function OrderDetailPage() {
   const { id = '' } = useParams();
@@ -34,14 +24,16 @@ export function OrderDetailPage() {
   }
 
   if (!order) {
-    return <Navigate to="/orders" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-8 space-y-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-3xl font-semibold">Order Details</h1>
+          <h1 className="font-heading text-3xl font-semibold text-primary-foreground">
+            Order Details
+          </h1>
           <p className="text-sm text-muted-foreground">Order #{order.order_id.slice(0, 8)}</p>
         </div>
 
@@ -64,10 +56,6 @@ export function OrderDetailPage() {
               }
             />
           )}
-
-          <Button asChild variant="outline">
-            <Link to="/orders">Back to Orders</Link>
-          </Button>
         </div>
       </div>
 
@@ -80,7 +68,7 @@ export function OrderDetailPage() {
           <div className="grid gap-5 text-sm sm:grid-cols-2">
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Status</p>
-              <p className="font-semibold">{formatStatus(order.status)}</p>
+              <OrderStatusBadge status={order.status} className="mt-2" />
             </div>
 
             <div>
@@ -97,7 +85,7 @@ export function OrderDetailPage() {
 
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Total</p>
-              <p className="text-xl font-bold">{formatCurrency(order.total_price)}</p>
+              <p className="text-xl font-bold">{currencyFormatter.format(order.total_price)}</p>
             </div>
           </div>
         </CardContent>
@@ -117,11 +105,11 @@ export function OrderDetailPage() {
               <div>
                 <p className="font-medium">{item.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  Qty: {item.quantity} × {formatCurrency(item.price_snapshot)}
+                  Qty: {item.quantity} x {currencyFormatter.format(item.price_snapshot)}
                 </p>
               </div>
 
-              <p className="font-semibold">{formatCurrency(item.subtotal)}</p>
+              <p className="font-semibold">{currencyFormatter.format(item.subtotal)}</p>
             </div>
           ))}
         </CardContent>

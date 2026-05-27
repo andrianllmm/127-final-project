@@ -17,9 +17,11 @@ export function StoreListPage() {
   const storeList = Array.isArray(stores) ? stores : [];
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <div className="space-y-2">
-        <h1 className="font-heading text-3xl font-semibold">Browse stores</h1>
+        <h1 className="font-heading text-3xl font-semibold text-primary-foreground">
+          Browse stores
+        </h1>
       </div>
 
       {storeList.length ? (

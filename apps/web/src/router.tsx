@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route, useParams } from 'react-router-dom';
 
 import { RootLayout } from './layouts/RootLayout';
 import { AuthLayout } from './layouts/AuthLayout';
@@ -30,7 +30,18 @@ import { StoreAnalyticsPage } from './features/stores/pages/StoreAnalyticsPage';
 import { StoreItemDetailPage } from './features/stores/pages/StoreItemDetailPage';
 import { ItemsPage } from './features/stores/pages/ItemsPage';
 import { AccountPage } from './pages/AccountPage';
-import { ActiveDeliveriesPage } from './features/deliveries/pages/ActiveDeliveriesPage';
+
+function LegacyStoreItemDetailRedirect() {
+  const { itemId = '' } = useParams();
+
+  return <Navigate to={`/items/${itemId}`} replace />;
+}
+
+function LegacyStoreItemEditRedirect() {
+  const { itemId = '' } = useParams();
+
+  return <Navigate to={`/items/${itemId}/edit`} replace />;
+}
 
 export function AppRouter() {
   return (
@@ -55,7 +66,9 @@ export function AppRouter() {
 
         <Route path="/stores/:id/items" element={<StoreItemsPage />} />
 
-        <Route path="/stores/:id/items/:itemId" element={<StoreItemDetailPage />} />
+        <Route path="/items/:id" element={<StoreItemDetailPage />} />
+
+        <Route path="/stores/:id/items/:itemId" element={<LegacyStoreItemDetailRedirect />} />
 
         {/* PRIVATE */}
         <Route element={<ProtectedRoute />}>
@@ -67,16 +80,20 @@ export function AppRouter() {
 
           <Route path="/stores/:id/edit" element={<StoreEditPage />} />
 
-          <Route path="/stores/:id/items/new" element={<StoreItemNewPage />} />
+          <Route path="/items/new" element={<StoreItemNewPage />} />
 
-          <Route path="/stores/:id/items/:itemId/edit" element={<StoreItemEditPage />} />
+          <Route path="/stores/:id/items/new" element={<Navigate to="/items/new" replace />} />
+
+          <Route path="/items/:id/edit" element={<StoreItemEditPage />} />
+
+          <Route path="/stores/:id/items/:itemId/edit" element={<LegacyStoreItemEditRedirect />} />
 
           <Route path="/store-analytics" element={<StoreAnalyticsPage />} />
 
           <Route path="/cart" element={<CartPage />} />
 
           <Route path="/orders" element={<OrderListPage />} />
-          
+
           <Route path="/orders/:id" element={<OrderDetailPage />} />
 
           <Route path="/offers" element={<OffersPage />} />
@@ -86,8 +103,6 @@ export function AppRouter() {
           <Route path="/deliveries/history" element={<DeliveriesHistoryPage />} />
 
           <Route path="/account" element={<AccountPage />} />
-
-          <Route path="/deliveries/active" element={<ActiveDeliveriesPage />} />
         </Route>
       </Route>
 

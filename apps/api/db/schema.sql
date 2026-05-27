@@ -1,12 +1,11 @@
-\restrict dbmate
+\restrict NCgfXsJV7nN5cXSjeUwIsF0iwuX1Nw9EBdInr4C9Zddx7HVIkRhr7cyeFcBhJKN
 
--- Dumped from database version 18.4
--- Dumped by pg_dump version 18.4
+-- Dumped from database version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -460,7 +459,7 @@ ALTER TABLE ONLY public.session
 -- PostgreSQL database dump complete
 --
 
-\unrestrict dbmate
+\unrestrict NCgfXsJV7nN5cXSjeUwIsF0iwuX1Nw9EBdInr4C9Zddx7HVIkRhr7cyeFcBhJKN
 
 
 --

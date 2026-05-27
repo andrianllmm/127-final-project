@@ -23,7 +23,7 @@ export const HomePage = () => {
         break;
 
       case 'vendor':
-        navigate('/stores/me', { replace: true });
+        navigate('/store-analytics', { replace: true });
         break;
 
       case 'rider':
