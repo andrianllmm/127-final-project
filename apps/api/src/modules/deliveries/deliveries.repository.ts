@@ -39,11 +39,11 @@ export class DeliveriesRepository {
 
   async updateStatus(id: string, status: string) {
     const query = sql.unsafe`
-      UPDATE "order" 
-      SET status = ${status} 
-      WHERE order_id = ${id}
-      RETURNING *
-    `;
+    UPDATE "order" 
+    SET status = ${status} 
+    WHERE order_id = ${id} AND status = 'open'
+    RETURNING *
+  `;
     const pool = await getPool();
     return await pool.one(query);
   }

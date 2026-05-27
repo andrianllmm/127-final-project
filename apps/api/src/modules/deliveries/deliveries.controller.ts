@@ -25,7 +25,8 @@ export class DeliveriesController {
 
       return res.json(mappedData);
     } catch (error) {
-      // ...
+      console.error('Failed to fetch open offers:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   };
 
