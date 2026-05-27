@@ -50,7 +50,7 @@ app.get('/health', (_req, res) => {
 app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/stores', storesRoutes);
-app.use('/stores', storeItemsRoutes);
+app.use('/items', storeItemsRoutes);
 app.use('/analytics', analyticsRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/deliveries', deliveriesRoutes);

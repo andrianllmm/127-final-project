@@ -11,7 +11,7 @@ export const getStores = () => apiClient.get<Store[]>('/stores');
 
 export const getStore = (id: string) => apiClient.get<Store>(`/stores/${id}`);
 
-export const getStoresByUser = (userId: string) => apiClient.get<Store[]>(`/stores/user/${userId}`);
+export const getStoreByUser = (userId: string) => apiClient.get<Store>(`/stores/user/${userId}`);
 
 export const createStore = (input: CreateStoreInput) =>
   apiClient.post<Store, CreateStoreInput>('/stores', input);

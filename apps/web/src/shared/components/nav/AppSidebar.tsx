@@ -28,10 +28,27 @@ import {
 import { Logo } from '../brand/Logo';
 import { Link } from 'react-router-dom';
 
-type UserRole = 'customer' | 'vendor' | 'rider';
+type UserRole = 'anon' | 'customer' | 'vendor' | 'rider';
 
 const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNode }[]> = {
+  anon: [
+    {
+      name: 'Browse Items',
+      url: '/items',
+      icon: <HugeiconsIcon icon={DishIcon} strokeWidth={2} />,
+    },
+    {
+      name: 'Browse Stores',
+      url: '/stores',
+      icon: <HugeiconsIcon icon={StoreIcon} strokeWidth={2} />,
+    },
+  ],
   customer: [
+    {
+      name: 'Browse Items',
+      url: '/items',
+      icon: <HugeiconsIcon icon={DishIcon} strokeWidth={2} />,
+    },
     {
       name: 'Browse Stores',
       url: '/stores',
@@ -86,7 +103,7 @@ const navData: Record<UserRole, { name: string; url: string; icon: React.ReactNo
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = authClient.useSession();
-  const role = session ? (session.user?.role as UserRole | undefined) || 'customer' : undefined;
+  const role = session ? (session.user?.role as UserRole | undefined) || 'anon' : 'anon';
 
   return (
     <Sidebar variant="inset" {...props}>

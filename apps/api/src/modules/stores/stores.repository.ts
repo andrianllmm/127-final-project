@@ -37,22 +37,22 @@ export class StoresRepository {
     return row as Store | null;
   }
 
-  async findByUserId(userId: string): Promise<Store[]> {
+  async findByUserId(userId: string): Promise<Store | null> {
     const pool = await getPool();
 
-    const rows = await pool.any(sql.type(storeSchema)`
-      SELECT
-        store_id,
-        user_id,
-        store_name,
-        store_address,
-        created_at
-      FROM store
-      WHERE user_id = ${userId}
-      ORDER BY created_at DESC
-    `);
+    const row = await pool.maybeOne(sql.type(storeSchema)`
+    SELECT
+      store_id,
+      user_id,
+      store_name,
+      store_address,
+      created_at
+    FROM store
+    WHERE user_id = ${userId}
+    LIMIT 1
+  `);
 
-    return rows as Store[];
+    return row ?? null;
   }
 
   async create(userId: string, input: CreateStoreInput): Promise<Store> {
