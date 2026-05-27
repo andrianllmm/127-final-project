@@ -31,6 +31,7 @@ router.patch(
   '/:itemId',
   requireAuth,
   requireRole('vendor'),
+  validate({ params: z.object({ itemId: z.uuid() }) }),
   storeItemImageUpload.single('image'),
   controller.update,
 );

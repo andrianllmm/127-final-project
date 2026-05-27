@@ -3,6 +3,8 @@ import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import z from 'zod';
+import os from 'node:os';
+import { createStoreItemSchema, updateStoreItemSchema } from '@repo/api';
 import { StoreItemsService } from './store-items.service.js';
 import { AuthRequest } from '../../common/middleware/auth.middleware.js';
 import { StoreItemsQuery } from '@repo/api';
@@ -11,80 +13,58 @@ function isForbiddenError(error: unknown) {
   return error instanceof Error && error.message === 'Forbidden';
 }
 
-const uploadsDir = path.join(process.cwd(), 'uploads');
+const uploadsDir = process.env.UPLOADS_DIR ?? path.join(os.tmpdir(), 'miago-uploads');
 const allowedImageMimeTypes = new Map<string, string>([
   ['image/jpeg', '.jpg'],
   ['image/png', '.png'],
   ['image/webp', '.webp'],
 ]);
 
-const requiredTextSchema = z.preprocess(
-  (value) => (typeof value === 'string' ? value.trim() : value),
-  z.string().min(1, 'Item name is required').max(255, 'Item name is too long'),
-);
+function preprocessCreateBody(body: any) {
+  return {
+    name: typeof body.name === 'string' ? body.name.trim() : body.name,
+    description:
+      typeof body.description === 'string' ? body.description.trim() || undefined : undefined,
+    price: body.price === undefined || body.price === '' ? undefined : Number(body.price),
+    is_available:
+      typeof body.is_available === 'boolean'
+        ? body.is_available
+        : typeof body.is_available === 'string'
+          ? body.is_available === 'true'
+          : undefined,
+    image_url: typeof body.image_url === 'string' ? body.image_url.trim() || undefined : undefined,
+  };
+}
 
-const optionalTextSchema = (maxLength: number, message: string) =>
-  z.preprocess((value) => {
-    if (typeof value !== 'string') {
-      return undefined;
-    }
+function preprocessUpdateBody(body: any) {
+  const out: Record<string, unknown> = {};
 
-    const trimmed = value.trim();
-    return trimmed ? trimmed : undefined;
-  }, z.string().max(maxLength, message).optional());
-
-const optionalImageUrlSchema = z.preprocess((value) => {
-  if (typeof value !== 'string') {
-    return undefined;
+  if (Object.prototype.hasOwnProperty.call(body, 'name')) {
+    out.name = typeof body.name === 'string' ? body.name.trim() : body.name;
   }
 
-  const trimmed = value.trim();
-  return trimmed ? trimmed : undefined;
-}, z.url().optional());
-
-const priceSchema = z.preprocess(
-  (value) => {
-    if (value === '' || value === null || value === undefined) {
-      return undefined;
-    }
-
-    if (typeof value === 'string') {
-      return Number(value);
-    }
-
-    return value;
-  },
-  z.number('Invalid price').min(0, 'Price must be at least 0'),
-);
-
-const availabilitySchema = z.preprocess((value) => {
-  if (typeof value === 'boolean') {
-    return value;
+  if (Object.prototype.hasOwnProperty.call(body, 'description')) {
+    out.description =
+      typeof body.description === 'string' ? body.description.trim() || undefined : undefined;
   }
 
-  if (typeof value === 'string') {
-    if (value === 'true') return true;
-    if (value === 'false') return false;
+  if (Object.prototype.hasOwnProperty.call(body, 'price')) {
+    out.price = body.price === '' || body.price === undefined ? undefined : Number(body.price);
   }
 
-  return undefined;
-}, z.boolean().optional());
+  if (Object.prototype.hasOwnProperty.call(body, 'is_available')) {
+    const v = body.is_available;
+    out.is_available =
+      typeof v === 'boolean' ? v : v === 'true' ? true : v === 'false' ? false : undefined;
+  }
 
-const createStoreItemBodySchema = z.object({
-  name: requiredTextSchema,
-  description: optionalTextSchema(1000, 'Description is too long'),
-  price: priceSchema,
-  is_available: availabilitySchema,
-  image_url: optionalImageUrlSchema,
-});
+  if (Object.prototype.hasOwnProperty.call(body, 'image_url')) {
+    out.image_url =
+      typeof body.image_url === 'string' ? body.image_url.trim() || undefined : undefined;
+  }
 
-const updateStoreItemBodySchema = z.object({
-  name: requiredTextSchema.optional(),
-  description: optionalTextSchema(1000, 'Description is too long'),
-  price: priceSchema.optional(),
-  is_available: availabilitySchema.optional(),
-  image_url: optionalImageUrlSchema,
-});
+  return out;
+}
 
 async function saveUploadedImage(file: Express.Multer.File) {
   const extension = allowedImageMimeTypes.get(file.mimetype);
@@ -177,17 +157,20 @@ export class StoreItemsController {
     let uploadedFilePath: string | null = null;
 
     try {
-      const parsedBody = createStoreItemBodySchema.parse(req.body);
+      const pre = preprocessCreateBody(req.body);
+      const parsedBody = createStoreItemSchema.parse(pre);
       const uploadedImage = authReq.file ? await saveUploadedImage(authReq.file) : null;
 
       uploadedFilePath = uploadedImage?.filePath ?? null;
 
-      const result = await this.service.create(authReq.user!.id, {
+      const createInput = {
         ...parsedBody,
         image_url: uploadedImage
           ? buildPublicImageUrl(req, uploadedImage.filename)
           : parsedBody.image_url,
-      });
+      };
+
+      const result = await this.service.create(authReq.user!.id, createInput);
 
       if (!result) {
         await removeFile(uploadedFilePath);
@@ -216,15 +199,21 @@ export class StoreItemsController {
 
     try {
       const { itemId } = z.object({ itemId: z.uuid() }).parse(req.params);
-      const parsedBody = updateStoreItemBodySchema.parse(req.body);
+      const pre = preprocessUpdateBody(req.body);
+      const parsedBody = updateStoreItemSchema.parse(pre);
       const uploadedImage = authReq.file ? await saveUploadedImage(authReq.file) : null;
 
       uploadedFilePath = uploadedImage?.filePath ?? null;
 
-      const result = await this.service.update(authReq.user!.id, itemId, {
-        ...parsedBody,
-        ...(uploadedImage ? { image_url: buildPublicImageUrl(req, uploadedImage.filename) } : {}),
-      });
+      const updatePayload: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(parsedBody)) {
+        if (value !== undefined) updatePayload[key] = value;
+      }
+      if (uploadedImage) {
+        updatePayload.image_url = buildPublicImageUrl(req, uploadedImage.filename);
+      }
+
+      const result = await this.service.update(authReq.user!.id, itemId, updatePayload as any);
 
       if (!result) {
         await removeFile(uploadedFilePath);

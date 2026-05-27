@@ -3,6 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import os from 'node:os';
 import { env } from './config/env.js';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './modules/auth/auth.config.js';
@@ -18,7 +19,7 @@ import deliveriesRoutes from './modules/deliveries/deliveries.routes.js';
 import analyticsRoutes from './modules/analytics/analytics.routes.js';
 
 const app = express();
-const uploadsDir = join(process.cwd(), 'uploads');
+const uploadsDir = process.env.UPLOADS_DIR ?? join(os.tmpdir(), 'miago-uploads');
 
 mkdirSync(uploadsDir, { recursive: true });
 
