@@ -8,16 +8,13 @@ import { OrderActionDialog } from '../component/OrderActionDialog';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 import { toast } from 'sonner';
+import { OrderStatusBadge } from '../component/OrderStatusBadge';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-PH', {
     style: 'currency',
     currency: 'PHP',
   }).format(value);
-}
-
-function formatStatus(status: string) {
-  return status.replace('_', ' ').toUpperCase();
 }
 
 export function OrderDetailPage() {
@@ -80,7 +77,7 @@ export function OrderDetailPage() {
           <div className="grid gap-5 text-sm sm:grid-cols-2">
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Status</p>
-              <p className="font-semibold">{formatStatus(order.status)}</p>
+              <OrderStatusBadge status={order.status} className="mt-2" />
             </div>
 
             <div>

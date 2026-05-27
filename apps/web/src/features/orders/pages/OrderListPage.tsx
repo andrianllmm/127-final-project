@@ -7,73 +7,7 @@ import { useOrders } from '../hooks/use-orders';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-PH', {
-    style: 'currency',
-    currency: 'PHP',
-  }).format(value);
-}
-
-function formatStatus(status: string) {
-  return status.replace('_', ' ').toUpperCase();
-}
-
-function getStatusBadgeClass(status: string) {
-  switch (status) {
-    case 'open': return 'bg-yellow-100 text-yellow-800';
-    case 'accepted': return 'bg-blue-100 text-blue-800';
-    case 'picked_up': return 'bg-purple-100 text-purple-800';
-    case 'delivered': return 'bg-green-100 text-green-800';
-    case 'cancelled': return 'bg-red-100 text-red-800';
-    default: return 'bg-muted text-foreground';
-  }
-}
-
-function OrderCard({ order, muted = false }: { order: Order; muted?: boolean }) {
-  return (
-    <div className={`rounded-2xl border p-6 ${muted ? 'bg-muted/10' : 'bg-background'}`}>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-heading text-lg font-semibold">{order.store_name}</h3>
-          <p className="text-sm text-muted-foreground">Order #{order.order_id.slice(0, 8)}</p>
-        </div>
-
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusBadgeClass(
-            order.status,
-          )}`}
-        >
-          {formatStatus(order.status)}
-        </span>
-      </div>
-
-      <div className="mt-5 flex items-end justify-between gap-6">
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>Payment: {order.payment_method.toUpperCase()}</p>
-          <p>Deliver to: {order.delivery_address || 'Address not provided'}</p>
-        </div>
-
-        <div className="text-right">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Total
-          </p>
-          <p className="mt-1 text-lg font-semibold text-foreground">
-            {formatCurrency(order.total_price)}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <Button asChild variant="outline" size="sm">
-          <Link to={`/orders/${order.order_id}`}>
-            {order.status === 'open' ? 'View Order' : 'View Details'}
-          </Link>
-        </Button>
-      </div>
-    </div>
-  );
-}
+import { OrderCard } from '../component/OrderCard';
 
 function OrderSection({
   title,
@@ -103,7 +37,21 @@ function OrderSection({
         {orders.length ? (
           <div className="grid gap-4">
             {orders.map((order) => (
-              <OrderCard key={order.order_id} order={order} muted={muted} />
+              <OrderCard
+                key={order.order_id}
+                mode="customer"
+                muted={muted}
+                order={{
+                  id: order.order_id,
+                  title: order.store_name,
+                  status: order.status,
+                  referenceLabel: 'Order',
+                  referenceValue: order.order_id.slice(0, 8),
+                  paymentMethod: order.payment_method,
+                  deliveryAddress: order.delivery_address,
+                  totalPrice: order.total_price,
+                }}
+              />
             ))}
           </div>
         ) : (
@@ -128,7 +76,6 @@ export function OrderListPage() {
   const { data: orders, isPending } = useOrders();
   const [activeLimit, setActiveLimit] = useState(3);
   const [historyLimit, setHistoryLimit] = useState(3);
-  
 
   if (isPending) {
     return (
@@ -139,11 +86,13 @@ export function OrderListPage() {
   }
   const orderList = orders ?? [];
 
-  const activeOrders =
-    orderList.filter((order) => ['open', 'accepted', 'picked_up'].includes(order.status));
+  const activeOrders = orderList.filter((order) =>
+    ['open', 'accepted', 'picked_up'].includes(order.status),
+  );
 
-  const orderHistory =
-    orderList.filter((order) => ['delivered', 'cancelled'].includes(order.status));
+  const orderHistory = orderList.filter((order) =>
+    ['delivered', 'cancelled'].includes(order.status),
+  );
 
   const visibleActiveOrders = activeOrders.slice(0, activeLimit);
   const visibleOrderHistory = orderHistory.slice(0, historyLimit);
@@ -164,7 +113,9 @@ export function OrderListPage() {
             description="Orders currently waiting for rider acceptance or delivery completion."
             orders={visibleActiveOrders}
             emptyMessage="No active orders right now."
-            showMoreLabel={activeOrders.length > activeLimit ? 'Show More Active Orders' : undefined}
+            showMoreLabel={
+              activeOrders.length > activeLimit ? 'Show More Active Orders' : undefined
+            }
             onShowMore={
               activeOrders.length > activeLimit
                 ? () => setActiveLimit((limit) => limit + 3)
