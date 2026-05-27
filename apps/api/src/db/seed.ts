@@ -15,9 +15,7 @@ type SeedUser = {
 };
 
 const users: SeedUser[] = [
-  // =========================
-  // PRIMARY USERS
-  // =========================
+  // USERS
   {
     name: 'Ana Reyes',
     email: 'ana.reyes@example.com',
@@ -70,11 +68,7 @@ const users: SeedUser[] = [
     phone_number: '+639193333002',
   },
 
-  // =========================
-  // GENERIC POOL (IMPORTANT FOR ANALYTICS)
-  // =========================
-
-  // Customers (heavy usage simulation)
+  // Customers
   {
     name: 'Customer One',
     email: 'customer1@example.com',
@@ -97,7 +91,7 @@ const users: SeedUser[] = [
     phone_number: '+639100000003',
   },
 
-  // Vendors (multiple stores possible later)
+  // Vendors
   {
     name: 'Vendor One',
     email: 'vendor1@example.com',
@@ -106,7 +100,7 @@ const users: SeedUser[] = [
     phone_number: '+639200000001',
   },
 
-  // Riders (distribution simulation)
+  // Riders
   {
     name: 'Rider One',
     email: 'rider1@example.com',
@@ -172,9 +166,7 @@ async function seedDB(userMap: Record<string, any>) {
   try {
     await client.query('BEGIN');
 
-    // =========================
-    // USERS GROUPING
-    // =========================
+    // USERS
     const vendors = {
       diego: userMap['diego.tan@example.com'],
       elena: userMap['elena.ocampo@example.com'],
@@ -196,9 +188,7 @@ async function seedDB(userMap: Record<string, any>) {
       userMap['rider1@example.com'],
     ];
 
-    // =========================
-    // STORES (ALL VENDORS)
-    // =========================
+    // STORES
     await client.query(
       `
       INSERT INTO store (user_id, store_name, store_address, created_at)
@@ -218,9 +208,7 @@ async function seedDB(userMap: Record<string, any>) {
     const elenaStore = stores.rows.find((s) => s.user_id === vendors.elena.id)!;
     const vendor1Store = stores.rows.find((s) => s.user_id === vendors.vendor1.id)!;
 
-    // =========================
-    // STORE ITEMS (HIGH VOLUME)
-    // =========================
+    // STORE ITEMS
     await client.query(
       `
       INSERT INTO store_item (
@@ -270,9 +258,7 @@ async function seedDB(userMap: Record<string, any>) {
 
     const pick = (arr: any[], n: number) => arr.slice(0, n);
 
-    // =========================
-    // ORDERS (REALISTIC HEAVY TRAFFIC)
-    // =========================
+    // ORDERS
     let index = 0;
 
     const allStores = [
@@ -283,7 +269,6 @@ async function seedDB(userMap: Record<string, any>) {
 
     for (const customer of customers) {
       for (const storeGroup of allStores) {
-        // 4–6 orders per customer per store
         for (let i = 0; i < 5; i++) {
           const rider = riders[(index + i) % riders.length];
 
@@ -320,7 +305,6 @@ async function seedDB(userMap: Record<string, any>) {
             [customer.id, storeGroup.store.store_id, rider.id, status, index],
           );
 
-          // 1–3 items per order
           const itemsInOrder = pick(storeGroup.items, 1 + (index % 3));
 
           for (const item of itemsInOrder) {
