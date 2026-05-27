@@ -8,5 +8,6 @@ router.get('/', controller.getAll);
 router.get('/offers', controller.getOpenOffers);
 router.get('/:id', controller.getById);
 router.patch('/:id/accept', controller.acceptDelivery);
+router.get('/active', controller.getActiveDeliveries);
 
 export default router;

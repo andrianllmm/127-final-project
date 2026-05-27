@@ -60,4 +60,14 @@ export class DeliveriesController {
     const result = await this.service.acceptDelivery(id);
     return res.json(result);
   };
+
+  getActiveDeliveries = async (_req: Request, res: Response) => {
+    try {
+      const data = await this.service.getActiveDeliveries();
+      return res.json(data);
+    } catch (error) {
+      console.error('Failed to fetch active deliveries:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
 }

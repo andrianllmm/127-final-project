@@ -22,4 +22,7 @@ export class DeliveriesService {
   async acceptDelivery(id: string) {
     return await this.repo.updateStatus(id, 'accepted');
   }
+  async getActiveDeliveries() {
+    return await this.repo.findActiveDeliveries();
+  }
 }

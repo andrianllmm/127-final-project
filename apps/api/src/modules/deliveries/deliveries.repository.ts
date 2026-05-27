@@ -47,4 +47,20 @@ export class DeliveriesRepository {
     const pool = await getPool();
     return await pool.one(query);
   }
+
+  async findActiveDeliveries() {
+    const query = sql.unsafe`
+    SELECT 
+      o.order_id AS id,
+      s.store_name AS "vendorName",
+      o.delivery_address AS "dropoffLocation",
+      o.status
+    FROM "order" o
+    JOIN store s ON o.store_id = s.store_id
+    WHERE o.status = 'accepted'
+    ORDER BY o.created_at DESC
+  `;
+    const pool = await getPool();
+    return await pool.any(query);
+  }
 }
