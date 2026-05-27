@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import type { AuthRequest } from '../../common/middleware/auth.middleware.js';
 import { AnalyticsService } from './analytics.service.js';
 import { StoresService } from '../stores/stores.service.js';
