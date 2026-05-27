@@ -91,7 +91,7 @@ export function StoreItemsPage() {
             </Button>
 
             <Button asChild>
-              <Link to={`/stores/${store?.store_id}/items/new`}>Add item</Link>
+              <Link to="/items/new">Add item</Link>
             </Button>
           </div>
         )}

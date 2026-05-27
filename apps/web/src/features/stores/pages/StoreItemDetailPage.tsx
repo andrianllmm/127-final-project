@@ -13,10 +13,10 @@ import { ArrowLeft } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 
 export function StoreItemDetailPage() {
-  const { id: storeId = '', itemId = '' } = useParams();
+  const { id: itemId = '' } = useParams();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
-  const { data: store, isPending: isStorePending } = useStore(storeId);
   const { data: item, isPending: isItemPending } = useStoreItem(itemId, true);
+  const { data: store, isPending: isStorePending } = useStore(item?.store_id ?? '');
 
   const canManage = Boolean(
     session && session.user.role === 'vendor' && store?.user_id === session.user.id,
@@ -34,23 +34,15 @@ export function StoreItemDetailPage() {
     );
   }
 
-  if (!store) {
-    return <Navigate to="/stores" replace />;
-  }
-
   if (!item) {
-    return <Navigate to={`/stores/${store.store_id}/items`} replace />;
-  }
-
-  if (item.store_id !== store.store_id) {
-    return <Navigate to={`/stores/${item.store_id}/items/${item.store_item_id}`} replace />;
+    return <Navigate to="/items" replace />;
   }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col px-4 py-8">
       <div className="mb-4 flex items-center justify-between">
         <Button asChild variant="ghost" size="sm">
-          <Link to={`/stores/${store.store_id}/items`}>
+          <Link to={`/stores/${item.store_id}/items`}>
             <HugeiconsIcon icon={ArrowLeft} />
             Back
           </Link>
@@ -59,7 +51,7 @@ export function StoreItemDetailPage() {
         <div className="flex gap-2">
           {canManage && (
             <Button asChild size="sm">
-              <Link to={`/stores/${store.store_id}/items/${item.store_item_id}/edit`}>Edit</Link>
+              <Link to={`/items/${item.store_item_id}/edit`}>Edit</Link>
             </Button>
           )}
         </div>

@@ -15,15 +15,14 @@ import { ArrowLeft } from '@hugeicons/core-free-icons';
 
 export function StoreItemEditPage() {
   const navigate = useNavigate();
-  const { id: storeId = '', itemId = '' } = useParams();
+  const { id: itemId = '' } = useParams();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
-  const { data: store, isPending: isStorePending } = useStore(storeId);
+  const { data: item, isPending: isItemPending } = useStoreItem(itemId, true);
+  const { data: store, isPending: isStorePending } = useStore(item?.store_id ?? '');
 
   const canManage = Boolean(
     session && session.user.role === 'vendor' && store?.user_id === session.user.id,
   );
-
-  const { data: item, isPending: isItemPending } = useStoreItem(itemId, canManage);
 
   const defaultValues = item
     ? {
@@ -37,7 +36,7 @@ export function StoreItemEditPage() {
   const updateItemMutation = useUpdateStoreItem();
   const deleteItemMutation = useDeleteStoreItem();
 
-  if (isSessionPending || isStorePending || (canManage && isItemPending)) {
+  if (isSessionPending || isItemPending || (item && isStorePending)) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <Spinner />
@@ -49,27 +48,19 @@ export function StoreItemEditPage() {
     return <Navigate to="/stores" replace />;
   }
 
-  if (!store) {
-    return <Navigate to="/stores" replace />;
-  }
-
   if (!canManage) {
-    return <Navigate to={`/stores/${store.store_id}`} replace />;
+    return <Navigate to={item ? `/items/${item.store_item_id}` : '/items'} replace />;
   }
 
   if (!item) {
-    return <Navigate to={`/stores/${store.store_id}/items`} replace />;
-  }
-
-  if (item.store_id !== store.store_id) {
-    return <Navigate to={`/stores/${item.store_id}/items/${item.store_item_id}/edit`} replace />;
+    return <Navigate to="/items" replace />;
   }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <div className="flex flex-row items-center gap-1">
         <Button asChild variant="ghost" size="icon">
-          <Link to={`/stores/${store.store_id}/items`}>
+          <Link to={`/stores/${item.store_id}/items`}>
             <HugeiconsIcon icon={ArrowLeft} />
           </Link>
         </Button>
@@ -86,7 +77,7 @@ export function StoreItemEditPage() {
               input: values,
             });
 
-            navigate(`/stores/${store.store_id}/items/${item.store_item_id}`, { replace: true });
+            navigate(`/items/${item.store_item_id}`, { replace: true });
           }}
           actions={
             <DeleteStoreItemDialog

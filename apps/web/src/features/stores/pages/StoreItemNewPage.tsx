@@ -1,10 +1,10 @@
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 import { authClient } from '@/shared/lib/authClient';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 
-import { useStore } from '../hooks/use-store';
+import { useStoreByUser } from '../hooks/use-store-by-user';
 import { useCreateStoreItem } from '../hooks/use-create-store-item';
 import { StoreItemForm } from '../components/StoreItemForm';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -12,9 +12,9 @@ import { ArrowLeft } from '@hugeicons/core-free-icons';
 
 export function StoreItemNewPage() {
   const navigate = useNavigate();
-  const { id: storeId = '' } = useParams();
   const { data: session, isPending: isSessionPending } = authClient.useSession();
-  const { data: store, isPending: isStorePending } = useStore(storeId);
+  const userId = session?.user?.id ?? '';
+  const { data: store, isPending: isStorePending } = useStoreByUser(userId);
   const createItemMutation = useCreateStoreItem();
 
   const canManage = Boolean(
@@ -34,7 +34,7 @@ export function StoreItemNewPage() {
   }
 
   if (!store) {
-    return <Navigate to="/stores" replace />;
+    return <Navigate to="/stores/new" replace />;
   }
 
   if (!canManage) {
@@ -57,8 +57,8 @@ export function StoreItemNewPage() {
           submitLabel="Create item"
           resetOnSuccess
           onSubmit={async (values) => {
-            await createItemMutation.mutateAsync(values);
-            navigate(`/stores/${store.store_id}/items`, { replace: true });
+            const createdItem = await createItemMutation.mutateAsync(values);
+            navigate(`/items/${createdItem.store_item_id}`, { replace: true });
           }}
         />
       </div>

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route, useParams } from 'react-router-dom';
 
 import { RootLayout } from './layouts/RootLayout';
 import { AuthLayout } from './layouts/AuthLayout';
@@ -31,6 +31,18 @@ import { StoreItemDetailPage } from './features/stores/pages/StoreItemDetailPage
 import { ItemsPage } from './features/stores/pages/ItemsPage';
 import { AccountPage } from './pages/AccountPage';
 
+function LegacyStoreItemDetailRedirect() {
+  const { itemId = '' } = useParams();
+
+  return <Navigate to={`/items/${itemId}`} replace />;
+}
+
+function LegacyStoreItemEditRedirect() {
+  const { itemId = '' } = useParams();
+
+  return <Navigate to={`/items/${itemId}/edit`} replace />;
+}
+
 export function AppRouter() {
   return (
     <Routes>
@@ -54,7 +66,9 @@ export function AppRouter() {
 
         <Route path="/stores/:id/items" element={<StoreItemsPage />} />
 
-        <Route path="/stores/:id/items/:itemId" element={<StoreItemDetailPage />} />
+        <Route path="/items/:id" element={<StoreItemDetailPage />} />
+
+        <Route path="/stores/:id/items/:itemId" element={<LegacyStoreItemDetailRedirect />} />
 
         {/* PRIVATE */}
         <Route element={<ProtectedRoute />}>
@@ -66,9 +80,13 @@ export function AppRouter() {
 
           <Route path="/stores/:id/edit" element={<StoreEditPage />} />
 
-          <Route path="/stores/:id/items/new" element={<StoreItemNewPage />} />
+          <Route path="/items/new" element={<StoreItemNewPage />} />
 
-          <Route path="/stores/:id/items/:itemId/edit" element={<StoreItemEditPage />} />
+          <Route path="/stores/:id/items/new" element={<Navigate to="/items/new" replace />} />
+
+          <Route path="/items/:id/edit" element={<StoreItemEditPage />} />
+
+          <Route path="/stores/:id/items/:itemId/edit" element={<LegacyStoreItemEditRedirect />} />
 
           <Route path="/store-analytics" element={<StoreAnalyticsPage />} />
 
