@@ -1,87 +1,101 @@
-import { useState, useEffect } from 'react';
-
-interface Offer {
-  id: string;
-  vendorName: string;
-  pickupLocation: string;
-  dropoffLocation: string;
-  totalPrice: number;
-  itemCount: number;
-}
+import { toast } from 'sonner';
+import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { useAcceptDelivery } from '../hooks/use-accept-delivery';
+import { useDeliveryOffers } from '../hooks/use-delivery-offers';
 
 export function OffersPage() {
-  const [offers, setOffers] = useState<Offer[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('http://localhost:3000/deliveries/offers')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setOffers(data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch:', err);
-        setIsLoading(false);
-      });
-  }, []);
+  const { data: offers, isPending } = useDeliveryOffers();
+  const acceptDelivery = useAcceptDelivery();
 
   const handleAcceptDelivery = async (orderId: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/deliveries/${orderId}/accept`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
-        throw new Error('Failed to accept delivery');
-      }
-
-      setOffers((prev) => prev.filter((offer) => offer.id !== orderId));
-      alert('Delivery accepted successfully!');
+      await acceptDelivery.mutateAsync(orderId);
+      toast.success('Delivery accepted successfully');
     } catch (error) {
       console.error('Error accepting delivery:', error);
-      alert('Something went wrong. Please try again.');
+      toast.error('Something went wrong. Please try again.');
     }
   };
 
-  return (
-    <div className="flex flex-col p-8 w-full max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-[#893302] mb-8">Available Deliveries</h1>
+  const offerList = Array.isArray(offers) ? offers : [];
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : offers.length === 0 ? (
-          <div className="text-gray-500">No open deliveries available right now.</div>
-        ) : (
-          offers.map((offer) => (
-            <div key={offer.id} className="bg-white border rounded-3xl p-6 shadow-sm">
-              <h3 className="text-xl font-bold text-[#893302]">{offer.vendorName}</h3>
-              <p className="text-sm text-gray-500 mb-4">{offer.pickupLocation}</p>
-              <div className="flex flex-col gap-2 mb-6">
-                <p className="text-sm text-gray-600 font-semibold">
-                  Dropoff: {offer.dropoffLocation}
-                </p>
-                <p className="text-[#893302] font-bold">
-                  Total: ₱{Number(offer.totalPrice).toFixed(2)}
-                </p>
-              </div>
-              <button
-                onClick={() => handleAcceptDelivery(offer.id)}
-                className="w-full bg-[#FBC107] text-[#893302] font-bold py-3 rounded-full"
-              >
-                Accept Delivery
-              </button>
-            </div>
-          ))
-        )}
+  return (
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 md:px-6">
+      <div className="space-y-2">
+        <Badge variant="secondary" className="w-fit">
+          Rider queue
+        </Badge>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Available deliveries</h1>
+        <p className="text-sm text-muted-foreground">
+          Review open offers and claim one when you are ready to pick up.
+        </p>
       </div>
+
+      {isPending ? (
+        <div className="flex min-h-[40vh] items-center justify-center rounded-4xl border bg-card">
+          <Spinner className="size-5 text-primary" />
+        </div>
+      ) : offerList.length === 0 ? (
+        <div className="rounded-4xl border border-dashed bg-card px-6 py-12 text-center text-muted-foreground">
+          No open deliveries available right now.
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {offerList.map((offer) => (
+            <Card
+              key={offer.id}
+              className="gap-0 transition hover:-translate-y-0.5 hover:shadow-lg"
+            >
+              <CardHeader className="gap-2 border-b border-border/60 pb-4">
+                <div className="flex items-center justify-between gap-3">
+                  <CardTitle>{offer.vendorName}</CardTitle>
+                  <Badge variant="outline">Open</Badge>
+                </div>
+                <CardDescription>{offer.pickupLocation}</CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-3 py-4">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Dropoff</span>
+                  <span className="font-medium text-foreground">{offer.dropoffLocation}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Items</span>
+                  <span className="font-medium text-foreground">{offer.itemCount}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Total</span>
+                  <span className="font-semibold text-foreground">
+                    ₱{Number(offer.totalPrice).toFixed(2)}
+                  </span>
+                </div>
+              </CardContent>
+
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  onClick={() => handleAcceptDelivery(offer.id)}
+                  disabled={acceptDelivery.isPending}
+                >
+                  Accept delivery
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

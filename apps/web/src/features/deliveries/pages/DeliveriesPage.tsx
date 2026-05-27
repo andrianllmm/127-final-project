@@ -1,62 +1,89 @@
-import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { useActiveDeliveries } from '../hooks/use-active-deliveries';
+import { useUpdateDeliveryStatus } from '../hooks/use-update-delivery-status';
 
 export function DeliveriesPage() {
-  const [active, setActive] = useState<any[] | null>(null);
+  const { data: activeDeliveries, isPending } = useActiveDeliveries();
+  const updateDeliveryStatus = useUpdateDeliveryStatus();
 
-  useEffect(() => {
-    fetch('http://localhost:3000/deliveries/active')
-      .then((res) => res.json())
-      .then((data) => setActive(data))
-      .catch((err) => {
-        console.error('Error:', err);
-        setActive([]);
-      });
-  }, []);
-
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
+  const handleUpdateStatus = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/deliveries/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.ok) {
-        window.location.reload(); // Refresh the page to show the updated status
-      } else {
-        alert('Failed to update status');
-      }
+      await updateDeliveryStatus.mutateAsync({ id, input: { status: 'picked_up' } });
+      toast.success('Delivery marked as picked up');
     } catch (err) {
       console.error('Error updating status:', err);
+      toast.error('Failed to update delivery status');
     }
   };
 
-  if (active === null) return <div className="p-8">Loading...</div>;
+  const active = Array.isArray(activeDeliveries) ? activeDeliveries : [];
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Active Deliveries</h1>
-      {Array.isArray(active) && active.length > 0 ? (
-        active.map((delivery) => (
-          <div key={delivery.id} className="border p-4 rounded mb-4 shadow-sm">
-            <h3 className="font-bold text-lg">{delivery?.vendorName || 'Unknown Vendor'}</h3>
-            <p className="text-gray-600">Dropoff: {delivery?.dropoffLocation || 'N/A'}</p>
-            <span className="text-sm font-semibold text-green-600 block mb-2">
-              Status: {delivery?.status || 'N/A'}
-            </span>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 md:px-6">
+      <div className="space-y-2">
+        <Badge variant="secondary" className="w-fit">
+          Live deliveries
+        </Badge>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Active deliveries</h1>
+        <p className="text-sm text-muted-foreground">
+          Keep track of accepted orders that are ready for pickup or already in transit.
+        </p>
+      </div>
 
-            {delivery?.status === 'accepted' && (
-              <button
-                onClick={() => handleUpdateStatus(delivery.id, 'picked_up')}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-              >
-                Mark as Picked Up
-              </button>
-            )}
-          </div>
-        ))
+      {isPending ? (
+        <div className="flex min-h-[40vh] items-center justify-center rounded-4xl border bg-card">
+          <Spinner className="size-5 text-primary" />
+        </div>
+      ) : active.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {active.map((delivery) => (
+            <Card
+              key={delivery.id}
+              className="gap-0 transition hover:-translate-y-0.5 hover:shadow-lg"
+            >
+              <CardHeader className="gap-2 border-b border-border/60 pb-4">
+                <div className="flex items-center justify-between gap-3">
+                  <CardTitle>{delivery.vendorName}</CardTitle>
+                  <Badge variant={delivery.status === 'picked_up' ? 'default' : 'secondary'}>
+                    {delivery.status.replace('_', ' ')}
+                  </Badge>
+                </div>
+                <CardDescription>{delivery.dropoffLocation}</CardDescription>
+              </CardHeader>
+
+              <CardContent className="py-4 text-sm text-muted-foreground">
+                Monitor the rider handoff and update the order when you have picked it up.
+              </CardContent>
+
+              <CardFooter>
+                {delivery.status === 'accepted' ? (
+                  <Button className="w-full" onClick={() => handleUpdateStatus(delivery.id)}>
+                    Mark as picked up
+                  </Button>
+                ) : (
+                  <Button className="w-full" variant="outline" disabled>
+                    Already picked up
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       ) : (
-        <p>No active deliveries found.</p>
+        <div className="rounded-4xl border border-dashed bg-card px-6 py-12 text-center text-muted-foreground">
+          No active deliveries found.
+        </div>
       )}
     </div>
   );

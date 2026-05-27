@@ -1,4 +1,5 @@
-import { DeliveriesRepository as DeliveriesRepository } from './deliveries.repository.js';
+import { DeliveriesRepository } from './deliveries.repository.js';
+import type { DeliveryStatus } from '@repo/api';
 
 export class DeliveriesService {
   private repo: DeliveriesRepository;
@@ -16,17 +17,18 @@ export class DeliveriesService {
   }
 
   async getOpenOffers() {
-    return await this.repo.findOpenOffers();
+    return this.repo.findOpenOffers();
   }
 
   async acceptDelivery(id: string) {
-    return await this.repo.updateStatus(id, 'accepted');
-  }
-  async getActiveDeliveries() {
-    return await this.repo.findActiveDeliveries();
+    return this.repo.updateStatus(id, 'accepted');
   }
 
-  async updateDeliveryStatus(id: string, status: string) {
-    return await this.repo.updateStatus(id, status);
+  async getActiveDeliveries() {
+    return this.repo.findActiveDeliveries();
+  }
+
+  async updateDeliveryStatus(id: string, status: DeliveryStatus) {
+    return this.repo.updateStatus(id, status);
   }
 }

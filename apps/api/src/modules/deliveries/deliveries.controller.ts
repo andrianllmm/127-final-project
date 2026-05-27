@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { DeliveriesService } from './deliveries.service.js';
+import type { UpdateDeliveryStatusInput } from '@repo/api';
 
 export class DeliveriesController {
   private service = new DeliveriesService();
@@ -13,17 +14,7 @@ export class DeliveriesController {
   getOpenOffers = async (_req: Request, res: Response): Promise<Response> => {
     try {
       const data = await this.service.getOpenOffers();
-
-      const mappedData = data.map((order: any) => ({
-        id: order.id,
-        vendorName: order.vendorName,
-        pickupLocation: order.pickupLocation,
-        dropoffLocation: order.dropoffLocation,
-        totalPrice: Number(order.totalPrice),
-        itemCount: Number(order.itemCount),
-      }));
-
-      return res.json(mappedData);
+      return res.json(data);
     } catch (error) {
       console.error('Failed to fetch open offers:', error);
       return res.status(500).json({ message: 'Internal server error' });
@@ -52,8 +43,7 @@ export class DeliveriesController {
 
   acceptDelivery = async (req: Request, res: Response) => {
     try {
-      // This handles the string/array type issue simply
-      const id = typeof req.params.id === 'string' ? req.params.id : (req.params.id as string[])[0];
+      const { id } = req.params as { id: string };
 
       if (!id) return res.status(400).json({ message: 'Delivery ID is required' });
 
@@ -77,14 +67,12 @@ export class DeliveriesController {
       return res.status(500).json({ message: 'Internal server error' });
     }
   };
-  updateStatus = async (req: Request, res: Response) => {
+  updateStatus = async (
+    req: Request<{ id: string }, unknown, UpdateDeliveryStatusInput>,
+    res: Response,
+  ): Promise<Response> => {
     try {
-      const id =
-        typeof req.params.id === 'string'
-          ? req.params.id
-          : Array.isArray(req.params.id)
-            ? req.params.id[0]
-            : '';
+      const { id } = req.params;
       const { status } = req.body;
 
       if (!id) {
