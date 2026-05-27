@@ -13,7 +13,12 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  trustedOrigins: [env.WEB_URL],
+  trustedOrigins: [
+    env.WEB_URL,
+    ...(env.WEB_URL.startsWith('http://localhost:') || env.WEB_URL.startsWith('https://localhost:')
+      ? [`${new URL(env.WEB_URL).protocol}//127.0.0.1:${new URL(env.WEB_URL).port}`]
+      : []),
+  ],
 
   user: {
     additionalFields: {

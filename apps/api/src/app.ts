@@ -16,9 +16,23 @@ import analyticsRoutes from './modules/analytics/analytics.routes.js';
 
 const app = express();
 
+const allowedWebOrigins = [env.WEB_URL];
+
+if (env.WEB_URL.startsWith('http://localhost:') || env.WEB_URL.startsWith('https://localhost:')) {
+  const url = new URL(env.WEB_URL);
+  allowedWebOrigins.push(`${url.protocol}//127.0.0.1:${url.port}`);
+}
+
 app.use(
   cors({
-    origin: env.WEB_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedWebOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   }),
 );

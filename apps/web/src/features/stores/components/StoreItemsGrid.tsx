@@ -21,7 +21,11 @@ export function StoreItemsGrid({
   isLoading,
   isError,
 }: StoreItemsGridProps) {
-  const visibleItems = typeof limit === 'number' ? items.slice(0, limit) : items;
+  const visibleItems = Array.isArray(items)
+    ? typeof limit === 'number'
+      ? items.slice(0, limit)
+      : items
+    : [];
 
   if (isError) {
     return (
