@@ -36,4 +36,15 @@ export class DeliveriesRepository {
   async findById(id: string) {
     return id;
   }
+
+  async updateStatus(id: string, status: string) {
+    const query = sql.unsafe`
+      UPDATE "order" 
+      SET status = ${status} 
+      WHERE order_id = ${id}
+      RETURNING *
+    `;
+    const pool = await getPool();
+    return await pool.one(query);
+  }
 }

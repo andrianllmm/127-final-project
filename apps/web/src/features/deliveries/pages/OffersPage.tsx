@@ -14,8 +14,11 @@ export function OffersPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/deliveries/offers')
-      .then((res) => res.json())
+    fetch('http://localhost:3000/deliveries/offers')
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setOffers(data);
         setIsLoading(false);
@@ -27,7 +30,24 @@ export function OffersPage() {
   }, []);
 
   const handleAcceptDelivery = async (orderId: string) => {
-    console.log('Accepting order:', orderId);
+    try {
+      const response = await fetch(`http://localhost:3000/deliveries/${orderId}/accept`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error('Failed to accept delivery');
+      }
+
+      setOffers((prev) => prev.filter((offer) => offer.id !== orderId));
+      alert('Delivery accepted successfully!');
+    } catch (error) {
+      console.error('Error accepting delivery:', error);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
   return (

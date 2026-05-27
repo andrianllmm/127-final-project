@@ -18,4 +18,8 @@ export class DeliveriesService {
   async getOpenOffers() {
     return await this.repo.findOpenOffers();
   }
+
+  async acceptDelivery(id: string) {
+    return await this.repo.updateStatus(id, 'accepted');
+  }
 }
