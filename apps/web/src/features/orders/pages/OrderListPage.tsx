@@ -4,7 +4,7 @@ import type { Order } from '@repo/api';
 
 import { useOrders } from '../hooks/use-orders';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 import { OrderCard } from '../component/OrderCard';
@@ -27,13 +27,13 @@ function OrderSection({
   onShowMore?: (() => void) | undefined;
 }) {
   return (
-    <Card className="border-muted/80">
-      <CardHeader>
-        <CardTitle className="font-heading text-xl">{title}</CardTitle>
+    <div>
+      <div className="mb-4">
+        <h2 className="font-heading font-medium text-xl mb-1">{title}</h2>
         <p className="text-sm text-muted-foreground">{description}</p>
-      </CardHeader>
+      </div>
 
-      <CardContent>
+      <div>
         {orders.length ? (
           <div className="grid gap-4">
             {orders.map((order) => (
@@ -67,8 +67,8 @@ function OrderSection({
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
