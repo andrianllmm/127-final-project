@@ -1,21 +1,14 @@
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import { useOrder } from '../hooks/use-order';
 import { useCancelOrder } from '../hooks/use-cancel-order';
 
+import { currencyFormatter } from '@/shared/lib/currencyFormatter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { OrderActionDialog } from '../component/OrderActionDialog';
 import { Spinner } from '@/shared/components/ui/spinner';
-import { Button } from '@/shared/components/ui/button';
 import { toast } from 'sonner';
 import { OrderStatusBadge } from '../component/OrderStatusBadge';
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-PH', {
-    style: 'currency',
-    currency: 'PHP',
-  }).format(value);
-}
 
 export function OrderDetailPage() {
   const { id = '' } = useParams();
@@ -31,7 +24,7 @@ export function OrderDetailPage() {
   }
 
   if (!order) {
-    return <Navigate to="/orders" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -61,10 +54,6 @@ export function OrderDetailPage() {
               }
             />
           )}
-
-          <Button asChild variant="outline">
-            <Link to="/orders">Back to Orders</Link>
-          </Button>
         </div>
       </div>
 
@@ -94,7 +83,7 @@ export function OrderDetailPage() {
 
             <div>
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Total</p>
-              <p className="text-xl font-bold">{formatCurrency(order.total_price)}</p>
+              <p className="text-xl font-bold">{currencyFormatter.format(order.total_price)}</p>
             </div>
           </div>
         </CardContent>
@@ -114,11 +103,11 @@ export function OrderDetailPage() {
               <div>
                 <p className="font-medium">{item.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  Qty: {item.quantity} × {formatCurrency(item.price_snapshot)}
+                  Qty: {item.quantity} x {currencyFormatter.format(item.price_snapshot)}
                 </p>
               </div>
 
-              <p className="font-semibold">{formatCurrency(item.subtotal)}</p>
+              <p className="font-semibold">{currencyFormatter.format(item.subtotal)}</p>
             </div>
           ))}
         </CardContent>
