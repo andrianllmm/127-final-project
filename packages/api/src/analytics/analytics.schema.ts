@@ -5,8 +5,6 @@ export const analyticsMetricsSchema = z.object({
   total_revenue: z.string(), // Stored as numeric in DB
   average_order_value: z.string(),
   completed_orders: z.number().int().nonnegative(),
-  cancelled_orders: z.number().int().nonnegative(),
-  pending_orders: z.number().int().nonnegative(),
 });
 
 export type AnalyticsMetrics = z.infer<typeof analyticsMetricsSchema>;
