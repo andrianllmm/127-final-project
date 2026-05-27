@@ -85,7 +85,11 @@ export function StoreItemEditPage() {
               triggerLabel="Delete item"
               onConfirm={async () => {
                 await deleteItemMutation.mutateAsync(item.store_item_id);
-                navigate(`/stores/${store.store_id}/items`, { replace: true });
+                if (store) {
+                  navigate(`/stores/${store.store_id}/items`, { replace: true });
+                } else {
+                  navigate('/items', { replace: true });
+                }
               }}
             />
           }
