@@ -9,5 +9,6 @@ router.get('/offers', controller.getOpenOffers);
 router.get('/:id', controller.getById);
 router.patch('/:id/accept', controller.acceptDelivery);
 router.get('/active', controller.getActiveDeliveries);
+router.patch('/:id/status', controller.updateStatus);
 
 export default router;

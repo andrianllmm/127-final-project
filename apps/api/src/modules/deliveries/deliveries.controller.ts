@@ -77,4 +77,34 @@ export class DeliveriesController {
       return res.status(500).json({ message: 'Internal server error' });
     }
   };
+  updateStatus = async (req: Request, res: Response) => {
+    try {
+      const id =
+        typeof req.params.id === 'string'
+          ? req.params.id
+          : Array.isArray(req.params.id)
+            ? req.params.id[0]
+            : '';
+      const { status } = req.body;
+
+      if (!id) {
+        return res.status(400).json({ message: 'Delivery ID is required' });
+      }
+
+      if (!status) {
+        return res.status(400).json({ message: 'Status is required' });
+      }
+
+      const result = await this.service.updateDeliveryStatus(id, status);
+
+      if (!result) {
+        return res.status(404).json({ message: 'Delivery not found' });
+      }
+
+      return res.json(result);
+    } catch (_error) {
+      console.error('Failed to update status:', _error);
+      return res.status(500).json({ message: 'Failed to update status' });
+    }
+  };
 }
