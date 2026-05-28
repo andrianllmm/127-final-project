@@ -4,12 +4,13 @@ import { Spinner } from '@/shared/components/ui/spinner';
 import { useActiveDeliveries } from '../hooks/use-active-deliveries';
 import { useUpdateDeliveryStatus } from '../hooks/use-update-delivery-status';
 import { OrderCard } from '../../orders/component/OrderCard';
+import { OrderActionDialog } from '../../orders/component/OrderActionDialog';
 
 export function DeliveriesPage() {
   const { data: activeDeliveries, isPending } = useActiveDeliveries();
   const updateDeliveryStatus = useUpdateDeliveryStatus();
 
-  const handleUpdateStatus = async (id: string, status: 'picked_up' | 'delivered') => {
+  const handleUpdateStatus = async (id: string, status: 'picked_up' | 'delivered' | 'open') => {
     try {
       await updateDeliveryStatus.mutateAsync({ id, input: { status } });
 
@@ -18,7 +19,12 @@ export function DeliveriesPage() {
         return;
       }
 
-      toast.success('Delivery marked as delivered');
+      if (status === 'delivered') {
+        toast.success('Delivery marked as delivered');
+        return;
+      }
+
+      toast.success('Delivery aborted');
     } catch (err) {
       console.error('Error updating status:', err);
       toast.error('Failed to update delivery status');
@@ -58,21 +64,34 @@ export function DeliveriesPage() {
               }}
               action={
                 delivery.status === 'accepted' ? (
-                  <Button
-                    className="w-full"
-                    onClick={() => handleUpdateStatus(delivery.order_id, 'picked_up')}
-                  >
-                    Mark as picked up
-                  </Button>
+                  <>
+                    <Button
+                      className="flex-1"
+                      onClick={() => handleUpdateStatus(delivery.order_id, 'picked_up')}
+                    >
+                      Mark as picked up
+                    </Button>
+
+                    <OrderActionDialog
+                      triggerLabel="Abort"
+                      title="Abort delivery?"
+                      description="This will return the order to open status and cannot be undone."
+                      confirmLabel="Abort Delivery"
+                      pendingLabel="Aborting..."
+                      isPending={updateDeliveryStatus.isPending}
+                      triggerClassName="border-red-500 text-red-600 hover:bg-red-50"
+                      onConfirm={() => handleUpdateStatus(delivery.order_id, 'open')}
+                    />
+                  </>
                 ) : delivery.status === 'picked_up' ? (
                   <Button
-                    className="w-full"
+                    className="flex-1"
                     onClick={() => handleUpdateStatus(delivery.order_id, 'delivered')}
                   >
                     Mark as delivered
                   </Button>
                 ) : (
-                  <Button className="w-full" variant="outline" disabled>
+                  <Button className="flex-1" variant="outline" disabled>
                     Completed
                   </Button>
                 )

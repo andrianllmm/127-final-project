@@ -8,6 +8,8 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { Button } from '@/shared/components/ui/button';
 import { OrderCard } from '../component/OrderCard';
+import { OrderActionDialog } from '../component/OrderActionDialog';
+import { useCancelOrder } from '../hooks/use-cancel-order';
 
 function OrderSection({
   title,
@@ -17,6 +19,8 @@ function OrderSection({
   muted = false,
   showMoreLabel,
   onShowMore,
+  onCancel,
+  cancelPending = false,
 }: {
   title: string;
   description: string;
@@ -25,6 +29,8 @@ function OrderSection({
   muted?: boolean;
   showMoreLabel?: string | undefined;
   onShowMore?: (() => void) | undefined;
+  onCancel?: (orderId: string) => void;
+  cancelPending?: boolean;
 }) {
   return (
     <div>
@@ -51,6 +57,24 @@ function OrderSection({
                   deliveryAddress: order.delivery_address,
                   totalPrice: order.total_price,
                 }}
+                action={
+                  (order.status === 'open' || order.status === 'accepted') && (
+                    <OrderActionDialog
+                      triggerLabel="Cancel"
+                      title="Cancel order?"
+                      description={
+                        order.status === 'accepted'
+                          ? 'This order has been accepted by a rider. Cancelling will notify the rider and cannot be undone.'
+                          : 'This will cancel your order.'
+                      }
+                      confirmLabel="Cancel"
+                      pendingLabel="Cancelling..."
+                      triggerClassName="border-red-500 text-red-600 hover:bg-red-50"
+                      isPending={cancelPending}
+                      onConfirm={() => onCancel && onCancel(order.order_id)}
+                    />
+                  )
+                }
               />
             ))}
           </div>
@@ -74,6 +98,7 @@ function OrderSection({
 
 export function OrderListPage() {
   const { data: orders, isPending } = useOrders();
+  const cancel = useCancelOrder();
   const [activeLimit, setActiveLimit] = useState(3);
   const [historyLimit, setHistoryLimit] = useState(3);
 
@@ -113,6 +138,8 @@ export function OrderListPage() {
             description="Orders currently waiting for rider acceptance or delivery completion."
             orders={visibleActiveOrders}
             emptyMessage="No active orders right now."
+            onCancel={(id: string) => cancel.mutate(id)}
+            cancelPending={cancel.isPending}
             showMoreLabel={
               activeOrders.length > activeLimit ? 'Show More Active Orders' : undefined
             }

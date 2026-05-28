@@ -256,17 +256,32 @@ export class OrdersRepository {
     `);
   }
 
-  async cancelOrder(orderId: string, customerId: string) {
+  async cancelOrder(orderId: string, actorId: string, role: string) {
     const pool = await getPool();
 
+    if (role === 'rider') {
+      // Allow rider to cancel orders they are assigned to (e.g., when accepted/open)
+      return pool.maybeOne(sql.type(orderIdSchema)`
+        UPDATE "order"
+        SET
+          status = 'cancelled',
+          updated_at = CURRENT_TIMESTAMP
+        WHERE order_id = ${orderId}
+          AND rider_id = ${actorId}
+          AND status IN ('open', 'accepted')
+        RETURNING order_id
+      `);
+    }
+
+    // Default: allow customer to cancel when order is 'open' or 'accepted'
     return pool.maybeOne(sql.type(orderIdSchema)`
       UPDATE "order"
       SET
         status = 'cancelled',
         updated_at = CURRENT_TIMESTAMP
       WHERE order_id = ${orderId}
-        AND customer_id = ${customerId}
-        AND status = 'open'
+        AND customer_id = ${actorId}
+        AND status IN ('open', 'accepted')
       RETURNING order_id
     `);
   }

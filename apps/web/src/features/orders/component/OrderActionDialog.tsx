@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
+import { cn } from '@/shared/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -43,7 +44,7 @@ export function OrderActionDialog({
       <Button
         type="button"
         variant="outline"
-        className={triggerClassName}
+        className={cn('flex-1 w-full', triggerClassName)}
         disabled={isPending}
         onClick={() => setOpen(true)}
       >
