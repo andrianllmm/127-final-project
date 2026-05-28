@@ -15,21 +15,25 @@ export class OrdersService {
   async getById(id: string) {
     const order = await this.repo.findById(id);
 
-    if (!order) {return null;}
+    if (!order) {
+      return null;
+    }
 
     const items = await this.repo.findItemsByOrderId(order.order_id);
 
-    return {...order, items};
+    return { ...order, items };
   }
 
   async getDraftCart(customerId: string) {
     const cart = await this.repo.findDraftCart(customerId);
 
-    if (!cart) {return null;}
+    if (!cart) {
+      return null;
+    }
 
     const items = await this.repo.findItemsByOrderId(cart.order_id);
 
-    return {...cart, items};
+    return { ...cart, items };
   }
 
   async addCartItem(customerId: string, input: AddCartItemInput) {
@@ -88,7 +92,9 @@ export class OrdersService {
   async removeCartItem(customerId: string, orderItemId: string) {
     const cart = await this.repo.findDraftCart(customerId);
 
-    if (!cart) {return null;}
+    if (!cart) {
+      return null;
+    }
 
     await this.repo.deleteItem(orderItemId, cart.order_id);
 
@@ -98,26 +104,23 @@ export class OrdersService {
   async clearCart(customerId: string) {
     const cart = await this.repo.findDraftCart(customerId);
 
-    if (!cart) {return null;}
+    if (!cart) {
+      return null;
+    }
 
     await this.repo.deleteDraftCart(cart.order_id, customerId);
 
     return true;
   }
 
-  async updateCartItemQuantity(
-    customerId: string,
-    orderItemId: string,
-    quantity: number,
-  ) {
-    return this.repo.updateCartItemQuantity(
-      customerId,
-      orderItemId,
-      quantity,
-    );
+  async updateCartItemQuantity(customerId: string, orderItemId: string, quantity: number) {
+    return this.repo.updateCartItemQuantity(customerId, orderItemId, quantity);
   }
 
-  async checkoutCart(customerId: string, input: { payment_method: string; delivery_address: string }) {
+  async checkoutCart(
+    customerId: string,
+    input: { payment_method: string; delivery_address: string },
+  ) {
     const cart = await this.repo.findDraftCart(customerId);
 
     if (!cart) {
@@ -135,10 +138,12 @@ export class OrdersService {
     return this.getById(cart.order_id);
   }
 
-  async cancelOrder(customerId: string, orderId: string) {
-    const result = await this.repo.cancelOrder(orderId, customerId);
+  async cancelOrder(actorId: string, role: string, orderId: string) {
+    const result = await this.repo.cancelOrder(orderId, actorId, role);
 
-    if (!result) {return null;}
+    if (!result) {
+      return null;
+    }
 
     return this.getById(orderId);
   }

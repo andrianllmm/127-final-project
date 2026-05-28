@@ -90,7 +90,9 @@ export class OrdersController {
   cancelOrder = async (req: AuthRequest, res: Response): Promise<Response> => {
     const { id } = req.params as { id: string };
 
-    const data = await this.service.cancelOrder(req.user!.id, id);
+    const user = req.user!;
+
+    const data = await this.service.cancelOrder(user.id, user.role, id);
 
     if (!data) {
       return res.status(404).json({

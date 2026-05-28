@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-export const deliveryStatusSchema = z.enum(['accepted', 'picked_up', 'delivered', 'cancelled']);
+export const deliveryStatusSchema = z.enum([
+  'open',
+  'accepted',
+  'picked_up',
+  'delivered',
+  'cancelled',
+]);
 
 export const updateDeliveryStatusSchema = z.object({
   status: deliveryStatusSchema,

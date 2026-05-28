@@ -1,19 +1,15 @@
 import { Navigate, useParams } from 'react-router-dom';
 
 import { useOrder } from '../hooks/use-order';
-import { useCancelOrder } from '../hooks/use-cancel-order';
 
 import { currencyFormatter } from '@/shared/lib/currencyFormatter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { OrderActionDialog } from '../component/OrderActionDialog';
 import { Spinner } from '@/shared/components/ui/spinner';
-import { toast } from 'sonner';
 import { OrderStatusBadge } from '../component/OrderStatusBadge';
 
 export function OrderDetailPage() {
   const { id = '' } = useParams();
   const { data: order, isPending } = useOrder(id);
-  const cancelOrder = useCancelOrder();
 
   if (isPending) {
     return (
@@ -35,27 +31,6 @@ export function OrderDetailPage() {
             Order Details
           </h1>
           <p className="text-sm text-muted-foreground">Order #{order.order_id.slice(0, 8)}</p>
-        </div>
-
-        <div className="flex gap-2">
-          {order.status === 'open' && (
-            <OrderActionDialog
-              triggerLabel="Cancel Order"
-              title="Cancel order?"
-              description="This will cancel the order. This action cannot be undone."
-              confirmLabel="Cancel Order"
-              pendingLabel="Cancelling..."
-              isPending={cancelOrder.isPending}
-              triggerClassName="border-red-500 text-red-600 hover:bg-red-50"
-              onConfirm={() =>
-                cancelOrder.mutate(order.order_id, {
-                  onSuccess: () => {
-                    toast.success('Order cancelled successfully.');
-                  },
-                })
-              }
-            />
-          )}
         </div>
       </div>
 

@@ -57,7 +57,7 @@ export function StoreEditPage() {
           navigate(`/stores/${store.store_id}`, { replace: true });
         }}
         actions={
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="w-full">
             <Link to={`/stores/${store.store_id}`}>Cancel</Link>
           </Button>
         }
