@@ -10,6 +10,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "start": {
+      "dependsOn": [],
+      "cache": false
+    },
     "db:up": {
       "dependsOn": ["^db:up"]
     },

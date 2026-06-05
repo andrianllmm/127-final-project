@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "start": "vite preview",
     "lint": "eslint .",
-    "check-types": "tsc --noEmit",
-    "preview": "vite preview"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@fontsource-variable/fredoka": "^5.2.10",
