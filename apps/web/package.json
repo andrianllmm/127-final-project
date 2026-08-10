@@ -39,7 +39,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.6",
     "@eslint/js": "^10.0.1",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:^",
