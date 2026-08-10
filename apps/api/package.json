@@ -21,7 +21,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-zod-safe": "^3.2.1",
-    "multer": "^2.1.1",
+    "multer": "^2.2.0",
     "pg": "^8.20.0",
     "slonik": "^48.14.1",
     "swagger-jsdoc": "^6.2.8",
