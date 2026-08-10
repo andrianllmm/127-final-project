@@ -1,12 +1,10 @@
-# Agent Instructions
+# AGENTS.md
 
 ## Project
 
 MiaGo is a community-based food delivery platform for Miagao municipality and UPV Miagao campus.
 
 Stack: React (Vite), Express.js, PostgreSQL, Slonik, dbmate, Better Auth, Tailwind CSS, shadcn/ui, TypeScript, Turborepo.
-
----
 
 ## Repo Structure
 
@@ -16,14 +14,10 @@ apps/
   api/   # Express backend
 ```
 
----
-
 ## Core Rules
 
 - Modular monolith (domain-based modules)
 - Keep frontend/backend fully independent (no cross-imports)
-
----
 
 ## Domain Features
 
@@ -41,15 +35,11 @@ apps/
 - Repositories handle database access (Slonik)
 - Zod validation required at boundaries
 
----
-
 ## React Rules
 
 - Feature-based structure
 - Use reusable shadcn/ui components
 - Avoid coupling UI to API implementation details
-
----
 
 ## Code Style
 
