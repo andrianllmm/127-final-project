@@ -64,9 +64,17 @@ cp .env.example .env
 
 ### Database Setup
 
-This project requires a local PostgreSQL database.
+This project requires a PostgreSQL database. Use Docker (recommended) or install PostgreSQL locally.
 
-#### Install PostgreSQL
+#### Option A: Docker (recommended)
+
+```sh
+docker compose up -d postgres
+```
+
+This starts a `postgres:16-alpine` container matching the default `DATABASE_URL` in `apps/api/.env.example` (`postgres://postgres:postgres@localhost:5432/miago`), with data persisted in a named volume.
+
+#### Option B: Install PostgreSQL locally
 
 **Linux / WSL**:
 
@@ -95,7 +103,7 @@ createdb -U postgres miago
 #### Run migrations
 
 ```sh
-pnpm db:migrate
+pnpm db:up
 ```
 
 ### Run Development Server
