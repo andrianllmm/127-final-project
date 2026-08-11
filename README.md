@@ -8,8 +8,6 @@
 
 Community-Based Food Delivery Platform for Miagao and UPV Miagao Campus
 
----
-
 ## About The Project
 
 MiaGo is a community-based food delivery platform for Miagao municipality and UPV Miagao campus that connects customers with freelance riders for food pickup and delivery from local vendors through a centralized order and dispatch system.
@@ -22,10 +20,8 @@ It replaces fragmented Messenger/Facebook-based ordering workflows with a struct
 - Food ordering via centralized delivery requests
 - Deliveries job marketplace (browse and accept deliveries)
 - Vendor item listings and order preparation workflow
-- Order lifecycle tracking (request → accepted → picked up → delivered)
+- Order lifecycle tracking (request, accepted, picked up, delivered)
 - Structured dispatch system replacing informal coordination
-
----
 
 ## Tech Stack
 
@@ -112,8 +108,6 @@ pnpm db:up
 pnpm dev
 ```
 
----
-
 ## Project Structure
 
 ```
@@ -140,15 +134,11 @@ apps/
 packages/                        # shared across apps
 ```
 
----
-
 ## Contributing
 
 Contributions are welcome!
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
-
----
 
 <!-- MARKDOWN LINKS -->
 
